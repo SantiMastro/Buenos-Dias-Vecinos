@@ -1,0 +1,44 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 893835775aa8d9c4798fcba7c5c5c37e, type: 3}
+  m_Name: HouseGenConfig
+  m_EditorClassIdentifier: Assembly-CSharp::BuenosDias.Config.HouseGenConfig
+  lotWidthMinPixels: 190
+  lotWidthMaxPixels: 270
+  gapMinPixels: 85
+  gapMaxPixels: 175
+  wallSprites:
+  - {fileID: 21300000, guid: 7d5f4fda3192d06418c8a595003126d3, type: 3}
+  - {fileID: 21300000, guid: 80c2008343379a54da6ebe09e04cc3a3, type: 3}
+  - {fileID: 21300000, guid: 1b84667ddd24efd42bca0a5ae036d8ad, type: 3}
+  - {fileID: 21300000, guid: 20b21ec9bbbde594aab77e595996dd02, type: 3}
+  - {fileID: 21300000, guid: c628690d43c474149b086f65a2a85a5f, type: 3}
+  fullGableMaxWidthPixels: 128
+  windowTopMarginPixels: 4
+  windowSeparationPixels: 60
+  curtainOffsetXPixels: 4
+  curtainOffsetYPixels: 2
+  tellWindowNearApproach: 1
+  doorPathWidthPixels: 44
+  maximumSignals: 2
+  maximumWindowVariants: 1
+  wallAnchorCount: 2
+  groundAnchorCount: 1
+  maximumTiledStrips: 1
+  availableSignals:
+  - {fileID: 11400000, guid: 9bceecf0f805a4c44861d715a90bc965, type: 2}
+  - {fileID: 11400000, guid: f99cce343fc8398429d866fa077e6ba0, type: 2}
+  - {fileID: 11400000, guid: 8342cfb7584a16241afdc24a6c606866, type: 2}
+  - {fileID: 11400000, guid: 89a0a5f3a6a397249b0a89cb5e34c8e2, type: 2}
+  - {fileID: 11400000, guid: dd55c1576927b30498e827439be06f90, type: 2}
+  - {fileID: 11400000, guid: 6de3e834ac3432e409b029cc5f91cb9f, type: 2}
+  - {fileID: 11400000, guid: 1ac9bfefe09122c42aa3b054718b2108, type: 2}

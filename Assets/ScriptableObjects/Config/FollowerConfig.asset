@@ -1,0 +1,28 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6511ec488abf42a4ba9754c4c47eca42, type: 3}
+  m_Name: FollowerConfig
+  m_EditorClassIdentifier: Assembly-CSharp::BuenosDias.Config.FollowerConfig
+  spacingPixels: 22
+  delayPerPosition: 0.06
+  continuousScaling: 1
+  speedPerFollower: 0.035
+  speedMax: 1.75
+  widthPerFollower: 0.03
+  widthMin: 0.45
+  followersPerChainLink: 4
+  maximumChainLinks: 4
+  abandonThreshold: 5
+  penaltyMode: 1
+  failTimePenalty: 3
+  failTimePenaltyCrowded: 4
+  crowdedThreshold: 6

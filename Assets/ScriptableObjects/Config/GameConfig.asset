@@ -1,0 +1,45 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fad70d19ee6a29b49b1ae6add5ae669e, type: 3}
+  m_Name: GameConfig
+  m_EditorClassIdentifier: Assembly-CSharp::BuenosDias.Config.GameConfig
+  dayDurationSeconds: 72
+  infiniteTimeDebug: 0
+  fixedSeedDebug: 0
+  forceEnding: 0
+  convertsForMaxDifficulty: 14
+  crucifixionBelow: 1
+  ascensionAtLeast: 10
+  religions:
+  - {fileID: 11400000, guid: 3335ccdfe8de5654d8493492824c94cc, type: 2}
+  - {fileID: 11400000, guid: 3483e5e66453a5e48b4e75020b5a267e, type: 2}
+  - {fileID: 11400000, guid: e653028a2e568c24f8cc2804bb0b71f3, type: 2}
+  - {fileID: 11400000, guid: 4bb7d6090844c9d4dad3a8ceb78d9971, type: 2}
+  - {fileID: 11400000, guid: 2d0deca6a2eb9034a8e6a583d3f6cd60, type: 2}
+  neighbors:
+  - {fileID: 11400000, guid: 2894242832c19354ea6870c377ddb949, type: 2}
+  - {fileID: 11400000, guid: 3ad5843caa395974b8b4bcfd0e4ea5ae, type: 2}
+  - {fileID: 11400000, guid: 017aacf5251c7444e8cbda74246d8276, type: 2}
+  - {fileID: 11400000, guid: 6c644346e127d3c4ea271cfc50542c3e, type: 2}
+  - {fileID: 11400000, guid: c48bb443d7aac4440bd292dbfa7d1e51, type: 2}
+  walk: {fileID: 11400000, guid: 4dc442d1f8f277a408b2072a69ec53ea, type: 2}
+  doorbell: {fileID: 11400000, guid: c05b841e3daf57d43939410cdd98e2bc, type: 2}
+  wait: {fileID: 11400000, guid: 549836aceb1324f4f8c03a2364c8ef2e, type: 2}
+  skillcheck: {fileID: 11400000, guid: 302b8d60f80f6024b8c9654b3ea8d4d2, type: 2}
+  pity: {fileID: 11400000, guid: 88c36aa6c0a089848a19e0d1215ece5f, type: 2}
+  houseGeneration: {fileID: 11400000, guid: 1e13675d0a139014582568ac473920fd, type: 2}
+  dayCycle: {fileID: 11400000, guid: 7192e1e78f94578439e3be7e375c401f, type: 2}
+  followers: {fileID: 11400000, guid: 65adc5cc6d7d42d4ba0aef2fc474826e, type: 2}
+  bonusBaseSeconds: 3
+  bonusPerfectSeconds: 4
+  bonusGoodSeconds: 1.5
+  bonusCapPerLinkSeconds: 7

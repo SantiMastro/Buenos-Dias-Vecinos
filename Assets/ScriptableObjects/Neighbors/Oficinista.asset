@@ -1,0 +1,21 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8f62235977aad90408f35e95ce6af612, type: 3}
+  m_Name: Oficinista
+  m_EditorClassIdentifier: Assembly-CSharp::BuenosDias.Config.NeighborDefinition
+  displayName: Oficinista
+  animatorOverride: {fileID: 22100000, guid: fb21aa70db3aeca40af3976edbd51876, type: 2}
+  objections:
+  - No me interesa, gracias.
+  - Estoy por salir.
+  - "Ya tengo mi religi\xF3n."
+  - "Mi marido no est\xE1."

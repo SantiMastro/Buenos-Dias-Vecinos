@@ -1,0 +1,41 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a3c98a87dd0b0cc4ba27d88f2879eee4, type: 3}
+  m_Name: AnimationBuildConfig
+  m_EditorClassIdentifier: Assembly-CSharp::BuenosDias.Config.AnimationBuildConfig
+  rules:
+  - match: _walk
+    framesPerSecond: 12
+    playMode: 0
+  - match: _espera
+    framesPerSecond: 8
+    playMode: 0
+  - match: _idle
+    framesPerSecond: 1
+    playMode: 2
+  - match: ondas_timbre
+    framesPerSecond: 12
+    playMode: 0
+  - match: _timbre
+    framesPerSecond: 12
+    playMode: 1
+  - match: _exito
+    framesPerSecond: 12
+    playMode: 1
+  - match: _si
+    framesPerSecond: 8
+    playMode: 1
+  - match: _no
+    framesPerSecond: 8
+    playMode: 1
+  defaultFramesPerSecond: 12
+  defaultPlayMode: 0

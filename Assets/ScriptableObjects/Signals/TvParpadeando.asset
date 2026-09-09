@@ -1,0 +1,22 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3c381265910309049a885b7abe43a020, type: 3}
+  m_Name: TvParpadeando
+  m_EditorClassIdentifier: Assembly-CSharp::BuenosDias.Config.HouseSignalDefinition
+  displayName: TV parpadeando
+  weight: 0.35
+  mountMode: 3
+  sprite: {fileID: 21300000, guid: 86f7477620a4e4f42b100719e320be8e, type: 3}
+  additiveLayer: {fileID: 21300000, guid: 5abdc411d76ce9746aa20f98262b3193, type: 3}
+  additiveLayerAnimation: {fileID: 7400000, guid: b4a0fced7652a2d4eb7eb726294824d8, type: 2}
+  claimsDoorSideAnchor: 0
+  minimumLotWidthPixels: 0

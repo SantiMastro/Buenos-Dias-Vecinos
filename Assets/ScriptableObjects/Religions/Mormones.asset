@@ -1,0 +1,26 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3a1077cf4f72e654faf9ea856a1eb7b4, type: 3}
+  m_Name: Mormones
+  m_EditorClassIdentifier: Assembly-CSharp::BuenosDias.Config.ReligionDefinition
+  displayName: MORMONES
+  id: mormones
+  tagline: "CAMIN\xC1S R\xC1PIDO, ZONA CHICA"
+  walkSpeed: 1.3
+  waitDuration: 1
+  zoneWidth: 0.8
+  needleSpeed: 1
+  extraChainLinks: 0
+  timeBonus: 1
+  canAscend: 1
+  shirtColor: {r: 0.9529412, g: 0.9254902, b: 0.8784314, a: 1}
+  tieColor: {r: 0.22745098, g: 0.22745098, b: 0.49019608, a: 1}

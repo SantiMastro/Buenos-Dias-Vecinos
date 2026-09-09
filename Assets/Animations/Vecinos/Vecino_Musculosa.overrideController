@@ -1,0 +1,17 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!221 &22100000
+AnimatorOverrideController:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: Vecino_Musculosa
+  m_Controller: {fileID: 9100000, guid: 0352535e026ecc7439e4d6627dec59a5, type: 2}
+  m_Clips:
+  - m_OriginalClip: {fileID: 7400000, guid: e1b6f5a0595fdf841b3f55f95014ca04, type: 2}
+    m_OverrideClip: {fileID: 7400000, guid: ca8ab4e26e453ec42ae61e6f47947095, type: 2}
+  - m_OriginalClip: {fileID: 7400000, guid: 3978eaf08fc9ae14586bd9e175da7c37, type: 2}
+    m_OverrideClip: {fileID: 7400000, guid: 01527e0a40cc0214bbef378b2d6f8a66, type: 2}
+  - m_OriginalClip: {fileID: 7400000, guid: 88fe1f667dfc3d340835b0e467f71b97, type: 2}
+    m_OverrideClip: {fileID: 7400000, guid: feac6a67d4c76bd468f825b20d54a935, type: 2}

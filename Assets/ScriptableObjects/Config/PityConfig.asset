@@ -1,0 +1,25 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1334749f989b1924d81a87a38f80bd30, type: 3}
+  m_Name: PityConfig
+  m_EditorClassIdentifier: Assembly-CSharp::BuenosDias.Config.PityConfig
+  baseChance: 0.45
+  signalClampMin: 0.05
+  signalClampMax: 0.95
+  readableChanceThreshold: 0.42
+  increment: 0.22
+  cap: 0.55
+  rollClampMin: 0.05
+  rollClampMax: 0.97
+  guaranteedAfterEmptyRun: 3
+  deadBlockWindow: 3
+  positiveBiasPerEmpty: 0.35
