@@ -12,7 +12,11 @@ namespace BuenosDias.Presentation
     /// Trabaja en el espacio LOCAL de su capa: el padre puede llevar un
     /// <see cref="ParallaxLayer"/>, así el desplazamiento lo resuelve la capa y
     /// acá solo se decide la cobertura, sin que un componente pise al otro.
+    ///
+    /// Orden −30: después de la cámara (−50) y de su capa (−40), para leer las
+    /// dos ya ubicadas en este cuadro.
     /// </summary>
+    [DefaultExecutionOrder(-30)]
     [DisallowMultipleComponent]
     public sealed class ScenerySpawner : MonoBehaviour
     {
@@ -84,8 +88,10 @@ namespace BuenosDias.Presentation
                 // Sin esta corrección, media capa aparece corrida media mata.
                 float width = variant.rect.width / variant.pixelsPerUnit;
                 float pivotX = variant.pivot.x / variant.rect.width;
-                prop.transform.localPosition =
-                    new Vector3(nextX + pivotX * width, propSet.GroundOffset, 0f);
+                // A la grilla de píxeles, igual que la capa: un prop a medio píxel
+                // se rasteriza distinto de un cuadro al otro.
+                float x = ParallaxLayer.Snap(nextX + pivotX * width, ProjectConstants.PixelsPerUnit);
+                prop.transform.localPosition = new Vector3(x, propSet.GroundOffset, 0f);
 
                 active.Add(prop);
                 nextX += width + propSet.RollSpacing(random);

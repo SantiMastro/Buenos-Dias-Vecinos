@@ -17,25 +17,29 @@ MonoBehaviour:
   perfectStart: 0.32
   perfectEnd: 0.68
   failMarginRadians: 0.42
-  widthAtWorstPrecision: 0.24
-  widthAtBestPrecision: 0.52
-  minimumWidthRadians: 0.12
+  widthAtWorstPrecision: 2.0944
+  widthAtBestPrecision: 2.618
+  openingMinimumRadians: 2.0944
+  minimumWidthRadians: 0.785
+  randomDirection: 1
+  speedGainPerLink: 0.15
+  pressSweepMaxSeconds: 0.05
   widthByProgress:
     serializedVersion: 2
     m_Curve:
     - serializedVersion: 3
       time: 0
-      value: 1.45
+      value: 1
       inSlope: 0
-      outSlope: -0.63000005
+      outSlope: -0.4
       tangentMode: 0
       weightedMode: 0
       inWeight: 0
       outWeight: 0
     - serializedVersion: 3
       time: 1
-      value: 0.82
-      inSlope: -0.63000005
+      value: 0.6
+      inSlope: -0.4
       outSlope: 0
       tangentMode: 0
       weightedMode: 0

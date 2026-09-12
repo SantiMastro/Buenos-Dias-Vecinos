@@ -59,9 +59,12 @@ namespace BuenosDias.EditorTools.Authoring
         }
 
         /// <summary>
-        /// Las siete señales de la spec. Cuatro de ellas no son "un sprite en un
-        /// ancla": el pasto es una franja tileada, la luz de entrada y el TV
-        /// llevan capa aditiva, y persianas y TV pisan el sprite de WindowA.
+        /// Las siete señales de la spec, más la silueta y el humo de chimenea.
+        /// Cuatro de las de la spec no son "un sprite en un ancla": el pasto es
+        /// una franja tileada, la luz de entrada y el TV llevan capa aditiva, y
+        /// persianas y TV pisan el sprite de WindowA. Silueta y humo se dibujan
+        /// por código y no llevan sprite; el humo pide un terreno de 160 px para
+        /// caer siempre sobre losa y nunca sobre un techo a dos aguas completo.
         /// </summary>
         public static HouseSignalDefinition[] SeedSignals(ref int created)
         {
@@ -78,6 +81,8 @@ namespace BuenosDias.EditorTools.Authoring
                 ("PersianasBajas", "Persianas bajas",         -0.35f, SignalMountMode.VarianteDeVentana,   "env_ventana_persiana", null,             0f),
                 ("BuzonLleno",     "Buzón desbordado",        -0.40f, SignalMountMode.PropEnAnclaDePared,  "prop_buzon_lleno",     null,             0f),
                 ("PastoCrecido",   "Pasto crecido",           -0.22f, SignalMountMode.FranjaTileada,       "prop_pasto_alto",      null,             0f),
+                ("SiluetaEnVentana", "Silueta en la ventana",  0.30f, SignalMountMode.SiluetaEnVentana,    null,                   null,             0f),
+                ("HumoChimenea",   "Humo de chimenea",         0.20f, SignalMountMode.ChimeneaEnTecho,     null,                   null,             160f),
             };
 
             AnimationClip flicker = SignalAssetFactory.BuildTelevisionFlicker();
@@ -95,7 +100,8 @@ namespace BuenosDias.EditorTools.Authoring
                 ScriptableObjectSeeder.Set(asset, "displayName", s.Item2);
                 ScriptableObjectSeeder.Set(asset, "weight", s.Item3);
                 ScriptableObjectSeeder.Set(asset, "mountMode", (int)s.Item4);
-                ScriptableObjectSeeder.Set(asset, "sprite", SpriteLibrary.Load(s.Item5));
+                if (s.Item5 != null)
+                    ScriptableObjectSeeder.Set(asset, "sprite", SpriteLibrary.Load(s.Item5));
                 ScriptableObjectSeeder.Set(asset, "minimumLotWidthPixels", s.Item7);
 
                 if (s.Item6 != null)

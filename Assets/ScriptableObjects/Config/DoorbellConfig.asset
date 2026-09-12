@@ -14,6 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::BuenosDias.Config.DoorbellConfig
   reachBeforePixels: 78
   reachAfterPixels: 46
+  coyotePixels: 40
   abortLockoutSeconds: 0.32
   precisionByDistance:
     serializedVersion: 2

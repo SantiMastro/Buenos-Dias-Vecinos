@@ -106,8 +106,12 @@ namespace BuenosDias.Presentation
         /// <summary>Alto de una línea, en píxeles de pantalla.</summary>
         public int HeightPixels => font != null ? font.CellHeight * pixelScale : 0;
 
-        private int AdvancePixels =>
+        /// <summary>Cuánto avanza cada letra, en píxeles de pantalla.</summary>
+        public int AdvancePixels =>
             font != null ? (font.CellWidth + trackingPixels) * pixelScale : 0;
+
+        /// <summary>Multiplicador de tamaño.</summary>
+        public int PixelScale => pixelScale;
 
         /// <summary>Cambia lo que dice. Si es lo mismo que ya decía, no hace nada.</summary>
         public void SetText(string value)
@@ -116,6 +120,19 @@ namespace BuenosDias.Presentation
             if (value == text && glyphs != null) return;
 
             text = value;
+            if (glyphs != null) Rebuild();
+        }
+
+        /// <summary>
+        /// Cambia el color de la tinta. Si es el mismo, no hace nada: el parpadeo de
+        /// la tabla de récords lo llama cada cuadro y solo tiene que rehacer el
+        /// cartel cuando el color de verdad cambia.
+        /// </summary>
+        public void SetInkColor(Color value)
+        {
+            if (value == inkColor && glyphs != null) return;
+
+            inkColor = value;
             if (glyphs != null) Rebuild();
         }
 

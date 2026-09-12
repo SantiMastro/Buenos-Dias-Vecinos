@@ -108,6 +108,7 @@ namespace BuenosDias.Presentation
 
             runner.AttemptStarted += OnAttemptStarted;
             runner.AttemptResolved += OnAttemptResolved;
+            runner.Cancelled += OnCancelled;
         }
 
         private void OnDisable()
@@ -116,6 +117,7 @@ namespace BuenosDias.Presentation
 
             runner.AttemptStarted -= OnAttemptStarted;
             runner.AttemptResolved -= OnAttemptResolved;
+            runner.Cancelled -= OnCancelled;
         }
 
         private void OnDestroy()
@@ -154,6 +156,18 @@ namespace BuenosDias.Presentation
             Show(true);
         }
 
+        /// <summary>
+        /// La puerta se cortó sin resolverse —se hizo de noche con la puerta
+        /// abierta—: el aro se va en el acto, sin destello, porque no hubo golpe
+        /// que devolver.
+        /// </summary>
+        private void OnCancelled()
+        {
+            attempt = null;
+            flashLeft = 0f;
+            Show(false);
+        }
+
         private void OnAttemptResolved(SkillcheckOutcome outcome)
         {
             flashLeft = flashSeconds;
@@ -173,12 +187,23 @@ namespace BuenosDias.Presentation
             // no dependa de una conversión implícita que se lee como un descuido.
             painter.Clear();
             painter.Paint(
-                target.ZoneStart, target.ZoneWidth,
+                ArcStart(target.ZoneStart, target.ZoneEnd, target.Direction), target.ZoneWidth,
                 trackInnerRadius, trackOuterRadius, (Color32)goodColor);
             painter.Paint(
-                target.PerfectStart, target.PerfectEnd - target.PerfectStart,
+                ArcStart(target.PerfectStart, target.PerfectEnd, target.Direction),
+                target.PerfectEnd - target.PerfectStart,
                 trackInnerRadius, trackOuterRadius, (Color32)perfectColor);
             painter.Apply();
+        }
+
+        /// <summary>
+        /// Dónde arranca, en el aro, un tramo del recorrido. En horario es el
+        /// mismo número; en antihorario el tramo se espeja, así que el arco va de
+        /// −fin a −inicio. El pintor siempre barre en horario.
+        /// </summary>
+        private static float ArcStart(float start, float end, int direction)
+        {
+            return direction >= 0 ? start : -end;
         }
 
         /// <summary>
@@ -206,10 +231,13 @@ namespace BuenosDias.Presentation
         /// El ángulo de la tirada crece y no vuelve nunca: el módulo es cosa de
         /// quien dibuja. La rotación va en Z negativa porque Unity gira antihorario
         /// y el convenio del skillcheck es horario.
+        ///
+        /// El sentido de la tirada multiplica el recorrido: en antihorario el
+        /// ángulo en el aro es el recorrido negado, igual que la zona espejada.
         /// </summary>
         private void PointNeedle()
         {
-            float degrees = Mathf.Repeat(attempt.NeedleAngle, TwoPi) * Mathf.Rad2Deg;
+            float degrees = Mathf.Repeat(attempt.Direction * attempt.NeedleAngle, TwoPi) * Mathf.Rad2Deg;
             needleRenderer.transform.localRotation = Quaternion.Euler(0f, 0f, -degrees);
         }
 

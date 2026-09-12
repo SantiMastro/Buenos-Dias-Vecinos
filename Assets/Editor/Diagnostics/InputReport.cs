@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Text;
+using BuenosDias.DebugTools;
 using BuenosDias.Gameplay;
 using UnityEditor;
 using UnityEngine;
@@ -22,18 +23,82 @@ namespace BuenosDias.EditorTools.Diagnostics
     {
         /// <summary>
         /// Arma el informe. <paramref name="log"/> son las líneas del registro de
-        /// apretones, de la más nueva a la más vieja.
+        /// apretones, de la más nueva a la más vieja; <paramref name="timing"/> son
+        /// los tiempos de cada apretón y cada suelta.
         /// </summary>
-        public static string Build(IReadOnlyList<string> log)
+        public static string Build(IReadOnlyList<string> log, InputTimingLog timing)
         {
-            var sb = new StringBuilder(1024);
+            var sb = new StringBuilder(4096);
 
             Header(sb);
             Devices(sb);
             Log(sb, log);
             Held(sb);
+            Timing(sb, timing);
 
             return sb.ToString();
+        }
+
+        /// <summary>Segundos a milisegundos enteros, o una raya si no hay dato.</summary>
+        public static string Ms(double seconds)
+        {
+            return double.IsNaN(seconds) ? "—" : $"{seconds * 1000.0:0}";
+        }
+
+        /// <summary>
+        /// Una línea de tiempos: cuándo pasó desde el cero, qué fue, y los tres
+        /// números que importan según sea apretón o suelta.
+        /// </summary>
+        public static string TimingLine(InputTimingLog timing, TimedInput entry)
+        {
+            string at = Ms(entry.Time - timing.Origin).PadLeft(7);
+            string kind = entry.Pressed ? "APRIETA" : "suelta ";
+            string any = $"Δ {Ms(entry.SincePreviousAny)}";
+
+            if (!entry.Pressed)
+                return $"+{at}  {kind}  {entry.Control}   {any} · sostenido {Ms(entry.HeldFor)}";
+
+            string bounce = timing.IsBounce(entry) ? "   ⚠ REBOTE" : string.Empty;
+            return $"+{at}  {kind}  {entry.Control}   {any} · desde su apretón anterior " +
+                   $"{Ms(entry.SincePreviousPress)} · desde su suelta {Ms(entry.SinceRelease)}{bounce}";
+        }
+
+        /// <summary>El resumen de un control en una línea.</summary>
+        public static string SummaryLine(ControlTiming summary)
+        {
+            return $"{summary.Control}: {summary.Presses} apretones, {summary.Bounces} rebotes · " +
+                   $"entre apretones mín {Ms(summary.MinInterval)} / prom {Ms(summary.AverageInterval)} / " +
+                   $"máx {Ms(summary.MaxInterval)} · sostenido mín {Ms(summary.MinHeld)} / " +
+                   $"prom {Ms(summary.AverageHeld)} / máx {Ms(summary.MaxHeld)}";
+        }
+
+        /// <summary>
+        /// Los tiempos van del más VIEJO al más nuevo, al revés que el registro de
+        /// apretones: acá lo que se lee es una secuencia, y una secuencia se lee
+        /// en el orden en que pasó.
+        /// </summary>
+        private static void Timing(StringBuilder sb, InputTimingLog timing)
+        {
+            sb.AppendLine();
+
+            int count = timing != null ? timing.Entries.Count : 0;
+            sb.AppendLine($"4 · TIEMPOS — {count} eventos, del más viejo al más nuevo, en ms");
+            sb.AppendLine($"     (+ = desde el cronómetro a cero · rebote = reapretón a menos de " +
+                          $"{Ms(timing?.BounceSeconds ?? double.NaN)} ms de soltar)");
+
+            if (count == 0)
+            {
+                sb.AppendLine("  (ninguno: no se registró ni un apretón ni una suelta)");
+                return;
+            }
+
+            foreach (TimedInput entry in timing.Entries)
+                sb.AppendLine($"  {TimingLine(timing, entry)}");
+
+            sb.AppendLine();
+            sb.AppendLine("  RESUMEN POR CONTROL");
+            foreach (ControlTiming summary in timing.Summarize())
+                sb.AppendLine($"  · {SummaryLine(summary)}");
         }
 
         private static void Header(StringBuilder sb)

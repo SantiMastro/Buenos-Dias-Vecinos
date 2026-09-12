@@ -1,3 +1,5 @@
+using UnityEngine;
+
 namespace BuenosDias.Gameplay
 {
     /// <summary>
@@ -25,14 +27,19 @@ namespace BuenosDias.Gameplay
     /// objeto. Una tecla no se siente bajo el pie: soltarla sin querer abandonaría
     /// una puerta en silencio, y no habría nada que delatara por qué. Con el toggle,
     /// estar en el felpudo es un estado que se decide.
+    ///
+    /// Cuando A y B llegan juntos decide <see cref="TwoButtonArbiter"/>: sin él, un
+    /// solo apretón podía frenar y tocar el timbre a la vez.
     /// </summary>
     public sealed class TwoButtonInputSource : IInputSource
     {
         private readonly PhysicalBinding a;
         private readonly PhysicalBinding b;
+        private readonly TwoButtonArbiter arbiter;
+        private readonly bool matIsHeld;
 
+        private TwoButtonFrame frame;
         private bool onMat;
-        private bool confirmed;
 
         /// <summary>Qué espera el juego. Le da significado al botón A.</summary>
         public InputContext Context { get; set; } = InputContext.Seleccion;
@@ -40,15 +47,29 @@ namespace BuenosDias.Gameplay
         /// <summary>Siempre 0: en este esquema no hay ningún gesto sostenido.</summary>
         public float HoldProgress => 0f;
 
-        /// <summary>Toma los dos bindings ya configurados.</summary>
-        public TwoButtonInputSource(PhysicalBinding a, PhysicalBinding b)
+        /// <summary>
+        /// Toma los dos bindings ya configurados y cuánto después de B se descarta
+        /// A (ver <see cref="TwoButtonArbiter"/>).
+        ///
+        /// <paramref name="matIsHeld"/> cambia cómo se lee B jugando: sostenido en
+        /// vez de toggle. Es para la plancha física, que manda la tecla MIENTRAS
+        /// está pisada; con toggle, bajarse de la plancha no haría nada.
+        /// </summary>
+        public TwoButtonInputSource(
+            PhysicalBinding a, PhysicalBinding b, float coincidenceSeconds = 0.1f, bool matIsHeld = false)
         {
             this.a = a;
             this.b = b;
+            this.matIsHeld = matIsHeld;
+            arbiter = new TwoButtonArbiter(coincidenceSeconds);
         }
 
         /// <summary>
-        /// Resuelve qué hizo B en este cuadro.
+        /// Lee A y B UNA vez por cuadro y los arbitra.
+        ///
+        /// Se puede resolver acá y no al consultar porque <see cref="GameInput"/>
+        /// llama a esto con orden de ejecución adelantado: todos los que preguntan
+        /// después, en su propio Update, ven lo mismo.
         ///
         /// B tiene DOS trabajos según dónde estemos, y no es un capricho: en la
         /// pantalla de religiones no existe el felpudo, así que la tecla estaría
@@ -58,11 +79,11 @@ namespace BuenosDias.Gameplay
         /// </summary>
         public void Tick()
         {
-            confirmed = false;
-            if (!PressedOn(b)) return;
+            bool aPressed = a != null && a.WasPressedThisFrame();
+            bool bPressed = b != null && b.WasPressedThisFrame();
 
-            if (Context == InputContext.Seleccion) confirmed = true;
-            else onMat = !onMat;
+            frame = arbiter.Resolve(aPressed, bPressed, Context, Time.unscaledTime);
+            if (frame.ToggleMat && !matIsHeld) onMat = !onMat;
         }
 
         /// <summary>Si esa acción se disparó en este cuadro.</summary>
@@ -72,9 +93,9 @@ namespace BuenosDias.Gameplay
             if (action == GameAction.Felpudo) return false;
 
             // Confirmar la religión es lo único que dispara B como pulso.
-            if (action == GameAction.Libro && confirmed) return true;
+            if (action == GameAction.Libro && frame.Confirmed) return true;
 
-            return PressedOn(a) && Resolve() == action;
+            return frame.APulse && Resolve() == action;
         }
 
         /// <summary>
@@ -88,9 +109,10 @@ namespace BuenosDias.Gameplay
         /// </summary>
         public bool Held(GameAction action)
         {
-            if (action == GameAction.Felpudo) return onMat;
+            if (action == GameAction.Felpudo)
+                return matIsHeld ? b != null && b.IsPressed() : onMat;
 
-            return HeldOn(a) && Resolve() == action;
+            return a != null && a.IsPressed() && Resolve() == action;
         }
 
         /// <summary>
@@ -118,18 +140,6 @@ namespace BuenosDias.Gameplay
                 // subirse o bajarse, y eso es B. En el final A reinicia.
                 default: return GameAction.Timbre;
             }
-        }
-
-        private static bool PressedOn(PhysicalBinding binding)
-        {
-            var control = binding?.Control();
-            return control != null && control.wasPressedThisFrame;
-        }
-
-        private static bool HeldOn(PhysicalBinding binding)
-        {
-            var control = binding?.Control();
-            return control != null && control.isPressed;
         }
     }
 }

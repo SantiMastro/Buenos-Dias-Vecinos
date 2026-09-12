@@ -98,6 +98,18 @@ namespace BuenosDias.Config
         [Tooltip("Tipos de vecino que pueden abrir la puerta.")]
         [SerializeField] private List<NeighborDefinition> neighbors = new List<NeighborDefinition>();
 
+        [Header("Religión por defecto")]
+        [Tooltip("PRENDIDO (el default): se juega SOLO con la religión por defecto " +
+                 "—el vendedor de aspiradoras— y la pantalla de selección se saltea.\n" +
+                 "APAGADO: vuelve la selección y se puede elegir cualquiera del " +
+                 "catálogo, arrancando por la religión por defecto.")]
+        [SerializeField] private bool lockToDefaultReligion = true;
+
+        [Tooltip("Con la que se juega si está bloqueado, y la que aparece primero en " +
+                 "la selección si no. Para bloquear no hace falta que esté en el " +
+                 "catálogo de arriba.")]
+        [SerializeField] private ReligionDefinition defaultReligion;
+
         [Header("Configs de sistema")]
         [SerializeField] private WalkConfig walk;
         [SerializeField] private DoorbellConfig doorbell;
@@ -140,6 +152,19 @@ namespace BuenosDias.Config
 
         /// <summary>Tipos de vecino disponibles.</summary>
         public IReadOnlyList<NeighborDefinition> Neighbors => neighbors;
+
+        /// <summary>
+        /// Si se juega solo con la religión por defecto. Sin religión por defecto
+        /// asignada no bloquea nada: sería bloquear a una opción que no existe.
+        /// </summary>
+        public bool LockToDefaultReligion => lockToDefaultReligion && defaultReligion != null;
+
+        /// <summary>La religión por defecto. Puede ser <c>null</c>.</summary>
+        public ReligionDefinition DefaultReligion => defaultReligion;
+
+        /// <summary>Posición de la religión por defecto en el catálogo, o −1.</summary>
+        public int DefaultReligionIndex =>
+            defaultReligion != null ? religions.IndexOf(defaultReligion) : -1;
 
         /// <summary>Config de caminata.</summary>
         public WalkConfig Walk => walk;

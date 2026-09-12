@@ -99,6 +99,26 @@ namespace BuenosDias.Tests
             Assert.AreEqual(3, session.PerfectHits);
         }
 
+        /// <summary>La cadena es la misma objeción poniéndose más insistente.</summary>
+        [Test]
+        public void Cada_eslabon_consecutivo_va_mas_rapido()
+        {
+            SkillcheckSession session = Build(out SkillcheckConfig config, links: 3);
+            float first = session.Current.Speed;
+
+            PressPerfect(session);
+            RunPause(session, config.ChainPauseSeconds + Frame);
+            float second = session.Current.Speed;
+
+            PressPerfect(session);
+            RunPause(session, config.ChainPauseSeconds + Frame);
+            float third = session.Current.Speed;
+
+            Assert.AreEqual(first * config.SpeedMultiplierForLink(1), second, 1e-4f);
+            Assert.Greater(second, first);
+            Assert.Greater(third, second);
+        }
+
         /// <summary>El bono de tiempo paga distinto perfecto que bueno, así que se cuentan aparte.</summary>
         [Test]
         public void Los_aciertos_se_cuentan_separados_por_calidad()

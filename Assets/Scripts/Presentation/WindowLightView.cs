@@ -45,12 +45,25 @@ namespace BuenosDias.Presentation
         /// cuadro con la luz del cuadro anterior — que es el mismo valor, porque
         /// todas las casas comparten la hora.
         /// </summary>
+        /// <remarks>
+        /// La luz ya no es la misma para todas: cada casa prende según lo habitada
+        /// que SE VE, que es su chance. Las que se ven habitadas prenden antes y
+        /// además la segunda ventana; las que se ven vacías quedan a oscuras.
+        /// </remarks>
         private void LateUpdate()
         {
-            float amount = cycle.WindowLightAt(director.SunsetProgress);
+            float progress = director.SunsetProgress;
 
             var houses = houseSpawner.Active;
-            for (int i = 0; i < houses.Count; i++) houses[i].SetWindowLight(amount);
+            for (int i = 0; i < houses.Count; i++)
+            {
+                HouseInstance house = houses[i];
+                if (house.Layout == null) continue;
+
+                float chance = house.Layout.Chance;
+                house.SetWindowLight(cycle.WindowLightAt(progress, chance));
+                house.SetSignalWindowLight(cycle.SecondWindowLightAt(progress, chance));
+            }
         }
 
         private bool ValidateSetup()

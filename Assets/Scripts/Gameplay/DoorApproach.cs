@@ -31,15 +31,23 @@ namespace BuenosDias.Gameplay
         /// <summary>Si hay una puerta a la que ir.</summary>
         public bool HasDoor => House != null;
 
-        private DoorApproach(HouseInstance house, float precision, float doorX)
+        /// <summary>
+        /// Si se agarró la puerta por el coyote: frenó pasado el alcance, por poco.
+        /// La puntería ya es cero; esto lo necesita quien dibuja, para no anunciar
+        /// el perdón como si fuera parte del alcance.
+        /// </summary>
+        public bool IsCoyote { get; }
+
+        private DoorApproach(HouseInstance house, float precision, float doorX, bool isCoyote)
         {
             House = house;
             Precision = precision;
             DoorX = doorX;
+            IsCoyote = isCoyote;
         }
 
         /// <summary>Frenar lejos de cualquier puerta: no hay adónde ir.</summary>
-        public static DoorApproach Nowhere => new DoorApproach(null, 0f, 0f);
+        public static DoorApproach Nowhere => new DoorApproach(null, 0f, 0f, false);
 
         /// <summary>
         /// Resuelve el frenazo. <paramref name="signedDistance"/> es negativa antes
@@ -64,12 +72,17 @@ namespace BuenosDias.Gameplay
             if (house == null) return Nowhere;
 
             float measured = signedDistance / Mathf.Max(0.01f, pace);
-            if (!config.IsInReach(measured)) return Nowhere;
+
+            // El coyote agarra la puerta aunque se haya pasado por poco: el
+            // predicador se da vuelta y vuelve, pero con puntería cero, porque ahí
+            // se perdona el frenazo y no se lo premia.
+            if (!config.CanGrab(measured)) return Nowhere;
 
             // ⚠️ La puerta se ubica con la distancia REAL, no con la medida: lo que
             // se escala es la ventana de decisión, no la geometría de la cuadra.
             return new DoorApproach(
-                house, config.PrecisionFor(measured), preacherX - signedDistance);
+                house, config.PrecisionFor(measured), preacherX - signedDistance,
+                config.IsInCoyote(measured));
         }
 
         /// <summary>Si a esa X ya se puede dar por llegado.</summary>

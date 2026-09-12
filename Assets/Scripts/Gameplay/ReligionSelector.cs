@@ -32,9 +32,22 @@ namespace BuenosDias.Gameplay
 
         private ReligionCarousel carousel;
 
-        /// <summary>Religión apuntada ahora. <c>null</c> si el catálogo está vacío.</summary>
-        public ReligionDefinition Selected =>
-            carousel == null || carousel.IsEmpty ? null : gameConfig.Religions[carousel.Index];
+        /// <summary>
+        /// Religión apuntada ahora. Con la religión bloqueada es siempre la de por
+        /// defecto. <c>null</c> si el catálogo está vacío.
+        /// </summary>
+        public ReligionDefinition Selected
+        {
+            get
+            {
+                if (gameConfig != null && gameConfig.LockToDefaultReligion)
+                    return gameConfig.DefaultReligion;
+
+                return carousel == null || carousel.IsEmpty
+                    ? null
+                    : gameConfig.Religions[carousel.Index];
+            }
+        }
 
         /// <summary>Posición dentro del catálogo. <c>-1</c> si está vacío.</summary>
         public int Index => carousel?.Index ?? -1;
@@ -66,7 +79,10 @@ namespace BuenosDias.Gameplay
         {
             if (!ValidateSetup()) { enabled = false; return; }
 
-            carousel = new ReligionCarousel(gameConfig.Religions.Count);
+            // Arranca apuntando a la religión por defecto: con la selección abierta
+            // es la primera que se ve, y con la religión bloqueada es la única.
+            carousel = new ReligionCarousel(
+                gameConfig.Religions.Count, gameConfig.DefaultReligionIndex);
         }
 
         /// <summary>
@@ -82,7 +98,8 @@ namespace BuenosDias.Gameplay
         /// </summary>
         private void Update()
         {
-            if (carousel == null || carousel.IsEmpty) return;
+            bool locked = gameConfig.LockToDefaultReligion;
+            if (carousel == null || (carousel.IsEmpty && !locked)) return;
 
             if (input.Pressed(GameAction.Libro))
             {
@@ -90,7 +107,8 @@ namespace BuenosDias.Gameplay
                 return;
             }
 
-            if (!input.Pressed(GameAction.Timbre)) return;
+            // Bloqueada no hay a dónde pasar: la única opción es la de por defecto.
+            if (locked || !input.Pressed(GameAction.Timbre)) return;
 
             carousel.Next();
             Changed?.Invoke(Selected);
@@ -106,7 +124,7 @@ namespace BuenosDias.Gameplay
                 return false;
             }
 
-            if (gameConfig.Religions.Count == 0)
+            if (gameConfig.Religions.Count == 0 && !gameConfig.LockToDefaultReligion)
             {
                 Debug.LogError(
                     $"[ReligionSelector] '{name}': el GameConfig no tiene ninguna " +

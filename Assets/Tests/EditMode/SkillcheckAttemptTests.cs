@@ -109,6 +109,59 @@ namespace BuenosDias.Tests
             Assert.AreEqual(frozen, attempt.NeedleAngle, 1e-5f);
         }
 
+        /// <summary>
+        /// El apretón pasó en algún momento entre el cuadro dibujado y este. Si en
+        /// ese tramo la aguja cruzó la zona, cuenta: a 30 fps, con la aguja rápida,
+        /// antes podía saltarse la zona entera entre dos cuadros.
+        /// </summary>
+        [Test]
+        public void Un_apreton_cuyo_tramo_cruza_la_zona_acierta()
+        {
+            SkillcheckAttempt attempt = Build(out _, zoneWidth: 0.5f, speed: 3f);
+            attempt.Advance((attempt.ZoneStart - 0.03f) / 3f);
+
+            Assert.AreEqual(SkillcheckOutcome.Bueno, attempt.PressWithin(1f / 30f));
+        }
+
+        [Test]
+        public void Sin_tramo_el_mismo_apreton_falla()
+        {
+            SkillcheckAttempt attempt = Build(out _, zoneWidth: 0.5f, speed: 3f);
+            attempt.Advance((attempt.ZoneStart - 0.03f) / 3f);
+
+            Assert.AreEqual(SkillcheckOutcome.Fallado, attempt.Press());
+        }
+
+        /// <summary>
+        /// El tramo se topa: un cuadro de medio segundo por un tirón de FPS no
+        /// puede barrer hasta la zona perfecta y regalarla.
+        /// </summary>
+        [Test]
+        public void Un_tiron_de_FPS_no_regala_un_perfecto()
+        {
+            SkillcheckAttempt attempt = Build(out _, zoneWidth: 0.5f, speed: 3f);
+            attempt.Advance((attempt.ZoneStart - 0.03f) / 3f);
+
+            Assert.AreEqual(SkillcheckOutcome.Bueno, attempt.PressWithin(0.5f));
+        }
+
+        /// <summary>El sentido sale del random, después de la zona, y no mueve la zona.</summary>
+        [Test]
+        public void El_sentido_se_sortea_sin_mover_la_zona()
+        {
+            SkillcheckConfig config = ConfigFactory.Skillcheck();
+            var setup = new SkillcheckSetup(0.5f, 2f, 1);
+
+            var low = new SkillcheckAttempt(config, setup, new FixedRandom(0.1d));
+            var high = new SkillcheckAttempt(config, setup, new FixedRandom(0.9d));
+
+            Assert.AreEqual(-1, low.Direction);
+            Assert.AreEqual(1, high.Direction);
+            Assert.AreEqual(
+                UnityEngine.Mathf.Lerp(config.ZoneAheadMin, config.ZoneAheadMax, 0.1f),
+                low.ZoneStart, 1e-5f);
+        }
+
         /// <summary>Avanza la aguja de a cuadros de 60 fps hasta pasar el ángulo pedido.</summary>
         private static void AdvanceTo(SkillcheckAttempt attempt, float angle)
         {

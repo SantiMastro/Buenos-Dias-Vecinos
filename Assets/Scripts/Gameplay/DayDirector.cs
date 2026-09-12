@@ -40,6 +40,13 @@ namespace BuenosDias.Gameplay
         public bool IsOver => clock != null && clock.IsOver;
 
         /// <summary>
+        /// Cuánto del día se consumió AHORA, de 0 a 1, según el tiempo que queda.
+        /// A diferencia de <see cref="SunsetProgress"/>, baja cuando una conversión
+        /// devuelve segundos: es el que usa la dificultad, no el cielo.
+        /// </summary>
+        public float TimeUsed => clock?.Progress ?? 0f;
+
+        /// <summary>
         /// Se dispara UNA vez, cuando cae la noche. Entrega la COMITIVA final —los
         /// seguidores que quedan caminando atrás— para que la fase 9 resuelva cuál
         /// de los tres finales corresponde.

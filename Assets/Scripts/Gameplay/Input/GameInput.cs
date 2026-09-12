@@ -1,36 +1,16 @@
+using BuenosDias.Config;
 using UnityEngine;
-using UnityEngine.InputSystem;
 
 namespace BuenosDias.Gameplay
 {
-    /// <summary>Con qué se juega.</summary>
-    public enum InputMode
-    {
-        /// <summary>Un botón único. Anda en cualquier máquina. Es el default.</summary>
-        Teclado,
-
-        /// <summary>
-        /// Dos botones: A hace todo lo del botón único, B es el felpudo.
-        ///
-        /// Es el intermedio, y existe por un problema real del esquema de un solo
-        /// botón: en <see cref="InputContext.SinRespuesta"/> el apretón insiste, así
-        /// que no quedaba forma de bajarse. Resolverlo con un mantenido habría
-        /// arruinado la decisión, que tiene que poder tomarse rápido.
-        /// </summary>
-        TecladoDosBotones,
-
-        /// <summary>Timbre, libro y felpudo por separado. Necesita el control físico.</summary>
-        Objeto
-    }
-
     /// <summary>
-    /// La única puerta de entrada del input para todo el juego. Elige la
-    /// modalidad y expone las tres acciones; quien la consume no sabe cuál está
-    /// activa.
+    /// La única puerta de entrada del input para todo el juego. Expone las tres
+    /// acciones; quien la consume pregunta por acciones y nunca por teclas.
     ///
-    /// No se autodetecta la modalidad a propósito. Las dos usan los mismos
-    /// dispositivos —el control físico es un teclado y un mouse para Windows— así
-    /// que adivinar saldría mal justo el día que importa.
+    /// Se juega con un solo esquema, el del control alternativo: el timbre (botón
+    /// A, click izquierdo) toca, insiste y le pega al QTE, y el felpudo (botón B,
+    /// Espacio desde la Raspberry Pi) frena y vuelve a caminar. Las teclas y los
+    /// tiempos viven en un <see cref="InputConfig"/>.
     /// </summary>
     /// <remarks>
     /// El orden de ejecución va adelantado porque todos los que preguntan lo hacen
@@ -42,58 +22,35 @@ namespace BuenosDias.Gameplay
     [DisallowMultipleComponent]
     public sealed class GameInput : MonoBehaviour
     {
-        [Header("Modalidad")]
-        [Tooltip("Teclado: un botón único, el esquema de siempre.\n" +
-                 "Objeto: timbre, libro y felpudo por separado.\n\n" +
-                 "El default es Teclado porque anda en cualquier máquina. Objeto es " +
-                 "la bandera que hay que acordarse de PRENDER, y olvidarse solo " +
-                 "significa jugar con el teclado.")]
-        [SerializeField] private InputMode mode = InputMode.Teclado;
-
-        [Header("Referencias")]
-        [Tooltip("Lector crudo del botón único. Lo usa la modalidad de teclado.")]
-        [SerializeField] private OneButtonInput button;
-
-        [Header("Modalidad de dos botones")]
-        [Tooltip("BOTÓN A: todo lo que hace el botón único —timbre, libro y " +
-                 "skillcheck— según el estado. Por defecto el click izquierdo, que " +
-                 "es el timbre físico ya soldado.")]
-        [SerializeField]
-        private PhysicalBinding botonA = new PhysicalBinding(BindingDevice.MouseIzquierdo, Key.Space);
-
-        [Tooltip("BOTÓN B: subirse y bajarse del felpudo, y confirmar la religión. " +
-                 "Es un TOGGLE, no un sostenido: una tecla no se siente bajo el pie, " +
-                 "y soltarla sin querer abandonaría una puerta en silencio.")]
-        [SerializeField]
-        private PhysicalBinding botonB = new PhysicalBinding(BindingDevice.Teclado, Key.Space);
-
-        [Header("Modalidad de objeto — entradas físicas")]
-        [Tooltip("⚠️ FIJO EN HARDWARE: el pulsador del timbre está soldado al " +
-                 "switch del botón izquierdo de una placa de mouse. Cambiarlo acá " +
-                 "no cambia el fierro.")]
-        [SerializeField]
-        private PhysicalBinding timbre = new PhysicalBinding(BindingDevice.MouseIzquierdo, Key.Space);
-
-        [Tooltip("El libro con sensor magnético. Cerrarlo manda un pulso.")]
-        [SerializeField]
-        private PhysicalBinding libro = new PhysicalBinding(BindingDevice.Teclado, Key.Enter);
-
-        [Tooltip("La plancha que se pisa. Manda la tecla MIENTRAS está pisada.\n\n" +
-                 "⚠️ Nunca Shift, Ctrl, Alt, Caps Lock, Tab, Esc ni la de Windows: " +
-                 "Shift sostenida abre el diálogo de Sticky Keys ENCIMA del juego y " +
-                 "Alt se roba el menú de la ventana.")]
-        [SerializeField]
-        private PhysicalBinding felpudo = new PhysicalBinding(BindingDevice.Teclado, Key.Space);
+        [Header("Config")]
+        [Tooltip("Teclas y tiempos del input. Sin asset se juega con los valores por " +
+                 "defecto y la consola lo avisa.")]
+        [SerializeField] private InputConfig config;
 
         private IInputSource source;
-
-        /// <summary>Con qué modalidad se está jugando.</summary>
-        public InputMode Mode => mode;
+        private InputConfig fallback;
 
         /// <summary>
-        /// Qué espera el juego. Lo escribe la FSM. En modalidad de objeto no hace
-        /// nada, pero se escribe igual: que la FSM tenga que acordarse de decirlo
-        /// solo en una de las dos modalidades sería una trampa.
+        /// La config en uso. Sin asset asignado se arma una con los defaults, así
+        /// quien pregunte antes del Awake —el buffer del predicador, por ejemplo—
+        /// no recibe un null.
+        /// </summary>
+        private InputConfig Config
+        {
+            get
+            {
+                if (config != null) return config;
+                if (fallback == null) fallback = ScriptableObject.CreateInstance<InputConfig>();
+                return fallback;
+            }
+        }
+
+        /// <summary>Segundos que se guarda un timbrazo adelantado.</summary>
+        public float RingBufferSeconds => Config.RingBufferSeconds;
+
+        /// <summary>
+        /// Qué espera el juego. Lo escribe la FSM, y es lo que le da significado al
+        /// botón A: timbre en la puerta, libro con la puerta abierta.
         /// </summary>
         public InputContext Context
         {
@@ -101,7 +58,7 @@ namespace BuenosDias.Gameplay
             set { if (source != null) source.Context = value; }
         }
 
-        /// <summary>Cuánto lleva del gesto mantenido, 0..1. Lo dibuja la barrita.</summary>
+        /// <summary>Cuánto lleva del gesto mantenido, 0..1. Con este esquema no hay: siempre 0.</summary>
         public float HoldProgress => source != null ? source.HoldProgress : 0f;
 
         /// <summary>Si esa acción se disparó en este cuadro.</summary>
@@ -112,28 +69,24 @@ namespace BuenosDias.Gameplay
 
         private void Awake()
         {
-            if (mode == InputMode.Objeto)
+            if (config == null)
             {
-                source = new DeviceInputSource(timbre, libro, felpudo);
-                return;
+                Debug.LogWarning(
+                    $"[GameInput] '{name}' no tiene InputConfig asignado: se juega con " +
+                    "los valores por defecto.", this);
             }
 
-            if (mode == InputMode.TecladoDosBotones)
-            {
-                source = new TwoButtonInputSource(botonA, botonB);
-                return;
-            }
+            InputConfig settings = Config;
+            WarnIfShared(settings);
 
-            if (button == null)
-            {
-                Debug.LogError(
-                    $"[GameInput] '{name}' está en modalidad Teclado y no tiene " +
-                    "OneButtonInput asignado.", this);
-                enabled = false;
-                return;
-            }
+            source = new TwoButtonInputSource(
+                settings.BotonA, settings.BotonB,
+                settings.CoincidenceSeconds, settings.FelpudoSostenido);
+        }
 
-            source = new SingleButtonInputSource(button);
+        private void OnDestroy()
+        {
+            if (fallback != null) Destroy(fallback);
         }
 
         /// <summary>
@@ -144,6 +97,22 @@ namespace BuenosDias.Gameplay
         private void Update()
         {
             source?.Tick();
+        }
+
+        /// <summary>
+        /// Grita si el timbre y el felpudo leen la MISMA entrada. Solo avisa y no
+        /// apaga nada: el juego sigue jugable, pero un apretón va a frenar y tocar
+        /// a la vez, y ese bug se ve como un problema del control cuando es de
+        /// configuración.
+        /// </summary>
+        private void WarnIfShared(InputConfig settings)
+        {
+            if (settings.BotonA == null || !settings.BotonA.SameInputAs(settings.BotonB)) return;
+
+            Debug.LogError(
+                $"[GameInput] '{name}': el timbre y el felpudo están atados a la MISMA " +
+                $"entrada ({settings.BotonA.Describe()}). Un solo apretón va a frenar y " +
+                "tocar a la vez. Asigná entradas distintas en el InputConfig.", this);
         }
     }
 }

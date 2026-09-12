@@ -73,17 +73,24 @@ namespace BuenosDias.Simulation
         /// molestos. Va en 1 cuando abrieron al primer timbrazo. Es un parámetro y
         /// no una consulta a la config porque esta clase no sabe de puertas: le
         /// llega el número ya resuelto por quien sí sabe cuántas veces se tocó.
+        ///
+        /// <paramref name="timeUsed"/> es cuánto del día ya se consumió, de 0 a 1,
+        /// medido con el tiempo que QUEDA. Achica la zona igual que las
+        /// conversiones y la comitiva: la presión del reloj también se siente en
+        /// la puerta, no solo en la barra.
         /// </summary>
         public SkillcheckSetup Resolve(
             float precision, int converts, int followerCount, ReligionDefinition religion,
-            float zoneScale = 1f)
+            float zoneScale = 1f, float timeUsed = 0f)
         {
             float progress = ProgressAt(converts);
+            float time = Mathf.Clamp01(timeUsed);
             float religionWidth = religion != null ? religion.ZoneWidth : 1f;
             float religionSpeed = religion != null ? religion.NeedleSpeed : 1f;
 
             float width = skillcheck.BaseWidthFor(precision)
                           * skillcheck.WidthMultiplierAt(progress)
+                          * skillcheck.WidthMultiplierAtTime(time)
                           * followers.WidthMultiplier(followerCount)
                           * religionWidth
                           * Mathf.Max(0f, zoneScale);
@@ -92,8 +99,12 @@ namespace BuenosDias.Simulation
                           * followers.SpeedMultiplier(followerCount)
                           * religionSpeed;
 
+            // El piso depende del progreso: al arrancar el día la zona es grande
+            // pase lo que pase —un tercio del círculo— y recién con la dificultad
+            // al máximo baja hasta el absoluto. Manda el más avanzado de los dos
+            // relojes: el de conversiones o el del día.
             return new SkillcheckSetup(
-                Mathf.Max(width, skillcheck.MinimumWidthRadians),
+                Mathf.Max(width, skillcheck.MinimumWidthAt(Mathf.Max(progress, time))),
                 speed,
                 ChainLinksFor(followerCount, religion));
         }

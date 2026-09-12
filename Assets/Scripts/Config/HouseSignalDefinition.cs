@@ -29,7 +29,20 @@ namespace BuenosDias.Config
         /// Persianas bajas y TV, que son los dos pesos más altos del sistema en
         /// cada dirección.
         /// </summary>
-        VarianteDeVentana
+        VarianteDeVentana,
+
+        /// <summary>
+        /// Una sombra que cruza detrás de la cortina de la ventana de tell cada
+        /// tanto. Se dibuja por código: no lleva sprite.
+        /// </summary>
+        SiluetaEnVentana,
+
+        /// <summary>
+        /// Chimenea con humo sobre la losa del techo. Se dibuja por código: no
+        /// lleva sprite. Necesita losa, así que el asset pide un terreno más ancho
+        /// que el techo a dos aguas completo.
+        /// </summary>
+        ChimeneaEnTecho
     }
 
     /// <summary>
@@ -62,7 +75,8 @@ namespace BuenosDias.Config
         [SerializeField] private SignalMountMode mountMode = SignalMountMode.PropEnAnclaDePared;
 
         [Tooltip("Arte principal de la señal. Con VarianteDeVentana es el sprite " +
-                 "que pisa a env_ventana_normal en WindowA.")]
+                 "que pisa a env_ventana_normal en WindowA. Vacío en SiluetaEnVentana " +
+                 "y ChimeneaEnTecho, que se dibujan por código.")]
         [SerializeField] private Sprite sprite;
 
         [Header("Capa de luz (opcional)")]
@@ -105,6 +119,11 @@ namespace BuenosDias.Config
 
         /// <summary>Cómo se monta dentro del terreno.</summary>
         public SignalMountMode MountMode => mountMode;
+
+        /// <summary>Si se dibuja por código y por eso no necesita sprite.</summary>
+        public bool DrawnByCode =>
+            mountMode == SignalMountMode.SiluetaEnVentana
+            || mountMode == SignalMountMode.ChimeneaEnTecho;
 
         /// <summary>Arte principal.</summary>
         public Sprite Sprite => sprite;

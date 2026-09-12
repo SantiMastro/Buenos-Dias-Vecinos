@@ -21,6 +21,16 @@ namespace BuenosDias.Config
                  "Es menor que el de antes a propósito: pasarse se castiga.")]
         [SerializeField, Min(0f)] private float reachAfterPixels = 46f;
 
+        [Header("Coyote")]
+        [Tooltip("Píxeles EXTRA, pasado el alcance de DESPUÉS de la puerta, en los que " +
+                 "frenar todavía agarra la puerta: el predicador se da vuelta y vuelve.\n\n" +
+                 "Es el perdón para el que se pasó por un pelo. Adentro de esta franja " +
+                 "la puntería es CERO: se perdona el frenazo, no se premia. Como el " +
+                 "alcance, se mide en TIEMPO, así que el ritmo del día lo escala. El " +
+                 "cartelito de 'acá podés tocar' no lo muestra, a propósito.\n\n" +
+                 "0 lo apaga.")]
+        [SerializeField, Range(0f, 120f)] private float coyotePixels = 40f;
+
         [Header("Bloqueo")]
         [Tooltip("Segundos tras tocar el timbre durante los que NO se puede abortar. " +
                  "Evita que un doble toque accidental cancele la espera recién empezada.")]
@@ -97,6 +107,28 @@ namespace BuenosDias.Config
         public bool IsInReach(float signedDistanceToDoor)
         {
             return signedDistanceToDoor >= -ReachBefore && signedDistanceToDoor <= ReachAfter;
+        }
+
+        /// <summary>Franja de perdón pasada la puerta, en unidades.</summary>
+        public float Coyote => ProjectConstants.ToUnits(coyotePixels);
+
+        /// <summary>
+        /// Si esa distancia cae en la franja de coyote: pasado el alcance de
+        /// después de la puerta, pero no tanto.
+        /// </summary>
+        public bool IsInCoyote(float signedDistanceToDoor)
+        {
+            return signedDistanceToDoor > ReachAfter && signedDistanceToDoor <= ReachAfter + Coyote;
+        }
+
+        /// <summary>
+        /// Si frenar a esa distancia agarra la puerta: dentro del alcance, o en la
+        /// franja de coyote. La puntería la sigue diciendo <see cref="PrecisionFor"/>,
+        /// que en el coyote da cero.
+        /// </summary>
+        public bool CanGrab(float signedDistanceToDoor)
+        {
+            return IsInReach(signedDistanceToDoor) || IsInCoyote(signedDistanceToDoor);
         }
 
         /// <summary>

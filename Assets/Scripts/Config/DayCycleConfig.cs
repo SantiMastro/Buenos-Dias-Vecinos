@@ -33,6 +33,23 @@ namespace BuenosDias.Config
                  "a encenderse progresivamente.")]
         [SerializeField, Range(0f, 1f)] private float lightsOnFraction = 0.60f;
 
+        [Header("Ventanas según lo habitada que se ve la casa")]
+        [Tooltip("Cuánto se ADELANTA el encendido en una casa que se ve habitada, " +
+                 "como fracción del día. Con 0.25, una casa de chance 1 prende un " +
+                 "cuarto de día antes que una neutra (0.5), y una de chance baja, " +
+                 "después.\n\n" +
+                 "No es información nueva: sale de las mismas señales que se ven. " +
+                 "Es otra forma de leerlas, desde lejos y de un vistazo.")]
+        [SerializeField, Range(0f, 0.5f)] private float occupancyLightLead = 0.25f;
+
+        [Tooltip("Chance por debajo de la cual la casa NO prende ninguna luz: se ve " +
+                 "vacía y así queda de noche.")]
+        [SerializeField, Range(0f, 1f)] private float darkBelowChance = 0.3f;
+
+        [Tooltip("Chance desde la cual la casa prende TAMBIÉN la ventana de señal, si " +
+                 "no tiene persianas ni TV en ella.")]
+        [SerializeField, Range(0f, 1f)] private float secondWindowChance = 0.6f;
+
         [Header("Presión")]
         [Tooltip("Segundos restantes por debajo de los cuales la barra parpadea en rojo.")]
         [SerializeField, Min(0f)] private float lowTimeWarningSeconds = 12f;
@@ -69,6 +86,31 @@ namespace BuenosDias.Config
         {
             if (dayProgress <= lightsOnFraction) return 0f;
             return Mathf.InverseLerp(lightsOnFraction, 1f, dayProgress);
+        }
+
+        /// <summary>
+        /// Cuánto está encendida la ventana de tell de una casa con esa chance, de
+        /// 0 a 1. Las que se ven habitadas prenden antes; las que se ven vacías,
+        /// después o nunca.
+        /// </summary>
+        public float WindowLightAt(float dayProgress, float chance)
+        {
+            if (chance < darkBelowChance) return 0f;
+
+            float lead = (chance - 0.5f) * 2f * occupancyLightLead;
+            float start = Mathf.Clamp(lightsOnFraction - lead, 0f, 0.99f);
+
+            if (dayProgress <= start) return 0f;
+            return Mathf.InverseLerp(start, 1f, dayProgress);
+        }
+
+        /// <summary>
+        /// Cuánto está encendida la ventana de SEÑAL. Solo se prende en las casas
+        /// que se ven bien habitadas, y al mismo ritmo que la de tell.
+        /// </summary>
+        public float SecondWindowLightAt(float dayProgress, float chance)
+        {
+            return chance >= secondWindowChance ? WindowLightAt(dayProgress, chance) : 0f;
         }
 
         // Los colores salen de la paleta del proyecto: #A8B4C6 mediodía,

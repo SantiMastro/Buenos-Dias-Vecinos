@@ -50,6 +50,14 @@ namespace BuenosDias.Config
                  "encima de esto habría que estirarlo, y en pixel art no se estira.")]
         [SerializeField, Min(32f)] private float fullGableMaxWidthPixels = 128f;
 
+        [Tooltip("Si en el frente a dos aguas el gable se apoya ENCIMA de la losa " +
+                 "(prendido) o arranca en el tope de la pared (apagado).\n\n" +
+                 "Apagado, la losa se veía por detrás de las pendientes del gable y el " +
+                 "techo rojo quedaba hundido 28 px debajo del borde de la terraza, " +
+                 "como un alero de porche. Con techo a dos aguas completo no hay losa, " +
+                 "así que ahí el gable siempre va sobre la pared.")]
+        [SerializeField] private bool gableSitsOnSlab = true;
+
         [Header("Ventanas")]
         [Tooltip("Distancia desde el BORDE SUPERIOR de la pared hasta el tope de la " +
                  "ventana, en píxeles. 4 deja alféizar visible abajo; centrarla la " +
@@ -104,6 +112,17 @@ namespace BuenosDias.Config
                  "superficie: dos superpuestas no se leerían.")]
         [SerializeField, Range(0, 2)] private int maximumTiledStrips = 1;
 
+        [Tooltip("Cuántas siluetas puede llevar una casa. Hay una sola ventana de " +
+                 "tell, así que el techo es 1.")]
+        [SerializeField, Range(0, 1)] private int silhouetteCapacity = 1;
+
+        [Tooltip("Cuántas chimeneas puede llevar una casa.")]
+        [SerializeField, Range(0, 1)] private int chimneyCapacity = 1;
+
+        [Tooltip("Cómo se ven la silueta y el humo, que se dibujan por código. Son " +
+                 "números de lectura, no de balance. Vacío = valores por defecto.")]
+        [SerializeField] private SignalVisualsConfig signalVisuals;
+
         [Tooltip("Catálogo de señales disponibles. El generador NO enumera señales " +
                  "en código: usa esta lista, así que agregar una es crear el asset " +
                  "y sumarlo acá.")]
@@ -124,6 +143,12 @@ namespace BuenosDias.Config
         /// <summary>Máximo de señales por casa.</summary>
         public int MaximumSignals => maximumSignals;
 
+        /// <summary>Si el gable del frente a dos aguas se apoya sobre la losa.</summary>
+        public bool GableSitsOnSlab => gableSitsOnSlab;
+
+        /// <summary>Cómo se ven las señales dibujadas por código. Nunca null.</summary>
+        public SignalVisualsConfig SignalVisuals => SignalVisualsConfig.OrDefault(signalVisuals);
+
         /// <summary>Ancho del camino de entrada, en unidades.</summary>
         public float DoorPathWidth => ProjectConstants.ToUnits(doorPathWidthPixels);
 
@@ -143,6 +168,8 @@ namespace BuenosDias.Config
                 SignalMountMode.PropEnAnclaDePared => wallAnchorCount,
                 SignalMountMode.PropEnAnclaDeSuelo => groundAnchorCount,
                 SignalMountMode.FranjaTileada => maximumTiledStrips,
+                SignalMountMode.SiluetaEnVentana => silhouetteCapacity,
+                SignalMountMode.ChimeneaEnTecho => chimneyCapacity,
                 _ => 0
             };
         }

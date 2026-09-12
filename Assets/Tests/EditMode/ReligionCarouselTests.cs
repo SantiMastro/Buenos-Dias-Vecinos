@@ -67,6 +67,27 @@ namespace BuenosDias.Tests
             Assert.AreEqual(-1, carousel.Next());
         }
 
+        /// <summary>La selección arranca apuntando a la religión por defecto.</summary>
+        [Test]
+        public void Puede_arrancar_en_otra_opcion()
+        {
+            var carousel = new ReligionCarousel(5, 4);
+
+            Assert.AreEqual(4, carousel.Index);
+            Assert.AreEqual(0, carousel.Next(), "desde la última da la vuelta igual");
+        }
+
+        /// <summary>
+        /// Una religión por defecto que no está en el catálogo llega como −1: eso
+        /// no puede terminar indexando la lista con un número inválido.
+        /// </summary>
+        [Test]
+        public void Un_arranque_fuera_de_rango_cae_en_la_primera()
+        {
+            Assert.AreEqual(0, new ReligionCarousel(5, -1).Index);
+            Assert.AreEqual(0, new ReligionCarousel(5, 9).Index);
+        }
+
         [Test]
         public void Una_cantidad_negativa_se_trata_como_vacia()
         {

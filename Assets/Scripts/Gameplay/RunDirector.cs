@@ -51,6 +51,10 @@ namespace BuenosDias.Gameplay
                  "a 1.7 s.")]
         [SerializeField, Min(0f)] private float endingLockoutSeconds = 3.5f;
 
+        [Tooltip("Tabla de récords. Opcional: sin ella el final reinicia como antes. " +
+                 "Con ella, el click no reinicia mientras se cargan las iniciales.")]
+        [SerializeField] private HighscoreDirector highscore;
+
         private readonly RunStateMachine run = new RunStateMachine();
         private float phaseTime;
 
@@ -85,6 +89,22 @@ namespace BuenosDias.Gameplay
             Apply(run.Phase);
         }
 
+        /// <summary>
+        /// Con la religión bloqueada no hay nada que elegir: la selección se
+        /// confirma sola y la partida arranca directo.
+        ///
+        /// Va en Start y no en Awake: para entonces todos los Awake y OnEnable ya
+        /// corrieron, así que las pantallas ya están suscritas y el predicador
+        /// declara su contexto de entrada DESPUÉS que el selector, no antes. Y como
+        /// ningún Update corre antes que los Start, el reloj no pierde un cuadro.
+        /// </summary>
+        private void Start()
+        {
+            if (!gameConfig.LockToDefaultReligion) return;
+
+            OnReligionConfirmed(gameConfig.DefaultReligion);
+        }
+
         private void OnEnable()
         {
             selector.Confirmed += OnReligionConfirmed;
@@ -97,12 +117,20 @@ namespace BuenosDias.Gameplay
             day.DayEnded -= OnDayEnded;
         }
 
+        /// <summary>
+        /// Si un click ahora reinicia: estamos en el final, ya pasó la cinemática y
+        /// la tabla de récords —si hay— no está cargando iniciales.
+        /// </summary>
+        public bool AcceptsRestart =>
+            run.Phase == RunPhase.Final
+            && phaseTime >= endingLockoutSeconds
+            && (highscore == null || !highscore.HoldsRestart);
+
         private void Update()
         {
             phaseTime += Time.unscaledDeltaTime;
 
-            if (run.Phase != RunPhase.Final) return;
-            if (phaseTime < endingLockoutSeconds || !input.Pressed(GameAction.Timbre)) return;
+            if (!AcceptsRestart || !input.Pressed(GameAction.Timbre)) return;
 
             Restart();
         }
@@ -125,6 +153,10 @@ namespace BuenosDias.Gameplay
         /// </summary>
         private void OnDayEnded(int followers)
         {
+            // Una puerta abierta al caer la noche se corta ahí: si no, el aro del
+            // QTE quedaba dibujado encima de la cinemática del final.
+            preacher.EndDay();
+
             Ending = gameConfig.ResolveEnding(followers, Religion);
 
             if (!run.Finish()) return;

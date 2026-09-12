@@ -1,9 +1,11 @@
 using System.Collections.Generic;
+using BuenosDias.DebugTools;
 using BuenosDias.Gameplay;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.InputSystem.Controls;
+using UnityEngine.InputSystem.LowLevel;
 using UnityEngine.InputSystem.Utilities;
 
 namespace BuenosDias.EditorTools.Diagnostics
@@ -34,10 +36,16 @@ namespace BuenosDias.EditorTools.Diagnostics
     ///   <c>.cs</c> con el botón en la mano.
     /// - **Copiar informe** deja en el portapapeles los dispositivos con sus layouts y
     ///   los últimos apretones con veredicto y motivo, para mandarlo sin transcribir.
+    ///
+    /// Y mide TIEMPOS: cada apretón y cada suelta con el timestamp del evento, cuánto
+    /// pasó desde el anterior, cuánto estuvo apretado y si fue un rebote. Es con lo
+    /// que se ajustan la ventana de coincidencia y el buffer del timbre del
+    /// <c>InputConfig</c> según cómo manda las teclas el control físico.
     /// </summary>
     public sealed class InputDiagnosticsWindow : EditorWindow
     {
         private const int LogCapacity = 14;
+        private const int TimingLinesOnScreen = 25;
 
         /// <summary>
         /// La palanca de ruidosos vive en <c>EditorPrefs</c> y NO en un asset: es una
@@ -47,6 +55,7 @@ namespace BuenosDias.EditorTools.Diagnostics
         private const string NoisyPrefKey = "BuenosDias.Input.AcceptNoisyControls";
 
         private readonly List<string> log = new List<string>();
+        private readonly InputTimingLog timing = new InputTimingLog();
         private Vector2 scroll;
         private System.IDisposable subscription;
 
@@ -70,6 +79,7 @@ namespace BuenosDias.EditorTools.Diagnostics
         private void OnEnable()
         {
             subscription = InputSystem.onAnyButtonPress.Call(OnPressed);
+            InputSystem.onEvent += OnInputEvent;
             EditorApplication.update += Repaint;
         }
 
@@ -77,7 +87,35 @@ namespace BuenosDias.EditorTools.Diagnostics
         {
             subscription?.Dispose();
             subscription = null;
+            InputSystem.onEvent -= OnInputEvent;
             EditorApplication.update -= Repaint;
+        }
+
+        /// <summary>
+        /// Mira cada evento de estado ANTES de que se aplique y anota qué botones
+        /// cambiaron, con el tiempo del EVENTO y no el del cuadro: dos apretones
+        /// que caen en el mismo cuadro tienen que salir con sus milisegundos de
+        /// diferencia, que es justamente lo que se viene a medir.
+        ///
+        /// A diferencia del registro de arriba, acá se ven también las SUELTAS,
+        /// que son las que dicen cuánto se sostuvo y si hubo rebote.
+        /// </summary>
+        private void OnInputEvent(InputEventPtr eventPtr, InputDevice device)
+        {
+            if (!eventPtr.IsA<StateEvent>() && !eventPtr.IsA<DeltaStateEvent>()) return;
+
+            foreach (InputControl control in eventPtr.EnumerateChangedControls(device))
+            {
+                if (!(control is ButtonControl button) || control.synthetic) continue;
+
+                // El estado actual todavía es el de ANTES del evento: onEvent corre
+                // antes de que el Input System lo aplique.
+                bool before = button.isPressed;
+                bool after = button.IsValueConsideredPressed(button.ReadValueFromEvent(eventPtr));
+                if (before == after) continue;
+
+                timing.Record(control.path, after, eventPtr.time);
+            }
         }
 
         private void OnPressed(InputControl control)
@@ -119,8 +157,53 @@ namespace BuenosDias.EditorTools.Diagnostics
             DrawLog();
             EditorGUILayout.Space();
             DrawHeld();
+            EditorGUILayout.Space();
+            DrawTiming();
 
             EditorGUILayout.EndScrollView();
+        }
+
+        /// <summary>
+        /// Los tiempos: los últimos eventos, del más nuevo al más viejo, y un
+        /// resumen por control. Todo en milisegundos, que es la escala en la que se
+        /// ajustan la ventana de coincidencia y el buffer.
+        /// </summary>
+        private void DrawTiming()
+        {
+            EditorGUILayout.LabelField("4 · TIEMPOS ENTRE INPUTS (ms)", EditorStyles.boldLabel);
+
+            EditorGUILayout.BeginHorizontal();
+            if (GUILayout.Button("Cronómetro a cero", GUILayout.Width(140f))) timing.Clear();
+
+            string since = double.IsNaN(timing.LastTime)
+                ? "sin eventos todavía"
+                : $"desde el último evento: {InputReport.Ms(InputState.currentTime - timing.LastTime)} ms";
+            EditorGUILayout.LabelField(since);
+            EditorGUILayout.EndHorizontal();
+
+            IReadOnlyList<TimedInput> entries = timing.Entries;
+            if (entries.Count == 0)
+            {
+                EditorGUILayout.HelpBox(
+                    "Pisá y soltá el felpudo varias veces, tocá el timbre, cerrá el libro. " +
+                    "Cada apretón y cada suelta aparecen acá con su tiempo.\n\n" +
+                    "Para medir el control físico: poné el cronómetro a cero, hacé la " +
+                    "prueba y tocá 'Copiar informe'.", MessageType.Info);
+                return;
+            }
+
+            int shown = 0;
+            for (int i = entries.Count - 1; i >= 0 && shown < TimingLinesOnScreen; i--, shown++)
+                EditorGUILayout.LabelField(InputReport.TimingLine(timing, entries[i]));
+
+            if (entries.Count > TimingLinesOnScreen)
+                EditorGUILayout.LabelField(
+                    $"… {entries.Count - TimingLinesOnScreen} más en el informe copiado");
+
+            EditorGUILayout.Space();
+            EditorGUILayout.LabelField("Resumen por control", EditorStyles.miniBoldLabel);
+            foreach (ControlTiming summary in timing.Summarize())
+                EditorGUILayout.LabelField(InputReport.SummaryLine(summary));
         }
 
         /// <summary>
@@ -133,7 +216,7 @@ namespace BuenosDias.EditorTools.Diagnostics
 
             if (GUILayout.Button("Copiar informe", EditorStyles.toolbarButton, GUILayout.Width(110f)))
             {
-                EditorGUIUtility.systemCopyBuffer = InputReport.Build(log);
+                EditorGUIUtility.systemCopyBuffer = InputReport.Build(log, timing);
                 ShowNotification(new GUIContent("Informe copiado"));
             }
 

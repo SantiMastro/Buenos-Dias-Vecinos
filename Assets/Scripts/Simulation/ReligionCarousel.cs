@@ -28,11 +28,18 @@ namespace BuenosDias.Simulation
         /// <summary>Si no hay ninguna opción para elegir.</summary>
         public bool IsEmpty => count <= 0;
 
-        /// <summary>Arma el ciclo sobre esa cantidad de opciones.</summary>
-        public ReligionCarousel(int count)
+        /// <summary>
+        /// Arma el ciclo sobre esa cantidad de opciones, apuntando a
+        /// <paramref name="startIndex"/>. Un arranque fuera de rango —por ejemplo el
+        /// −1 de una religión por defecto que no está en el catálogo— cae en la
+        /// primera.
+        /// </summary>
+        public ReligionCarousel(int count, int startIndex = 0)
         {
             this.count = count > 0 ? count : 0;
-            Index = IsEmpty ? -1 : 0;
+
+            if (IsEmpty) Index = -1;
+            else Index = startIndex >= 0 && startIndex < this.count ? startIndex : 0;
         }
 
         /// <summary>Pasa a la siguiente y la devuelve. Da la vuelta al final.</summary>

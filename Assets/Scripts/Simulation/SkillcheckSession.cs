@@ -93,16 +93,16 @@ namespace BuenosDias.Simulation
             this.random = random;
 
             LinkCount = Mathf.Max(1, setup.ChainLinks);
-            Current = new SkillcheckAttempt(config, setup, random);
+            Current = NewAttempt();
         }
 
         /// <summary>
         /// Avanza la cadena un cuadro.
         ///
-        /// El botón se resuelve ANTES de mover la aguja, contra el ángulo que se
-        /// dibujó el cuadro pasado. El jugador reacciona a lo que vio, no a lo que
-        /// todavía no se pintó, y moverla primero le cobraría un cuadro de latencia
-        /// que a 60 fps son 0.03 rad de castigo que nadie puede ver ni corregir.
+        /// El botón se resuelve ANTES de mover la aguja, contra el tramo que
+        /// recorrió desde el cuadro que se dibujó: el jugador reacciona a lo que
+        /// vio, y el apretón pasó en algún momento de ese tramo. Juzgarlo solo
+        /// contra el ángulo dibujado hacía que el QTE dependiera del FPS.
         /// </summary>
         public SkillcheckSessionTick Advance(float deltaTime, bool pressed)
         {
@@ -110,7 +110,7 @@ namespace BuenosDias.Simulation
 
             if (Current == null) return Pause(deltaTime);
 
-            if (pressed) Current.Press();
+            if (pressed) Current.PressWithin(deltaTime);
             else Current.Advance(deltaTime);
 
             return Current.Outcome == SkillcheckOutcome.EnCurso
@@ -128,8 +128,18 @@ namespace BuenosDias.Simulation
             pauseLeft -= deltaTime;
             if (pauseLeft > 0f) return default;
 
-            Current = new SkillcheckAttempt(config, setup, random);
+            Current = NewAttempt();
             return new SkillcheckSessionTick(false, SkillcheckOutcome.EnCurso, true, false);
+        }
+
+        /// <summary>
+        /// Arma el eslabón que toca. Cada eslabón consecutivo va más rápido que el
+        /// anterior: la cadena es la misma objeción que se pone más insistente.
+        /// </summary>
+        private SkillcheckAttempt NewAttempt()
+        {
+            return new SkillcheckAttempt(
+                config, setup, random, config.SpeedMultiplierForLink(LinkIndex));
         }
 
         private SkillcheckSessionTick ResolveLink(SkillcheckOutcome outcome)

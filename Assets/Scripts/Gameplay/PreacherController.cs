@@ -12,10 +12,8 @@ namespace BuenosDias.Gameplay
     /// alcanzables que hay que acordarse de excluir; acá son inexpresables.
     ///
     /// Además de leer el input, la FSM le DECLARA al <see cref="GameInput"/> qué
-    /// está esperando. En modalidad de objeto eso no cambia nada, pero con un botón
-    /// único es lo que le da significado al apretón. Se declara siempre, en las dos
-    /// modalidades: que la FSM tuviera que acordarse de hacerlo solo en una sería
-    /// una trampa esperando a que alguien cambie el default.
+    /// está esperando: es lo que le da significado al timbre, que toca en la
+    /// puerta y le pega al QTE con la puerta abierta.
     ///
     /// No dibuja nada: avisa por eventos y quien dibuja se suscribe.
     /// </summary>
@@ -56,6 +54,7 @@ namespace BuenosDias.Gameplay
         private System.Random random;
         private DoorApproach approach;
         private DoorAttempt attempt;
+        private ActionBuffer ringBuffer;
         private float stateTime;
 
         /// <summary>Estado actual.</summary>
@@ -106,6 +105,7 @@ namespace BuenosDias.Gameplay
         {
             if (!ValidateSetup()) { enabled = false; return; }
             random = new System.Random(gameConfig.SeedFor(seed));
+            ringBuffer = new ActionBuffer(input.RingBufferSeconds);
         }
 
         /// <summary>
@@ -136,9 +136,22 @@ namespace BuenosDias.Gameplay
             Declare(State);
         }
 
+        /// <summary>
+        /// Se hizo de noche. Si había una puerta abierta, se corta ahí mismo, sin
+        /// resolverla: con la FSM apagada nadie más iba a avanzar la tirada, y el
+        /// aro quedaba dibujado encima del final.
+        ///
+        /// La llama quien maneja la partida ANTES de apagar este componente.
+        /// </summary>
+        public void EndDay()
+        {
+            if (skillcheck != null) skillcheck.Cancel();
+        }
+
         private void Update()
         {
             stateTime += Time.deltaTime;
+            BufferRing();
 
             switch (State)
             {
@@ -214,9 +227,31 @@ namespace BuenosDias.Gameplay
         private void OnMat()
         {
             if (SteppedOff()) return;
-            if (!approach.HasDoor || !input.Pressed(GameAction.Timbre)) return;
+            if (!approach.HasDoor || !ringBuffer.TryConsume(Time.time)) return;
 
             Ring();
+        }
+
+        /// <summary>
+        /// Guarda el timbrazo que llega un poco antes de poder usarse: justo antes
+        /// de que llegue la señal del felpudo, mientras camina hasta la puerta
+        /// después de frenar, o en los últimos instantes de la espera, donde se va
+        /// a leer como insistir.
+        ///
+        /// Caminando SÍ se guarda, y es por el control físico: la plancha de la
+        /// Raspberry Pi llega hasta ~190 ms tarde —revisa el sensor unas cinco
+        /// veces por segundo— y el click del mouse llega al instante. En "pisar y
+        /// tocar" el click llega PRIMERO; sin guardarlo, se perdía. Un click al aire
+        /// sin pisar no toca nada: el buffer vence solo.
+        ///
+        /// Con la puerta abierta no se guarda: ahí el botón es del skillcheck, y un
+        /// golpe no se guarda para después.
+        /// </summary>
+        private void BufferRing()
+        {
+            if (State == PreacherState.Atendido || State == PreacherState.Resuelto) return;
+
+            if (input.Pressed(GameAction.Timbre)) ringBuffer.Record(Time.time);
         }
 
         private void Ring()
@@ -256,7 +291,8 @@ namespace BuenosDias.Gameplay
             skillcheck.Begin(
                 gameConfig.Doorbell.SkillcheckPrecisionFor(attempt.Precision),
                 attempt.Neighbor, religion,
-                gameConfig.Doorbell.ZoneScaleAt(attempt.Insists));
+                gameConfig.Doorbell.ZoneScaleAt(attempt.Insists),
+                day != null ? day.TimeUsed : 0f);
 
             Enter(PreacherState.Atendido);
         }
@@ -270,7 +306,7 @@ namespace BuenosDias.Gameplay
         {
             if (SteppedOff()) return;
 
-            if (!input.Pressed(GameAction.Timbre) || !attempt.CanInsist) return;
+            if (!attempt.CanInsist || !ringBuffer.TryConsume(Time.time)) return;
 
             attempt.Insist();
             DoorbellRung?.Invoke(attempt.Precision);
@@ -339,6 +375,11 @@ namespace BuenosDias.Gameplay
         {
             State = next;
             stateTime = 0f;
+
+            // Lo guardado no sobrevive a volver a la vereda ni a que abran: en los
+            // dos casos ya no hay timbre para el que se estaba guardando.
+            if (next == PreacherState.Caminando || next == PreacherState.Atendido)
+                ringBuffer?.Clear();
 
             Declare(next);
             StateChanged?.Invoke(next);

@@ -103,6 +103,30 @@ namespace BuenosDias.Gameplay
         /// <summary>Cambió el tamaño de la comitiva. Lo escucha la fila de la fase 7.</summary>
         public event System.Action<int> FollowersChanged;
 
+        /// <summary>
+        /// La puerta se cortó sin resolverse. Pasa cuando se hace de noche con la
+        /// puerta abierta: quien dibuja el aro tiene que esconderlo.
+        /// </summary>
+        public event System.Action Cancelled;
+
+        /// <summary>
+        /// Corta la puerta en curso SIN resolverla: no paga ni cobra tiempo y no
+        /// toca la comitiva, porque no hubo acierto ni falla. Sin puerta en curso
+        /// no hace nada.
+        ///
+        /// ⚠️ Existe por el final del día: la FSM se apaga y deja de llamar a
+        /// <see cref="Tick"/>, así que la tirada quedaba viva para siempre y el aro
+        /// seguía dibujado encima de la cinemática.
+        /// </summary>
+        public void Cancel()
+        {
+            if (session == null) return;
+
+            session = null;
+            holdLeft = 0f;
+            Cancelled?.Invoke();
+        }
+
         private void Awake()
         {
             if (!ValidateSetup()) { enabled = false; return; }
@@ -119,10 +143,13 @@ namespace BuenosDias.Gameplay
         ///
         /// <paramref name="zoneScale"/> viene de cuántas veces hubo que insistirle
         /// al vecino: cuanto más tuvo que sonar el timbre, más chica la zona.
+        ///
+        /// <paramref name="timeUsed"/> es cuánto del día ya se consumió, 0..1: con
+        /// poco tiempo por delante la zona también se achica.
         /// </summary>
         public void Begin(
             float precision, NeighborDefinition neighborAtDoor, ReligionDefinition activeReligion,
-            float zoneScale = 1f)
+            float zoneScale = 1f, float timeUsed = 0f)
         {
             // Un componente apagado por validación igual recibe llamadas: los
             // métodos no dejan de existir porque enabled sea false. Sin esta
@@ -135,7 +162,7 @@ namespace BuenosDias.Gameplay
             religion = activeReligion;
 
             SkillcheckSetup setup =
-                difficulty.Resolve(precision, Converts, Followers, activeReligion, zoneScale);
+                difficulty.Resolve(precision, Converts, Followers, activeReligion, zoneScale, timeUsed);
 
             session = new SkillcheckSession(gameConfig.Skillcheck, setup, random);
             holdLeft = 0f;

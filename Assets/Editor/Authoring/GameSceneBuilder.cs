@@ -59,6 +59,8 @@ namespace BuenosDias.EditorTools.Authoring
             RunStateBuilder.BuildHud(camera, run, day, runner);
             RunStateBuilder.BuildScreen(camera, run);
             EndingRigBuilder.Build(camera, run);
+            HighscoreRigBuilder.Build(
+                camera, run, preacher.GetComponent<BuenosDias.Gameplay.GameInput>());
 
             EditorSceneManager.MarkSceneDirty(scene);
             EditorSceneManager.SaveScene(scene, ScenePath);
@@ -105,7 +107,7 @@ namespace BuenosDias.EditorTools.Authoring
             sb.AppendLine();
             sb.AppendLine("  ⚠ Banderas que volvieron a fábrica. Si alguna no es la");
             sb.AppendLine("    que querías, hay que tildarla de nuevo a mano:");
-            sb.AppendLine($"      Modalidad de input.... {(input != null ? input.Mode.ToString() : "SIN GameInput")}");
+            sb.AppendLine($"      Input................. {(input != null ? "timbre + felpudo (asigná el InputConfig)" : "SIN GameInput")}");
             sb.Append($"      acceptNoisyControls... {(button != null ? Noisy(button).ToString() : "SIN OneButtonInput")}");
         }
 

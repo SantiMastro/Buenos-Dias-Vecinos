@@ -6,8 +6,12 @@ using UnityEngine.InputSystem.Utilities;
 namespace BuenosDias.Gameplay
 {
     /// <summary>
-    /// El único input del juego: cualquier botón de cualquier dispositivo dispara
-    /// la única acción. No hay mapeo porque no hay más de una acción.
+    /// Lector de "cualquier botón de cualquier dispositivo".
+    ///
+    /// Ya NO mueve el juego: se juega con el timbre y el felpudo de
+    /// <see cref="GameInput"/>. Queda por el filtro <see cref="Accepts"/> y la
+    /// palanca de ruidosos, que usa la ventana de diagnóstico para decir si un
+    /// apretón llega y si sería aceptado.
     ///
     /// ⚠️ NO se ata a bindings estáticos como <c>&lt;Gamepad&gt;/buttonSouth</c>. Los
     /// encoders USB de arcade no siempre se presentan como <c>Gamepad</c>: muchos
@@ -27,7 +31,7 @@ namespace BuenosDias.Gameplay
     {
         [Header("Gesto mantenido")]
         [Tooltip("Segundos que hay que sostener el botón para que cuente como " +
-                 "confirmación. Lo usa la selección de religión.")]
+                 "mantenido.")]
         [SerializeField, Min(0.05f)] private float holdSeconds = 0.6f;
 
         [Header("Rescate de gabinete")]
@@ -39,21 +43,29 @@ namespace BuenosDias.Gameplay
         [SerializeField] private bool acceptNoisyControls;
 
         private System.IDisposable subscription;
-        private InputControl active;
         private int pressedFrame = -1;
-        private float pressStartTime;
+
+        /// <summary>
+        /// "El botón" son todos los botones aceptados a la vez: el gesto dura hasta
+        /// que se sueltan TODOS. Con un solo control guardado, apretar un segundo
+        /// botón con el primero sostenido reiniciaba el mantenido y soltarlo
+        /// inventaba un toque.
+        /// </summary>
+        private readonly ButtonGesture<InputControl> gesture =
+            new ButtonGesture<InputControl>(StillPressed);
 
         /// <summary>Si se apretó el botón en este cuadro.</summary>
         public bool PressedThisFrame => pressedFrame == Time.frameCount;
 
-        /// <summary>Si el botón sigue apretado ahora mismo.</summary>
-        public bool IsHeld => active != null && active.IsPressed();
+        /// <summary>Si algún botón del gesto sigue apretado ahora mismo.</summary>
+        public bool IsHeld => gesture.IsHeld;
 
         /// <summary>
-        /// Segundos que lleva sostenido. Va en tiempo NO escalado para que una
-        /// pausa o un cambio de <c>timeScale</c> no le cambien el largo al gesto.
+        /// Segundos que lleva sostenido, contados desde el PRIMER apretón del gesto.
+        /// Va en tiempo NO escalado para que una pausa o un cambio de
+        /// <c>timeScale</c> no le cambien el largo al gesto.
         /// </summary>
-        public float HoldSeconds => IsHeld ? Time.unscaledTime - pressStartTime : 0f;
+        public float HoldSeconds => IsHeld ? Time.unscaledTime - gesture.StartTime : 0f;
 
         /// <summary>Cuánto le falta al gesto mantenido, de 0 a 1. Lo dibuja la UI.</summary>
         public float HoldProgress => Mathf.Clamp01(HoldSeconds / holdSeconds);
@@ -62,7 +74,7 @@ namespace BuenosDias.Gameplay
         public bool HoldCompleted => IsHeld && HoldSeconds >= holdSeconds;
 
         /// <summary>Último control que disparó. Lo lee la ventana de diagnóstico.</summary>
-        public InputControl LastControl => active;
+        public InputControl LastControl => gesture.Last;
 
         /// <summary>Avisa cada apretón aceptado, con el control que lo mandó.</summary>
         public event System.Action<InputControl> ButtonPressed;
@@ -149,11 +161,20 @@ namespace BuenosDias.Gameplay
         {
             if (!Accepts(control)) return;
 
-            active = control;
+            gesture.Press(control, Time.unscaledTime);
             pressedFrame = Time.frameCount;
-            pressStartTime = Time.unscaledTime;
 
             ButtonPressed?.Invoke(control);
+        }
+
+        /// <summary>
+        /// Si un botón del gesto sigue apretado. Un dispositivo desenchufado con el
+        /// botón abajo cuenta como suelto: si no, el gesto quedaría sostenido para
+        /// siempre con el último estado que mandó.
+        /// </summary>
+        private static bool StillPressed(InputControl control)
+        {
+            return control.device != null && control.device.added && control.IsPressed();
         }
     }
 }

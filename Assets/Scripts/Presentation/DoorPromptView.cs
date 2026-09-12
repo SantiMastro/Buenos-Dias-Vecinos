@@ -130,9 +130,12 @@ namespace BuenosDias.Presentation
             // El ritmo sale del predicador y no se recalcula acá: es el mismo
             // número que decide la hitbox de verdad, y dos cuentas que tienen que
             // dar igual terminan no dando igual.
-            return DoorApproach
-                .At(house, x, signedDistance, gameConfig.Doorbell, preacher.Pace)
-                .House;
+            DoorApproach approach =
+                DoorApproach.At(house, x, signedDistance, gameConfig.Doorbell, preacher.Pace);
+
+            // El coyote no se anuncia: es un perdón para el que se pasó por poco, y
+            // si el chevrón lo mostrara pasaría a ser parte del alcance.
+            return approach.IsCoyote ? null : approach.House;
         }
 
         private Sprite BuildIcon()

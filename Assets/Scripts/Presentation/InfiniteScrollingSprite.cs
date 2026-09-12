@@ -10,7 +10,16 @@ namespace BuenosDias.Presentation
     /// El salto se calcula en el espacio LOCAL del padre a propósito: así el
     /// parallax del padre desplaza la capa y acá solo resolvemos la cobertura,
     /// sin que un componente pise al otro.
+    ///
+    /// Orden −30: después de la cámara (−50) y de la capa padre (−40), para leer
+    /// las dos ya ubicadas en este cuadro.
+    ///
+    /// ⚠️ El ancho a cubrir se recalcula cuando cambia la vista. La Pixel Perfect
+    /// Camera reescribe el <c>orthographicSize</c> en runtime según la ventana (se
+    /// midió 3.688 donde el diseño dice 3.375), así que calcularlo una sola vez en
+    /// <c>Awake</c> dejaba asomar el borde de la tira en ventanas que no son 16:9.
     /// </summary>
+    [DefaultExecutionOrder(-30)]
     [DisallowMultipleComponent]
     [RequireComponent(typeof(SpriteRenderer))]
     public sealed class InfiniteScrollingSprite : MonoBehaviour
@@ -28,6 +37,8 @@ namespace BuenosDias.Presentation
         private Transform parentTransform;
         private float tileWidth;
         private float coverWidth;
+        private float coveredOrthographicSize = -1f;
+        private float coveredAspect = -1f;
 
         private void Awake()
         {
@@ -37,10 +48,24 @@ namespace BuenosDias.Presentation
             if (!ValidateSetup()) { enabled = false; return; }
 
             tileWidth = TileWidthOf(spriteRenderer.sprite);
+            RefreshCover();
+        }
 
-            float viewWidth = targetCamera.orthographicSize * 2f * targetCamera.aspect;
-            coverWidth = CalculateCoverWidth(tileWidth, viewWidth, marginTiles);
+        /// <summary>
+        /// Rehace el ancho de la tira si la vista de la cámara cambió desde la
+        /// última vez. La comparación es exacta a propósito: los dos valores los
+        /// escribe la cámara de a saltos, no derivan solos.
+        /// </summary>
+        private void RefreshCover()
+        {
+            float orthographicSize = targetCamera.orthographicSize;
+            float aspect = targetCamera.aspect;
+            if (orthographicSize == coveredOrthographicSize && aspect == coveredAspect) return;
 
+            coveredOrthographicSize = orthographicSize;
+            coveredAspect = aspect;
+
+            coverWidth = CalculateCoverWidth(tileWidth, orthographicSize * 2f * aspect, marginTiles);
             spriteRenderer.size = new Vector2(coverWidth, spriteRenderer.size.y);
         }
 
@@ -64,6 +89,8 @@ namespace BuenosDias.Presentation
 
         private void LateUpdate()
         {
+            RefreshCover();
+
             float cameraLocalX = ToParentSpaceX(targetCamera.transform.position.x);
             float desiredLeft = cameraLocalX - coverWidth * 0.5f;
 

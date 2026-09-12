@@ -119,6 +119,180 @@ NavMeshSettings:
     debug:
       m_Flags: 0
   m_NavMeshData: {fileID: 0}
+--- !u!1 &62817847
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 62817848}
+  - component: {fileID: 62817849}
+  m_Layer: 0
+  m_Name: Puesto 06
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &62817848
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 62817847}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0.5625, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1097506819}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &62817849
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 62817847}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b32308649f5d53c4d940ee83281987e4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: BuenosDias.Runtime::BuenosDias.Presentation.TextLabel
+  font: {fileID: 11400000, guid: cd251ea8434c3884da54327a2138ab62, type: 2}
+  text: 
+  alignment: 1
+  pixelScale: 1
+  trackingPixels: 0
+  inkColor: {r: 0.9529412, g: 0.9254902, b: 0.8784314, a: 1}
+  drawShadow: 1
+  shadowColor: {r: 0.11372549, g: 0.08627451, b: 0.21960784, a: 1}
+  shadowOffsetPixels: {x: 1, y: -1}
+  outlinePixels: 0
+  outlineColor: {r: 0.9529412, g: 0.9254902, b: 0.8784314, a: 1}
+  spriteMaterial: {fileID: 2100000, guid: 51f5a8f723e49aa41b8107bb2990610e, type: 2}
+  sortingLayer: FX
+  sortingOrder: 420
+--- !u!1 &65985609
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 65985610}
+  - component: {fileID: 65985611}
+  m_Layer: 0
+  m_Name: Puesto 03
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &65985610
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 65985609}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 1.5, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1097506819}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &65985611
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 65985609}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b32308649f5d53c4d940ee83281987e4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: BuenosDias.Runtime::BuenosDias.Presentation.TextLabel
+  font: {fileID: 11400000, guid: cd251ea8434c3884da54327a2138ab62, type: 2}
+  text: 
+  alignment: 1
+  pixelScale: 1
+  trackingPixels: 0
+  inkColor: {r: 0.9529412, g: 0.9254902, b: 0.8784314, a: 1}
+  drawShadow: 1
+  shadowColor: {r: 0.11372549, g: 0.08627451, b: 0.21960784, a: 1}
+  shadowOffsetPixels: {x: 1, y: -1}
+  outlinePixels: 0
+  outlineColor: {r: 0.9529412, g: 0.9254902, b: 0.8784314, a: 1}
+  spriteMaterial: {fileID: 2100000, guid: 51f5a8f723e49aa41b8107bb2990610e, type: 2}
+  sortingLayer: FX
+  sortingOrder: 420
+--- !u!1 &108391175
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 108391177}
+  - component: {fileID: 108391176}
+  m_Layer: 0
+  m_Name: Titular
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &108391176
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 108391175}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b32308649f5d53c4d940ee83281987e4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: BuenosDias.Runtime::BuenosDias.Presentation.TextLabel
+  font: {fileID: 11400000, guid: cd251ea8434c3884da54327a2138ab62, type: 2}
+  text: 
+  alignment: 1
+  pixelScale: 1
+  trackingPixels: 0
+  inkColor: {r: 0.9529412, g: 0.9254902, b: 0.8784314, a: 1}
+  drawShadow: 1
+  shadowColor: {r: 0.11372549, g: 0.08627451, b: 0.21960784, a: 1}
+  shadowOffsetPixels: {x: 1, y: -1}
+  outlinePixels: 0
+  outlineColor: {r: 0.9529412, g: 0.9254902, b: 0.8784314, a: 1}
+  spriteMaterial: {fileID: 2100000, guid: 51f5a8f723e49aa41b8107bb2990610e, type: 2}
+  sortingLayer: FX
+  sortingOrder: 420
+--- !u!4 &108391177
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 108391175}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 2.5625, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 909084751}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &137549860
 GameObject:
   m_ObjectHideFlags: 0
@@ -289,6 +463,64 @@ Transform:
   - {fileID: 1504892446}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &295853102
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 295853103}
+  - component: {fileID: 295853104}
+  m_Layer: 0
+  m_Name: Puesto 01
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &295853103
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 295853102}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 2.125, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1097506819}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &295853104
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 295853102}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b32308649f5d53c4d940ee83281987e4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: BuenosDias.Runtime::BuenosDias.Presentation.TextLabel
+  font: {fileID: 11400000, guid: cd251ea8434c3884da54327a2138ab62, type: 2}
+  text: 
+  alignment: 1
+  pixelScale: 1
+  trackingPixels: 0
+  inkColor: {r: 0.9529412, g: 0.9254902, b: 0.8784314, a: 1}
+  drawShadow: 1
+  shadowColor: {r: 0.11372549, g: 0.08627451, b: 0.21960784, a: 1}
+  shadowOffsetPixels: {x: 1, y: -1}
+  outlinePixels: 0
+  outlineColor: {r: 0.9529412, g: 0.9254902, b: 0.8784314, a: 1}
+  spriteMaterial: {fileID: 2100000, guid: 51f5a8f723e49aa41b8107bb2990610e, type: 2}
+  sortingLayer: FX
+  sortingOrder: 420
 --- !u!1 &307020505
 GameObject:
   m_ObjectHideFlags: 0
@@ -730,6 +962,64 @@ MonoBehaviour:
   spriteMaterial: {fileID: 2100000, guid: 51f5a8f723e49aa41b8107bb2990610e, type: 2}
   sortingLayer: FX
   sortingOrder: 200
+--- !u!1 &582648341
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 582648342}
+  - component: {fileID: 582648343}
+  m_Layer: 0
+  m_Name: Puesto 09
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &582648342
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 582648341}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: -0.375, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1097506819}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &582648343
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 582648341}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b32308649f5d53c4d940ee83281987e4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: BuenosDias.Runtime::BuenosDias.Presentation.TextLabel
+  font: {fileID: 11400000, guid: cd251ea8434c3884da54327a2138ab62, type: 2}
+  text: 
+  alignment: 1
+  pixelScale: 1
+  trackingPixels: 0
+  inkColor: {r: 0.9529412, g: 0.9254902, b: 0.8784314, a: 1}
+  drawShadow: 1
+  shadowColor: {r: 0.11372549, g: 0.08627451, b: 0.21960784, a: 1}
+  shadowOffsetPixels: {x: 1, y: -1}
+  outlinePixels: 0
+  outlineColor: {r: 0.9529412, g: 0.9254902, b: 0.8784314, a: 1}
+  spriteMaterial: {fileID: 2100000, guid: 51f5a8f723e49aa41b8107bb2990610e, type: 2}
+  sortingLayer: FX
+  sortingOrder: 420
 --- !u!1 &686022973
 GameObject:
   m_ObjectHideFlags: 0
@@ -849,6 +1139,98 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &695765192
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 695765194}
+  - component: {fileID: 695765193}
+  m_Layer: 0
+  m_Name: Panel
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!212 &695765193
+SpriteRenderer:
+  serializedVersion: 3
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 695765192}
+  m_Enabled: 1
+  m_CastShadows: 0
+  m_ReceiveShadows: 0
+  m_DynamicOccludee: 1
+  m_StaticShadowCaster: 0
+  m_MotionVectors: 1
+  m_LightProbeUsage: 1
+  m_ReflectionProbeUsage: 1
+  m_RayTracingMode: 0
+  m_RayTraceProcedural: 0
+  m_RayTracingAccelStructBuildFlagsOverride: 0
+  m_RayTracingAccelStructBuildFlags: 1
+  m_SmallMeshCulling: 1
+  m_ForceMeshLod: -1
+  m_MeshLodSelectionBias: 0
+  m_RenderingLayerMask: 1
+  m_RendererPriority: 0
+  m_Materials:
+  - {fileID: 2100000, guid: 51f5a8f723e49aa41b8107bb2990610e, type: 2}
+  m_StaticBatchInfo:
+    firstSubMesh: 0
+    subMeshCount: 0
+  m_StaticBatchRoot: {fileID: 0}
+  m_ProbeAnchor: {fileID: 0}
+  m_LightProbeVolumeOverride: {fileID: 0}
+  m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
+  m_PreserveUVs: 0
+  m_IgnoreNormalsForChartDetection: 0
+  m_ImportantGI: 0
+  m_StitchLightmapSeams: 1
+  m_SelectedEditorRenderState: 0
+  m_MinimumChartSize: 4
+  m_AutoUVMaxDistance: 0.5
+  m_AutoUVMaxAngle: 89
+  m_LightmapParameters: {fileID: 0}
+  m_GlobalIlluminationMeshLod: 0
+  m_SortingLayerID: 1825785779
+  m_SortingLayer: 8
+  m_SortingOrder: 410
+  m_MaskInteraction: 0
+  m_Sprite: {fileID: 0}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_FlipX: 0
+  m_FlipY: 0
+  m_DrawMode: 0
+  m_Size: {x: 1, y: 1}
+  m_AdaptiveModeThreshold: 0.5
+  m_SpriteTileMode: 0
+  m_WasSpriteAssigned: 0
+  m_SpriteSortPoint: 0
+  m_BlendShapeWeights: []
+--- !u!4 &695765194
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 695765192}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 1.125, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 909084751}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &699737232
 GameObject:
   m_ObjectHideFlags: 0
@@ -888,23 +1270,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9f523b85f2a3edc4aa773e67c3f40c3c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: BuenosDias.Runtime::BuenosDias.Gameplay.GameInput
-  mode: 0
-  button: {fileID: 699737234}
-  botonA:
-    device: 1
-    key: 1
-  botonB:
-    device: 0
-    key: 1
-  timbre:
-    device: 1
-    key: 1
-  libro:
-    device: 0
-    key: 2
-  felpudo:
-    device: 0
-    key: 1
+  config: {fileID: 11400000, guid: 2a5f9b3d7c0e4a1f9b2d4f6c8e0a2b3d, type: 2}
 --- !u!114 &699737234
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1250,6 +1616,64 @@ MonoBehaviour:
   spriteMaterial: {fileID: 2100000, guid: 51f5a8f723e49aa41b8107bb2990610e, type: 2}
   sortingLayer: FX
   sortingOrder: 200
+--- !u!1 &741312238
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 741312239}
+  - component: {fileID: 741312240}
+  m_Layer: 0
+  m_Name: Puesto 04
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &741312239
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 741312238}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 1.1875, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1097506819}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &741312240
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 741312238}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b32308649f5d53c4d940ee83281987e4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: BuenosDias.Runtime::BuenosDias.Presentation.TextLabel
+  font: {fileID: 11400000, guid: cd251ea8434c3884da54327a2138ab62, type: 2}
+  text: 
+  alignment: 1
+  pixelScale: 1
+  trackingPixels: 0
+  inkColor: {r: 0.9529412, g: 0.9254902, b: 0.8784314, a: 1}
+  drawShadow: 1
+  shadowColor: {r: 0.11372549, g: 0.08627451, b: 0.21960784, a: 1}
+  shadowOffsetPixels: {x: 1, y: -1}
+  outlinePixels: 0
+  outlineColor: {r: 0.9529412, g: 0.9254902, b: 0.8784314, a: 1}
+  spriteMaterial: {fileID: 2100000, guid: 51f5a8f723e49aa41b8107bb2990610e, type: 2}
+  sortingLayer: FX
+  sortingOrder: 420
 --- !u!1 &769194002
 GameObject:
   m_ObjectHideFlags: 0
@@ -1503,6 +1927,227 @@ SpriteRenderer:
   m_WasSpriteAssigned: 0
   m_SpriteSortPoint: 0
   m_BlendShapeWeights: []
+--- !u!1 &882061554
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 882061556}
+  - component: {fileID: 882061555}
+  m_Layer: 0
+  m_Name: Jugar de nuevo
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &882061555
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 882061554}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b32308649f5d53c4d940ee83281987e4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: BuenosDias.Runtime::BuenosDias.Presentation.TextLabel
+  font: {fileID: 11400000, guid: cd251ea8434c3884da54327a2138ab62, type: 2}
+  text: 
+  alignment: 1
+  pixelScale: 1
+  trackingPixels: 0
+  inkColor: {r: 0.9529412, g: 0.9254902, b: 0.8784314, a: 1}
+  drawShadow: 1
+  shadowColor: {r: 0.11372549, g: 0.08627451, b: 0.21960784, a: 1}
+  shadowOffsetPixels: {x: 1, y: -1}
+  outlinePixels: 0
+  outlineColor: {r: 0.9529412, g: 0.9254902, b: 0.8784314, a: 1}
+  spriteMaterial: {fileID: 2100000, guid: 51f5a8f723e49aa41b8107bb2990610e, type: 2}
+  sortingLayer: FX
+  sortingOrder: 420
+--- !u!4 &882061556
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 882061554}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: -2.5, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 909084751}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &909084748
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 909084751}
+  - component: {fileID: 909084749}
+  - component: {fileID: 909084750}
+  m_Layer: 0
+  m_Name: Highscore
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &909084749
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 909084748}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: dabdc91575d442344a780485dfa98af6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: BuenosDias.Runtime::BuenosDias.Gameplay.HighscoreDirector
+  runDirector: {fileID: 1165083135}
+  input: {fileID: 699737233}
+  config: {fileID: 11400000, guid: 8e4b2a6c1f3d4e5a9b7c0d2e4f6a8b1c, type: 2}
+--- !u!114 &909084750
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 909084748}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6c7b2113d1ecfbf4da46f31707abc341, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: BuenosDias.Runtime::BuenosDias.Presentation.HighscoreView
+  director: {fileID: 909084749}
+  panel: {fileID: 695765193}
+  headerLabel: {fileID: 108391176}
+  detailLabel: {fileID: 1239897683}
+  wordLabel: {fileID: 1691097522}
+  cursorLabel: {fileID: 1236058561}
+  gaugeTrack: {fileID: 1687513345}
+  gaugeFill: {fileID: 1894493616}
+  entryHintLabel: {fileID: 1932250313}
+  restartHintLabel: {fileID: 882061555}
+  rowLabels:
+  - {fileID: 295853104}
+  - {fileID: 1956019519}
+  - {fileID: 65985611}
+  - {fileID: 741312240}
+  - {fileID: 1977747073}
+  - {fileID: 62817849}
+  - {fileID: 975354245}
+  - {fileID: 1879388713}
+  - {fileID: 582648343}
+  - {fileID: 1309603182}
+  tableTitle: MEJORES VENDEDORES
+  newRecordTitle: "\xA1NUEVO R\xC9CORD!"
+  detailFormat: PUESTO {0}
+  entryHint: "CLICK: LETRA   MANTEN\xC9: LISTO"
+  restartHint: 'CLICK: JUGAR DE NUEVO'
+  inkColor: {r: 0.9529412, g: 0.9254902, b: 0.8784314, a: 1}
+  highlightColor: {r: 1, g: 0.6039216, b: 0.35686275, a: 1}
+  emptyColor: {r: 0.43529412, g: 0.5411765, b: 0.36862746, a: 1}
+  panelColor: {r: 0.1137, g: 0.0863, b: 0.2196, a: 0.82}
+  trackColor: {r: 0.11372549, g: 0.08627451, b: 0.21960784, a: 1}
+  panelSizePixels: {x: 200, y: 124}
+  gaugeHeightPixels: 2
+  blinkSeconds: 0.3
+  gaugeDeadZone: 0.15
+--- !u!4 &909084751
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 909084748}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 5}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 695765194}
+  - {fileID: 1687513346}
+  - {fileID: 1894493617}
+  - {fileID: 108391177}
+  - {fileID: 1239897684}
+  - {fileID: 1691097523}
+  - {fileID: 1236058562}
+  - {fileID: 1932250314}
+  - {fileID: 882061556}
+  - {fileID: 1097506819}
+  m_Father: {fileID: 1652582161}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &975354243
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 975354244}
+  - component: {fileID: 975354245}
+  m_Layer: 0
+  m_Name: Puesto 07
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &975354244
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 975354243}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0.25, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1097506819}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &975354245
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 975354243}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b32308649f5d53c4d940ee83281987e4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: BuenosDias.Runtime::BuenosDias.Presentation.TextLabel
+  font: {fileID: 11400000, guid: cd251ea8434c3884da54327a2138ab62, type: 2}
+  text: 
+  alignment: 1
+  pixelScale: 1
+  trackingPixels: 0
+  inkColor: {r: 0.9529412, g: 0.9254902, b: 0.8784314, a: 1}
+  drawShadow: 1
+  shadowColor: {r: 0.11372549, g: 0.08627451, b: 0.21960784, a: 1}
+  shadowOffsetPixels: {x: 1, y: -1}
+  outlinePixels: 0
+  outlineColor: {r: 0.9529412, g: 0.9254902, b: 0.8784314, a: 1}
+  spriteMaterial: {fileID: 2100000, guid: 51f5a8f723e49aa41b8107bb2990610e, type: 2}
+  sortingLayer: FX
+  sortingOrder: 420
 --- !u!1 &980385020
 GameObject:
   m_ObjectHideFlags: 0
@@ -1976,6 +2621,47 @@ MonoBehaviour:
   spriteMaterial: {fileID: 2100000, guid: 51f5a8f723e49aa41b8107bb2990610e, type: 2}
   sortingLayer: FX
   sortingOrder: 200
+--- !u!1 &1097506818
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1097506819}
+  m_Layer: 0
+  m_Name: Puestos
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1097506819
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1097506818}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 295853103}
+  - {fileID: 1956019518}
+  - {fileID: 65985610}
+  - {fileID: 741312239}
+  - {fileID: 1977747072}
+  - {fileID: 62817848}
+  - {fileID: 975354244}
+  - {fileID: 1879388712}
+  - {fileID: 582648342}
+  - {fileID: 1309603183}
+  m_Father: {fileID: 909084751}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1165083134
 GameObject:
   m_ObjectHideFlags: 0
@@ -2012,6 +2698,7 @@ MonoBehaviour:
   day: {fileID: 699737235}
   input: {fileID: 699737233}
   endingLockoutSeconds: 3.5
+  highscore: {fileID: 909084749}
 --- !u!114 &1165083136
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2201,6 +2888,64 @@ MonoBehaviour:
   flashSeconds: 0.25
   hitTint: {r: 0.9529412, g: 0.9254902, b: 0.8784314, a: 1}
   missTint: {r: 0.65882355, g: 0.27058825, b: 0.3529412, a: 1}
+--- !u!1 &1236058560
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1236058562}
+  - component: {fileID: 1236058561}
+  m_Layer: 0
+  m_Name: Letra del cursor
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1236058561
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1236058560}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b32308649f5d53c4d940ee83281987e4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: BuenosDias.Runtime::BuenosDias.Presentation.TextLabel
+  font: {fileID: 11400000, guid: cd251ea8434c3884da54327a2138ab62, type: 2}
+  text: 
+  alignment: 1
+  pixelScale: 3
+  trackingPixels: 0
+  inkColor: {r: 0.9529412, g: 0.9254902, b: 0.8784314, a: 1}
+  drawShadow: 1
+  shadowColor: {r: 0.11372549, g: 0.08627451, b: 0.21960784, a: 1}
+  shadowOffsetPixels: {x: 1, y: -1}
+  outlinePixels: 0
+  outlineColor: {r: 0.9529412, g: 0.9254902, b: 0.8784314, a: 1}
+  spriteMaterial: {fileID: 2100000, guid: 51f5a8f723e49aa41b8107bb2990610e, type: 2}
+  sortingLayer: FX
+  sortingOrder: 423
+--- !u!4 &1236058562
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1236058560}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0.9375, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 909084751}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1239410225
 GameObject:
   m_ObjectHideFlags: 0
@@ -2293,6 +3038,64 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_SpriteSortPoint: 0
   m_BlendShapeWeights: []
+--- !u!1 &1239897682
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1239897684}
+  - component: {fileID: 1239897683}
+  m_Layer: 0
+  m_Name: Puesto ganado
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1239897683
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1239897682}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b32308649f5d53c4d940ee83281987e4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: BuenosDias.Runtime::BuenosDias.Presentation.TextLabel
+  font: {fileID: 11400000, guid: cd251ea8434c3884da54327a2138ab62, type: 2}
+  text: 
+  alignment: 1
+  pixelScale: 1
+  trackingPixels: 0
+  inkColor: {r: 0.9529412, g: 0.9254902, b: 0.8784314, a: 1}
+  drawShadow: 1
+  shadowColor: {r: 0.11372549, g: 0.08627451, b: 0.21960784, a: 1}
+  shadowOffsetPixels: {x: 1, y: -1}
+  outlinePixels: 0
+  outlineColor: {r: 0.9529412, g: 0.9254902, b: 0.8784314, a: 1}
+  spriteMaterial: {fileID: 2100000, guid: 51f5a8f723e49aa41b8107bb2990610e, type: 2}
+  sortingLayer: FX
+  sortingOrder: 420
+--- !u!4 &1239897684
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1239897682}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 2.125, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 909084751}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1266603989
 GameObject:
   m_ObjectHideFlags: 0
@@ -2400,6 +3203,64 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_SpriteSortPoint: 0
   m_BlendShapeWeights: []
+--- !u!1 &1309603181
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1309603183}
+  - component: {fileID: 1309603182}
+  m_Layer: 0
+  m_Name: Puesto 10
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1309603182
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1309603181}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b32308649f5d53c4d940ee83281987e4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: BuenosDias.Runtime::BuenosDias.Presentation.TextLabel
+  font: {fileID: 11400000, guid: cd251ea8434c3884da54327a2138ab62, type: 2}
+  text: 
+  alignment: 1
+  pixelScale: 1
+  trackingPixels: 0
+  inkColor: {r: 0.9529412, g: 0.9254902, b: 0.8784314, a: 1}
+  drawShadow: 1
+  shadowColor: {r: 0.11372549, g: 0.08627451, b: 0.21960784, a: 1}
+  shadowOffsetPixels: {x: 1, y: -1}
+  outlinePixels: 0
+  outlineColor: {r: 0.9529412, g: 0.9254902, b: 0.8784314, a: 1}
+  spriteMaterial: {fileID: 2100000, guid: 51f5a8f723e49aa41b8107bb2990610e, type: 2}
+  sortingLayer: FX
+  sortingOrder: 420
+--- !u!4 &1309603183
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1309603181}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: -0.6875, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1097506819}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1314335166
 GameObject:
   m_ObjectHideFlags: 0
@@ -3429,15 +4290,15 @@ Camera:
   m_LensShift: {x: 0, y: 0}
   m_NormalizedViewPortRect:
     serializedVersion: 2
-    x: 0.00097370986
+    x: 0
     y: 0
-    width: 0.9970789
+    width: 1
     height: 1
   near clip plane: 0.1
   far clip plane: 100
   field of view: 60
   orthographic: 1
-  orthographic size: 3.6875
+  orthographic size: 3.375
   m_Depth: 0
   m_CullingMask:
     serializedVersion: 2
@@ -3471,6 +4332,7 @@ Transform:
   - {fileID: 307020506}
   - {fileID: 1467403554}
   - {fileID: 1084851877}
+  - {fileID: 909084751}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &1652582162
@@ -3605,6 +4467,156 @@ SpriteRenderer:
   m_WasSpriteAssigned: 0
   m_SpriteSortPoint: 0
   m_BlendShapeWeights: []
+--- !u!1 &1687513344
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1687513346}
+  - component: {fileID: 1687513345}
+  m_Layer: 0
+  m_Name: Medidor riel
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!212 &1687513345
+SpriteRenderer:
+  serializedVersion: 3
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1687513344}
+  m_Enabled: 1
+  m_CastShadows: 0
+  m_ReceiveShadows: 0
+  m_DynamicOccludee: 1
+  m_StaticShadowCaster: 0
+  m_MotionVectors: 1
+  m_LightProbeUsage: 1
+  m_ReflectionProbeUsage: 1
+  m_RayTracingMode: 0
+  m_RayTraceProcedural: 0
+  m_RayTracingAccelStructBuildFlagsOverride: 0
+  m_RayTracingAccelStructBuildFlags: 1
+  m_SmallMeshCulling: 1
+  m_ForceMeshLod: -1
+  m_MeshLodSelectionBias: 0
+  m_RenderingLayerMask: 1
+  m_RendererPriority: 0
+  m_Materials:
+  - {fileID: 2100000, guid: 51f5a8f723e49aa41b8107bb2990610e, type: 2}
+  m_StaticBatchInfo:
+    firstSubMesh: 0
+    subMeshCount: 0
+  m_StaticBatchRoot: {fileID: 0}
+  m_ProbeAnchor: {fileID: 0}
+  m_LightProbeVolumeOverride: {fileID: 0}
+  m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
+  m_PreserveUVs: 0
+  m_IgnoreNormalsForChartDetection: 0
+  m_ImportantGI: 0
+  m_StitchLightmapSeams: 1
+  m_SelectedEditorRenderState: 0
+  m_MinimumChartSize: 4
+  m_AutoUVMaxDistance: 0.5
+  m_AutoUVMaxAngle: 89
+  m_LightmapParameters: {fileID: 0}
+  m_GlobalIlluminationMeshLod: 0
+  m_SortingLayerID: 1825785779
+  m_SortingLayer: 8
+  m_SortingOrder: 421
+  m_MaskInteraction: 0
+  m_Sprite: {fileID: 0}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_FlipX: 0
+  m_FlipY: 0
+  m_DrawMode: 0
+  m_Size: {x: 1, y: 1}
+  m_AdaptiveModeThreshold: 0.5
+  m_SpriteTileMode: 0
+  m_WasSpriteAssigned: 0
+  m_SpriteSortPoint: 0
+  m_BlendShapeWeights: []
+--- !u!4 &1687513346
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1687513344}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0.8125, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 909084751}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &1691097521
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1691097523}
+  - component: {fileID: 1691097522}
+  m_Layer: 0
+  m_Name: Iniciales
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1691097522
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1691097521}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b32308649f5d53c4d940ee83281987e4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: BuenosDias.Runtime::BuenosDias.Presentation.TextLabel
+  font: {fileID: 11400000, guid: cd251ea8434c3884da54327a2138ab62, type: 2}
+  text: 
+  alignment: 1
+  pixelScale: 3
+  trackingPixels: 0
+  inkColor: {r: 0.9529412, g: 0.9254902, b: 0.8784314, a: 1}
+  drawShadow: 1
+  shadowColor: {r: 0.11372549, g: 0.08627451, b: 0.21960784, a: 1}
+  shadowOffsetPixels: {x: 1, y: -1}
+  outlinePixels: 0
+  outlineColor: {r: 0.9529412, g: 0.9254902, b: 0.8784314, a: 1}
+  spriteMaterial: {fileID: 2100000, guid: 51f5a8f723e49aa41b8107bb2990610e, type: 2}
+  sortingLayer: FX
+  sortingOrder: 420
+--- !u!4 &1691097523
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1691097521}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0.9375, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 909084751}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1700820327
 GameObject:
   m_ObjectHideFlags: 0
@@ -3789,6 +4801,64 @@ SpriteRenderer:
   m_WasSpriteAssigned: 0
   m_SpriteSortPoint: 0
   m_BlendShapeWeights: []
+--- !u!1 &1879388711
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1879388712}
+  - component: {fileID: 1879388713}
+  m_Layer: 0
+  m_Name: Puesto 08
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1879388712
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1879388711}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: -0.0625, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1097506819}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1879388713
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1879388711}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b32308649f5d53c4d940ee83281987e4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: BuenosDias.Runtime::BuenosDias.Presentation.TextLabel
+  font: {fileID: 11400000, guid: cd251ea8434c3884da54327a2138ab62, type: 2}
+  text: 
+  alignment: 1
+  pixelScale: 1
+  trackingPixels: 0
+  inkColor: {r: 0.9529412, g: 0.9254902, b: 0.8784314, a: 1}
+  drawShadow: 1
+  shadowColor: {r: 0.11372549, g: 0.08627451, b: 0.21960784, a: 1}
+  shadowOffsetPixels: {x: 1, y: -1}
+  outlinePixels: 0
+  outlineColor: {r: 0.9529412, g: 0.9254902, b: 0.8784314, a: 1}
+  spriteMaterial: {fileID: 2100000, guid: 51f5a8f723e49aa41b8107bb2990610e, type: 2}
+  sortingLayer: FX
+  sortingOrder: 420
 --- !u!1 &1888115320
 GameObject:
   m_ObjectHideFlags: 0
@@ -3836,6 +4906,272 @@ MonoBehaviour:
   m_EditorClassIdentifier: BuenosDias.Runtime::BuenosDias.Presentation.ParallaxLayer
   parallaxFactor: 1.25
   cameraTransform: {fileID: 1652582161}
+--- !u!1 &1894493615
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1894493617}
+  - component: {fileID: 1894493616}
+  m_Layer: 0
+  m_Name: Medidor relleno
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!212 &1894493616
+SpriteRenderer:
+  serializedVersion: 3
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1894493615}
+  m_Enabled: 1
+  m_CastShadows: 0
+  m_ReceiveShadows: 0
+  m_DynamicOccludee: 1
+  m_StaticShadowCaster: 0
+  m_MotionVectors: 1
+  m_LightProbeUsage: 1
+  m_ReflectionProbeUsage: 1
+  m_RayTracingMode: 0
+  m_RayTraceProcedural: 0
+  m_RayTracingAccelStructBuildFlagsOverride: 0
+  m_RayTracingAccelStructBuildFlags: 1
+  m_SmallMeshCulling: 1
+  m_ForceMeshLod: -1
+  m_MeshLodSelectionBias: 0
+  m_RenderingLayerMask: 1
+  m_RendererPriority: 0
+  m_Materials:
+  - {fileID: 2100000, guid: 51f5a8f723e49aa41b8107bb2990610e, type: 2}
+  m_StaticBatchInfo:
+    firstSubMesh: 0
+    subMeshCount: 0
+  m_StaticBatchRoot: {fileID: 0}
+  m_ProbeAnchor: {fileID: 0}
+  m_LightProbeVolumeOverride: {fileID: 0}
+  m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
+  m_PreserveUVs: 0
+  m_IgnoreNormalsForChartDetection: 0
+  m_ImportantGI: 0
+  m_StitchLightmapSeams: 1
+  m_SelectedEditorRenderState: 0
+  m_MinimumChartSize: 4
+  m_AutoUVMaxDistance: 0.5
+  m_AutoUVMaxAngle: 89
+  m_LightmapParameters: {fileID: 0}
+  m_GlobalIlluminationMeshLod: 0
+  m_SortingLayerID: 1825785779
+  m_SortingLayer: 8
+  m_SortingOrder: 422
+  m_MaskInteraction: 0
+  m_Sprite: {fileID: 0}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_FlipX: 0
+  m_FlipY: 0
+  m_DrawMode: 0
+  m_Size: {x: 1, y: 1}
+  m_AdaptiveModeThreshold: 0.5
+  m_SpriteTileMode: 0
+  m_WasSpriteAssigned: 0
+  m_SpriteSortPoint: 0
+  m_BlendShapeWeights: []
+--- !u!4 &1894493617
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1894493615}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0.8125, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 909084751}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &1932250312
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1932250314}
+  - component: {fileID: 1932250313}
+  m_Layer: 0
+  m_Name: "C\xF3mo cargar"
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1932250313
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1932250312}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b32308649f5d53c4d940ee83281987e4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: BuenosDias.Runtime::BuenosDias.Presentation.TextLabel
+  font: {fileID: 11400000, guid: cd251ea8434c3884da54327a2138ab62, type: 2}
+  text: 
+  alignment: 1
+  pixelScale: 1
+  trackingPixels: 0
+  inkColor: {r: 0.9529412, g: 0.9254902, b: 0.8784314, a: 1}
+  drawShadow: 1
+  shadowColor: {r: 0.11372549, g: 0.08627451, b: 0.21960784, a: 1}
+  shadowOffsetPixels: {x: 1, y: -1}
+  outlinePixels: 0
+  outlineColor: {r: 0.9529412, g: 0.9254902, b: 0.8784314, a: 1}
+  spriteMaterial: {fileID: 2100000, guid: 51f5a8f723e49aa41b8107bb2990610e, type: 2}
+  sortingLayer: FX
+  sortingOrder: 420
+--- !u!4 &1932250314
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1932250312}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0.25, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 909084751}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &1956019517
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1956019518}
+  - component: {fileID: 1956019519}
+  m_Layer: 0
+  m_Name: Puesto 02
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1956019518
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1956019517}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 1.8125, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1097506819}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1956019519
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1956019517}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b32308649f5d53c4d940ee83281987e4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: BuenosDias.Runtime::BuenosDias.Presentation.TextLabel
+  font: {fileID: 11400000, guid: cd251ea8434c3884da54327a2138ab62, type: 2}
+  text: 
+  alignment: 1
+  pixelScale: 1
+  trackingPixels: 0
+  inkColor: {r: 0.9529412, g: 0.9254902, b: 0.8784314, a: 1}
+  drawShadow: 1
+  shadowColor: {r: 0.11372549, g: 0.08627451, b: 0.21960784, a: 1}
+  shadowOffsetPixels: {x: 1, y: -1}
+  outlinePixels: 0
+  outlineColor: {r: 0.9529412, g: 0.9254902, b: 0.8784314, a: 1}
+  spriteMaterial: {fileID: 2100000, guid: 51f5a8f723e49aa41b8107bb2990610e, type: 2}
+  sortingLayer: FX
+  sortingOrder: 420
+--- !u!1 &1977747071
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1977747072}
+  - component: {fileID: 1977747073}
+  m_Layer: 0
+  m_Name: Puesto 05
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1977747072
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1977747071}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0.875, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1097506819}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1977747073
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1977747071}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b32308649f5d53c4d940ee83281987e4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: BuenosDias.Runtime::BuenosDias.Presentation.TextLabel
+  font: {fileID: 11400000, guid: cd251ea8434c3884da54327a2138ab62, type: 2}
+  text: 
+  alignment: 1
+  pixelScale: 1
+  trackingPixels: 0
+  inkColor: {r: 0.9529412, g: 0.9254902, b: 0.8784314, a: 1}
+  drawShadow: 1
+  shadowColor: {r: 0.11372549, g: 0.08627451, b: 0.21960784, a: 1}
+  shadowOffsetPixels: {x: 1, y: -1}
+  outlinePixels: 0
+  outlineColor: {r: 0.9529412, g: 0.9254902, b: 0.8784314, a: 1}
+  spriteMaterial: {fileID: 2100000, guid: 51f5a8f723e49aa41b8107bb2990610e, type: 2}
+  sortingLayer: FX
+  sortingOrder: 420
 --- !u!1 &2095979533
 GameObject:
   m_ObjectHideFlags: 0

@@ -10,7 +10,13 @@ namespace BuenosDias.Presentation
     /// <c>OnBeginCameraRendering</c> y ajusta la <c>worldToCameraMatrix</c> sin
     /// mover el transform. Redondear acá además pelearía con ese ajuste y
     /// produciría el temblor que se quiere evitar.
+    ///
+    /// ⚠️ El orden −50 es para que la cámara quede quieta ANTES de que la lean
+    /// las capas de parallax (−40), los sembradores (−30) y el resto de los
+    /// <c>LateUpdate</c>. Con el orden librado a Unity, algunos leían la cámara del
+    /// cuadro anterior.
     /// </summary>
+    [DefaultExecutionOrder(-50)]
     [DisallowMultipleComponent]
     [RequireComponent(typeof(Camera))]
     public sealed class PixelPerfectFollowCamera : MonoBehaviour

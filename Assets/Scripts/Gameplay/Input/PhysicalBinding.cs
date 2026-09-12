@@ -1,6 +1,7 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.InputSystem.Controls;
+using UnityEngine.InputSystem.Utilities;
 
 namespace BuenosDias.Gameplay
 {
@@ -30,6 +31,12 @@ namespace BuenosDias.Gameplay
     /// juego, Alt se roba el menú de la ventana, Caps Lock es un toggle y la de
     /// Windows abre el menú Inicio. Cualquiera de esas arruina una demo con el pie
     /// apoyado sobre la plancha.
+    ///
+    /// ⚠️ Se leen TODOS los teclados y TODOS los mouse, no <c>Keyboard.current</c>
+    /// ni <c>Mouse.current</c>. El control físico se presenta como un teclado y un
+    /// mouse más, y <c>.current</c> salta al último dispositivo que mandó CUALQUIER
+    /// evento —alcanza con mover el mouse de la PC—. Con dos controles enchufados,
+    /// leer solo el "actual" perdía apretones y soltaba el felpudo solo.
     /// </summary>
     [System.Serializable]
     public sealed class PhysicalBinding
@@ -47,24 +54,61 @@ namespace BuenosDias.Gameplay
             this.key = key;
         }
 
-        /// <summary>El control concreto, o <c>null</c> si el dispositivo no está.</summary>
-        public ButtonControl Control()
+        /// <summary>Si se apretó en este cuadro en cualquier dispositivo de ese tipo.</summary>
+        public bool WasPressedThisFrame()
         {
-            switch (device)
+            ReadOnlyArray<InputDevice> devices = InputSystem.devices;
+            for (int i = 0; i < devices.Count; i++)
             {
-                case BindingDevice.MouseIzquierdo:
-                    return Mouse.current?.leftButton;
-                case BindingDevice.MouseDerecho:
-                    return Mouse.current?.rightButton;
-                default:
-                    return Keyboard.current?[key];
+                ButtonControl control = ControlOn(devices[i]);
+                if (control != null && control.wasPressedThisFrame) return true;
             }
+
+            return false;
+        }
+
+        /// <summary>Si está apretado ahora en cualquier dispositivo de ese tipo.</summary>
+        public bool IsPressed()
+        {
+            ReadOnlyArray<InputDevice> devices = InputSystem.devices;
+            for (int i = 0; i < devices.Count; i++)
+            {
+                ButtonControl control = ControlOn(devices[i]);
+                if (control != null && control.isPressed) return true;
+            }
+
+            return false;
+        }
+
+        /// <summary>
+        /// Si los dos bindings leen la MISMA entrada física. Dos acciones atadas a
+        /// lo mismo se disparan juntas con un solo apretón, que es el bug de frenar
+        /// y tocar el timbre a la vez.
+        /// </summary>
+        public bool SameInputAs(PhysicalBinding other)
+        {
+            if (other == null || device != other.device) return false;
+            return device != BindingDevice.Teclado || key == other.key;
         }
 
         /// <summary>Nombre legible, para los mensajes de error.</summary>
         public string Describe()
         {
             return device == BindingDevice.Teclado ? key.ToString() : device.ToString();
+        }
+
+        /// <summary>El control de este binding en ese dispositivo, o <c>null</c> si no lo tiene.</summary>
+        private ButtonControl ControlOn(InputDevice candidate)
+        {
+            switch (device)
+            {
+                case BindingDevice.MouseIzquierdo:
+                    return candidate is Mouse left ? left.leftButton : null;
+                case BindingDevice.MouseDerecho:
+                    return candidate is Mouse right ? right.rightButton : null;
+                default:
+                    return key != Key.None && candidate is Keyboard keyboard ? keyboard[key] : null;
+            }
         }
     }
 }

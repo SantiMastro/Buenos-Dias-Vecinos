@@ -52,7 +52,13 @@ namespace BuenosDias.EditorTools.Inspectors
 
         private static void DrawWarnings(HouseSignalDefinition signal)
         {
-            if (signal.Sprite == null)
+            if (signal.DrawnByCode)
+            {
+                EditorGUILayout.HelpBox(
+                    $"'{signal.MountMode}' se dibuja por código: el sprite se ignora.",
+                    MessageType.Info);
+            }
+            else if (signal.Sprite == null)
             {
                 EditorGUILayout.HelpBox(
                     "Falta el sprite de esta señal: no se va a dibujar nada.",

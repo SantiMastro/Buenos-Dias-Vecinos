@@ -65,6 +65,17 @@ namespace BuenosDias.Gameplay
         private int tellTriggerHash;
         private Sprite closedDoorSprite;
 
+        private bool generatedBuilt;
+        private SpriteRenderer signalGlow;
+        private bool signalWindowFree = true;
+
+        /// <summary>
+        /// Altura del gable tal como viene en el prefab: el tope de la pared. Se
+        /// guarda antes de tocarla, porque la casa vuelve al pool con el gable
+        /// subido y el próximo terreno puede necesitarlo abajo.
+        /// </summary>
+        private float gableWallY;
+
         /// <summary>Receta que está mostrando ahora mismo.</summary>
         public HouseLayout Layout { get; private set; }
 
@@ -84,6 +95,84 @@ namespace BuenosDias.Gameplay
             // un segundo campo: son el mismo dibujo, y dos campos para eso invitan
             // a que un día no coincidan.
             if (doorLeaf != null) closedDoorSprite = doorLeaf.sprite;
+
+            // El spawner llama a esto cada vez que saca la casa del pool, pero las
+            // piezas dibujadas por código se arman una sola vez por casa.
+            if (generatedBuilt) return;
+
+            BuildGeneratedPieces();
+            generatedBuilt = true;
+        }
+
+        /// <summary>
+        /// Arma lo que no viene en el prefab: la silueta de la ventana de tell, la
+        /// chimenea con su humo, y un segundo halo para la ventana de señal.
+        ///
+        /// Se arma por código y no en el prefab para no tener que reconstruirlo:
+        /// el prefab lo genera un builder de Editor, y volver a correrlo pisaría
+        /// cualquier ajuste hecho a mano. Capa, orden y material se copian de las
+        /// piezas vecinas, así quedan en el mismo plano y con la misma luz.
+        /// </summary>
+        private void BuildGeneratedPieces()
+        {
+            if (roofGable != null) gableWallY = roofGable.transform.localPosition.y;
+
+            SignalVisualsConfig visuals = config != null
+                ? config.SignalVisuals
+                : SignalVisualsConfig.OrDefault(null);
+
+            WindowSilhouette silhouette = BuildSilhouette(visuals);
+
+            ChimneySmoke chimney = null;
+            float roofTop = 0f;
+            if (roofSlab != null && roofSlab.sprite != null)
+            {
+                roofTop = roofSlab.transform.localPosition.y
+                          + roofSlab.sprite.rect.height / roofSlab.sprite.pixelsPerUnit;
+                chimney = ChimneySmoke.Create(transform, roofSlab, visuals);
+            }
+
+            float gableHalf = roofGable != null && roofGable.sprite != null
+                ? roofGable.sprite.rect.width * 0.5f / roofGable.sprite.pixelsPerUnit
+                : 0f;
+
+            signals.AttachGenerated(silhouette, chimney, roofTop, gableHalf);
+
+            // El segundo halo es una copia del de la ventana de tell: mismo sprite,
+            // mismo material aditivo y mismo corrimiento, porque las dos ventanas
+            // son el mismo dibujo con el mismo pivot.
+            if (windowGlow != null && signals.SignalWindowTransform != null)
+            {
+                signalGlow = Instantiate(windowGlow, signals.SignalWindowTransform, false);
+                signalGlow.name = windowGlow.name;
+                signalGlow.enabled = false;
+            }
+        }
+
+        /// <summary>
+        /// La silueta va ENCIMA de la cortina y translúcida: así se lee como una
+        /// sombra del otro lado. Si el halo quedaba en el mismo orden, se lo sube
+        /// uno para que la luz siga por encima de todo.
+        /// </summary>
+        private WindowSilhouette BuildSilhouette(SignalVisualsConfig visuals)
+        {
+            if (tellWindow == null) return null;
+
+            var windowRenderer = tellWindow.GetComponent<SpriteRenderer>();
+            SpriteRenderer curtain = curtainAnimator != null
+                ? curtainAnimator.GetComponent<SpriteRenderer>()
+                : null;
+
+            SpriteRenderer reference = curtain != null ? curtain : windowRenderer;
+            if (reference == null || windowRenderer == null || windowRenderer.sprite == null)
+                return null;
+
+            int order = reference.sortingOrder + 1;
+            if (windowGlow != null && windowGlow.sortingOrder <= order)
+                windowGlow.sortingOrder = order + 1;
+
+            float windowWidth = windowRenderer.sprite.rect.width / windowRenderer.sprite.pixelsPerUnit;
+            return WindowSilhouette.Create(tellWindow, windowWidth, reference, order, visuals);
         }
 
         /// <summary>Aplica una receta. Es lo único que hace esta clase.</summary>
@@ -103,6 +192,7 @@ namespace BuenosDias.Gameplay
                 config, tellWindow, signals.SignalWindowTransform, width, doorX);
 
             signals.Mount(layout, anchors, config);
+            signalWindowFree = !HasWindowVariant(layout);
 
             // ⚠️ La casa vive en un pool. Sin este cierre, una puerta que quedó
             // abierta vuelve a aparecer más adelante en la cuadra como una casa que
@@ -143,22 +233,39 @@ namespace BuenosDias.Gameplay
                 if (hasGable)
                 {
                     float gableWidth = roofGable.sprite.rect.width / roofGable.sprite.pixelsPerUnit;
-                    roofGable.transform.localPosition = WithX(
-                        roofGable.transform.localPosition, doorX - gableWidth * 0.5f);
+                    roofGable.transform.localPosition = new Vector3(
+                        doorX - gableWidth * 0.5f, GableY(gableOnly), roofGable.transform.localPosition.z);
                 }
             }
 
             if (roofSlab == null) return;
 
-            // La losa cubre todo el ancho también bajo el gable: el gable se
-            // dibuja encima y el sobrante no se ve. Es más simple y más barato
-            // que recortar la losa en dos tramos.
+            // La losa cubre todo el ancho. Con el gable apoyado encima no hay
+            // nada que recortar; con el gable sobre la pared, el gable se dibuja
+            // delante y tapa la losa donde se pisan.
             roofSlab.enabled = !gableOnly;
             if (gableOnly) return;
 
             float slabHeight = roofSlab.sprite.rect.height / roofSlab.sprite.pixelsPerUnit;
             roofSlab.size = new Vector2(width, slabHeight);
             roofSlab.transform.localPosition = WithX(roofSlab.transform.localPosition, -width * 0.5f);
+        }
+
+        /// <summary>
+        /// Dónde arranca el gable. En el frente a dos aguas se apoya en el TOPE de
+        /// la losa, así se lee como un techo sobre la terraza y no como un alero
+        /// hundido detrás del borde. Con dos aguas completo no hay losa y va sobre
+        /// la pared, como vino del prefab.
+        /// </summary>
+        private float GableY(bool gableOnly)
+        {
+            bool onSlab = !gableOnly && config != null && config.GableSitsOnSlab
+                          && roofSlab != null && roofSlab.sprite != null;
+
+            if (!onSlab) return gableWallY;
+
+            return roofSlab.transform.localPosition.y
+                   + roofSlab.sprite.rect.height / roofSlab.sprite.pixelsPerUnit;
         }
 
         private void ApplyFence(float width)
@@ -190,11 +297,38 @@ namespace BuenosDias.Gameplay
         /// </summary>
         public void SetWindowLight(float amount)
         {
-            if (windowGlow == null) return;
+            SetGlow(windowGlow, amount);
+        }
+
+        /// <summary>
+        /// Enciende la ventana de SEÑAL, de 0 a 1. Es la segunda luz de las casas
+        /// que se ven más habitadas.
+        ///
+        /// ⚠️ Solo si la ventana está libre. Con persianas bajas no hay luz que
+        /// mostrar, y el TV ya trae su propia capa: un halo que se enciende con la
+        /// hora encima de una señal la haría parecer que cambia sola (§3.3).
+        /// </summary>
+        public void SetSignalWindowLight(float amount)
+        {
+            SetGlow(signalGlow, signalWindowFree ? amount : 0f);
+        }
+
+        private static void SetGlow(SpriteRenderer glow, float amount)
+        {
+            if (glow == null) return;
 
             float clamped = Mathf.Clamp01(amount);
-            windowGlow.enabled = clamped > 0f;
-            windowGlow.color = new Color(1f, 1f, 1f, clamped);
+            glow.enabled = clamped > 0f;
+            glow.color = new Color(1f, 1f, 1f, clamped);
+        }
+
+        private static bool HasWindowVariant(HouseLayout layout)
+        {
+            for (int i = 0; i < layout.Signals.Count; i++)
+                if (layout.Signals[i].Definition.MountMode == SignalMountMode.VarianteDeVentana)
+                    return true;
+
+            return false;
         }
 
         private static Vector3 WithX(Vector3 value, float x) => new Vector3(x, value.y, value.z);

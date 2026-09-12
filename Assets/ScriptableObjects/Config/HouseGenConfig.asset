@@ -34,6 +34,9 @@ MonoBehaviour:
   wallAnchorCount: 2
   groundAnchorCount: 1
   maximumTiledStrips: 1
+  silhouetteCapacity: 1
+  chimneyCapacity: 1
+  signalVisuals: {fileID: 11400000, guid: 4c7b1d5f9e2a4c3b1d4f6b8e0a2c4d5f, type: 2}
   availableSignals:
   - {fileID: 11400000, guid: 9bceecf0f805a4c44861d715a90bc965, type: 2}
   - {fileID: 11400000, guid: f99cce343fc8398429d866fa077e6ba0, type: 2}
@@ -42,3 +45,5 @@ MonoBehaviour:
   - {fileID: 11400000, guid: dd55c1576927b30498e827439be06f90, type: 2}
   - {fileID: 11400000, guid: 6de3e834ac3432e409b029cc5f91cb9f, type: 2}
   - {fileID: 11400000, guid: 1ac9bfefe09122c42aa3b054718b2108, type: 2}
+  - {fileID: 11400000, guid: 5b1e7c2a9d3f4e6a8c0b1d2e3f4a5b6c, type: 2}
+  - {fileID: 11400000, guid: 7c2f9e1b3a5d4c6e8f0a2b4c6d8e0f1a, type: 2}
