@@ -1284,7 +1284,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: BuenosDias.Runtime::BuenosDias.Gameplay.OneButtonInput
   holdSeconds: 0.6
-  acceptNoisyControls: 1
+  acceptNoisyControls: 0
 --- !u!114 &699737235
 MonoBehaviour:
   m_ObjectHideFlags: 0

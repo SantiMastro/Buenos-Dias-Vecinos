@@ -1487,7 +1487,17 @@ Estado dejado en la máquina: palanca apagada y la clave de `EditorPrefs` borrad
 
 ---
 
-### 13.8 🔴 PENDIENTE DE REVERTIR — `acceptNoisyControls` tildado para la prueba del gabinete
+### 13.8 ✅ APAGADO Y SIN EFECTO — `acceptNoisyControls` tildado para la prueba del gabinete
+
+> ✅ **23/9/2026: apagado (`acceptNoisyControls: 0`). Además ya no tenía efecto en el juego.**
+> Después de la reescritura del input a dos botones (12/9), `OneButtonInput` quedó huérfano:
+> sigue sobre `Predicador`, pero ningún script de runtime lo referencia ni por código ni por
+> campo serializado (verificado por MCP: cero referencias en `Game.unity`). El juego lee
+> timbre y felpudo por `GameInput`, que no pasa por `OneButtonInput.Accepts`. Lo único que el
+> campo hacía era prender la estática `AcceptNoisyControls` en `Awake`, y esa estática solo la
+> leen la ventana de diagnóstico y `InputReport` (Editor). Si un encoder ruidoso vuelve a ser
+> problema, el rescate hay que pensarlo sobre el input de dos botones, no sobre este campo.
+> Lo que sigue abajo queda como registro histórico.
 
 **Fecha de la prueba: miércoles 12 de agosto de 2026. Después hay que apagarlo.**
 
@@ -2613,5 +2623,5 @@ reporte de *Fase 1* ahora termina con las dos banderas y su valor:
 El aviso se probó reconstruyendo otra vez y leyendo la salida, no confiando en que compilara. Es
 la misma regla de siempre: **una guarda sin verificar falla igual que no tenerla.**
 
-⚠️ Y §13.8 sigue pendiente: `acceptNoisyControls` quedó PRENDIDA, que es lo que se pidió para la
-prueba del gabinete. Cuando esa prueba termine hay que apagarla.
+✅ §13.8 cerrado el 23/9/2026: `acceptNoisyControls` se apagó, y con el input de dos botones ya
+no tenía efecto en el juego (ver §13.8).
