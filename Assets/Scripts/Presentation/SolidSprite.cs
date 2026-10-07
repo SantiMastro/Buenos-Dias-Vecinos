@@ -17,7 +17,8 @@ namespace BuenosDias.Presentation
         /// Un cuadrado del color pedido. El lado por defecto es 4 px: con 1 px
         /// Unity se queja al tilear, y más grande no aporta nada porque es plano.
         /// </summary>
-        public static Sprite Create(Color32 color, float pixelsPerUnit, int size = 4)
+        public static Sprite Create(
+            Color32 color, float pixelsPerUnit, int size = 4, Vector2? pivot = null)
         {
             var texture = new Texture2D(size, size, TextureFormat.RGBA32, false)
             {
@@ -33,7 +34,7 @@ namespace BuenosDias.Presentation
             texture.Apply(false, false);
 
             Sprite sprite = Sprite.Create(
-                texture, new Rect(0f, 0f, size, size), new Vector2(0.5f, 0.5f),
+                texture, new Rect(0f, 0f, size, size), pivot ?? new Vector2(0.5f, 0.5f),
                 pixelsPerUnit, 0, SpriteMeshType.FullRect);
             sprite.hideFlags = HideFlags.HideAndDontSave;
 

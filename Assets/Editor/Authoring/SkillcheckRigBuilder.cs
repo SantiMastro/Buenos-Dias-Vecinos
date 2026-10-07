@@ -85,6 +85,9 @@ namespace BuenosDias.EditorTools.Authoring
             SerializedFieldUtility.SetInt(view, "textureSize", TextureSize);
             SerializedFieldUtility.SetFloat(view, "trackInnerRadius", TrackInnerRadius);
             SerializedFieldUtility.SetFloat(view, "trackOuterRadius", TrackOuterRadius);
+            SerializedFieldUtility.SetReference(view, "doorbellSprite", SpriteLibrary.Load("prop_timbre"));
+            SerializedFieldUtility.SetReference(
+                view, "doorbellPressedSprite", SpriteLibrary.Load("prop_timbre_activo"));
 
             return view;
         }

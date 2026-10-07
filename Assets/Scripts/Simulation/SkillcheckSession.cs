@@ -61,6 +61,7 @@ namespace BuenosDias.Simulation
         private readonly System.Random random;
 
         private float pauseLeft;
+        private int secondChancesLeft;
 
         /// <summary>Estado de la cadena.</summary>
         public SkillcheckSessionState State { get; private set; } = SkillcheckSessionState.EnCurso;
@@ -86,9 +87,11 @@ namespace BuenosDias.Simulation
 
         /// <summary>Arranca la cadena. El primer eslabón empieza ya.</summary>
         public SkillcheckSession(
-            SkillcheckConfig config, SkillcheckSetup setup, System.Random random)
+            SkillcheckConfig config, SkillcheckSetup setup, System.Random random,
+            int secondChances = 0)
         {
             this.config = config;
+            secondChancesLeft = Mathf.Max(0, secondChances);
             this.setup = setup;
             this.random = random;
 
@@ -148,6 +151,15 @@ namespace BuenosDias.Simulation
             else if (outcome == SkillcheckOutcome.Bueno) GoodHits++;
 
             Current = null;
+
+            // Segunda oportunidad: el fallo se perdona y el MISMO eslabón se repite
+            // tras la pausa de siempre. No suma ni resta aciertos.
+            if (outcome == SkillcheckOutcome.Fallado && secondChancesLeft > 0)
+            {
+                secondChancesLeft--;
+                pauseLeft = config.ChainPauseSeconds;
+                return new SkillcheckSessionTick(true, outcome, false, false);
+            }
 
             if (outcome == SkillcheckOutcome.Fallado)
                 return Finish(outcome, SkillcheckSessionState.Rechazado);

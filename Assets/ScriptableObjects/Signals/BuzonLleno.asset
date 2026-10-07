@@ -14,8 +14,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::BuenosDias.Config.HouseSignalDefinition
   displayName: "Buz\xF3n desbordado"
   weight: -0.4
-  mountMode: 0
-  sprite: {fileID: 21300000, guid: b59c1a5c07d3d6f4abfec0c06e021512, type: 3}
+  mountMode: 1
+  sprite: {fileID: 21300000, guid: b3ef36d22a629cec181354affb462965, type: 3}
   additiveLayer: {fileID: 0}
   additiveLayerAnimation: {fileID: 0}
   claimsDoorSideAnchor: 0

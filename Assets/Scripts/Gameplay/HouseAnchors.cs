@@ -81,7 +81,10 @@ namespace BuenosDias.Gameplay
             float doorCenter = ProjectConstants.ToUnits(layout.DoorOffsetPixels);
             float clearance = config.DoorPathWidth * 0.5f + halfSprite;
 
-            float preferred = placed.RightSide ? outer : -outer;
+            // El segundo prop de suelo (buzón junto al auto) va al lado opuesto, así
+            // no se pisan.
+            bool right = placed.SlotIndex > 0 ? !placed.RightSide : placed.RightSide;
+            float preferred = right ? outer : -outer;
             if (Mathf.Abs(preferred - doorCenter) >= clearance) return preferred;
 
             float other = -preferred;

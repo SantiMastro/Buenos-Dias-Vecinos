@@ -55,8 +55,25 @@ namespace BuenosDias.Gameplay
                  "Con ella, el click no reinicia mientras se cargan las iniciales.")]
         [SerializeField] private HighscoreDirector highscore;
 
-        private readonly RunStateMachine run = new RunStateMachine();
+        [Header("Menú principal")]
+        [Tooltip("Si el juego arranca en la pantalla de título. Solo la primera vez: " +
+                 "al reiniciar desde el final se va directo a elegir religión.")]
+        [SerializeField] private bool showMainMenu = true;
+
+        /// <summary>
+        /// Si el menú ya se mostró en esta sesión. Estática porque reiniciar
+        /// recarga la escena. Se limpia al entrar a Play: con la recarga de dominio
+        /// apagada, la estática sobreviviría y el menú no volvería a salir.
+        /// </summary>
+        private static bool menuShown;
+
+        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
+        private static void ResetStatics() => menuShown = false;
+
+        private readonly RunStateMachine run =
+            new RunStateMachine(menuShown ? RunPhase.Seleccion : RunPhase.Menu);
         private float phaseTime;
+        private bool startRequested;
 
         /// <summary>Etapa actual de la partida.</summary>
         public RunPhase Phase => run.Phase;
@@ -81,6 +98,8 @@ namespace BuenosDias.Gameplay
         {
             if (!ValidateSetup()) { enabled = false; return; }
 
+            if (!showMainMenu) run.SkipMenu();
+
             run.Changed += OnPhaseChanged;
 
             // Se aplica en Awake y no en Start porque Unity garantiza que todos los
@@ -100,7 +119,7 @@ namespace BuenosDias.Gameplay
         /// </summary>
         private void Start()
         {
-            if (!gameConfig.LockToDefaultReligion) return;
+            if (!gameConfig.LockToDefaultReligion || run.Phase != RunPhase.Seleccion) return;
 
             OnReligionConfirmed(gameConfig.DefaultReligion);
         }
@@ -130,9 +149,28 @@ namespace BuenosDias.Gameplay
         {
             phaseTime += Time.unscaledDeltaTime;
 
+            // En el menú cualquier toque o apretón largo arranca. La salida se hace
+            // en LateUpdate: ese mismo apretón lo vería el selector en este cuadro
+            // y cambiaría de religión sin que nadie lo pidiera.
+            if (run.Phase == RunPhase.Menu
+                && (input.Pressed(GameAction.Timbre) || input.Pressed(GameAction.Libro)))
+                startRequested = true;
+
             if (!AcceptsRestart || !input.Pressed(GameAction.Timbre)) return;
 
             Restart();
+        }
+
+        private void LateUpdate()
+        {
+            if (!startRequested) return;
+            startRequested = false;
+
+            menuShown = true;
+            if (!run.StartSelection()) return;
+
+            // con la religión bloqueada no hay nada que elegir: sigue de largo
+            if (gameConfig.LockToDefaultReligion) OnReligionConfirmed(gameConfig.DefaultReligion);
         }
 
         private void OnReligionConfirmed(ReligionDefinition chosen)
@@ -197,6 +235,9 @@ namespace BuenosDias.Gameplay
             // encenderse. El final no tiene dueño —no hay ningún sistema vivo— así
             // que lo declara el director, que es quien sabe que llegó.
             if (phase == RunPhase.Final) input.Context = InputContext.Final;
+
+            // El menú usa el mismo input de la selección: toque corto y mantenido.
+            if (phase == RunPhase.Menu) input.Context = InputContext.Seleccion;
         }
 
         private bool ValidateSetup()

@@ -64,6 +64,8 @@ namespace BuenosDias.Gameplay
         private NeighborDefinition neighbor;
         private ReligionDefinition religion;
         private float holdLeft;
+        private float instantHoldLeft;
+
 
         /// <summary>Conversiones logradas en la partida.</summary>
         public int Converts { get; private set; }
@@ -71,8 +73,33 @@ namespace BuenosDias.Gameplay
         /// <summary>Seguidores en la fila. Sube al convertir y baja al fallar.</summary>
         public int Followers { get; private set; }
 
+        /// <summary>
+        /// Config del skillcheck, para que la vista lea los rangos de posición sin
+        /// tener su propia referencia al <c>GameConfig</c>.
+        /// </summary>
+        public SkillcheckConfig Config => gameConfig != null ? gameConfig.Skillcheck : null;
+
+        /// <summary>Perfects seguidos juntados hacia el power up. Vuelve a 0 al fallar o al armarlo.</summary>
+        public int PerfectStreak { get; private set; }
+
+        /// <summary>Perfects seguidos que hacen falta para armar el power up. 0 si está apagado.</summary>
+        public int PerfectsNeeded =>
+            gameConfig != null && gameConfig.Skillcheck != null
+            && gameConfig.Skillcheck.InstantConvertPowerUp
+                ? gameConfig.Skillcheck.PerfectsForPowerUp
+                : 0;
+
+        /// <summary>Si la próxima puerta que se abra convierte al instante.</summary>
+        public bool PowerUpArmed { get; private set; }
+
+        /// <summary>Cambió la racha o el power up. Entrega (racha, armado).</summary>
+        public event System.Action<int, bool> PowerUpChanged;
+
+        /// <summary>Se gastó el power up en una puerta. La vista lo celebra.</summary>
+        public event System.Action PowerUpConsumed;
+
         /// <summary>Si la puerta todavía está en curso, incluido el cierre.</summary>
-        public bool IsBusy => session != null;
+        public bool IsBusy => session != null || instantHoldLeft > 0f;
 
         /// <summary>
         /// Eslabones que tendría la próxima puerta con la comitiva de ahora. Lo
@@ -120,10 +147,11 @@ namespace BuenosDias.Gameplay
         /// </summary>
         public void Cancel()
         {
-            if (session == null) return;
+            if (session == null && instantHoldLeft <= 0f) return;
 
             session = null;
             holdLeft = 0f;
+            instantHoldLeft = 0f;
             Cancelled?.Invoke();
         }
 
@@ -161,10 +189,18 @@ namespace BuenosDias.Gameplay
             neighbor = neighborAtDoor;
             religion = activeReligion;
 
+            if (PowerUpArmed)
+            {
+                ConvertInstantly();
+                return;
+            }
+
             SkillcheckSetup setup =
                 difficulty.Resolve(precision, Converts, Followers, activeReligion, zoneScale, timeUsed);
 
-            session = new SkillcheckSession(gameConfig.Skillcheck, setup, random);
+            session = new SkillcheckSession(
+                gameConfig.Skillcheck, setup, random,
+                activeReligion != null ? activeReligion.SecondChances : 0);
             holdLeft = 0f;
 
             AttemptStarted?.Invoke(session.Current);
@@ -173,7 +209,11 @@ namespace BuenosDias.Gameplay
         /// <summary>Avanza la puerta un cuadro. La llama la FSM del predicador.</summary>
         public void Tick(float deltaTime, bool pressed)
         {
-            if (session == null) return;
+            if (session == null)
+            {
+                if (instantHoldLeft > 0f) instantHoldLeft -= deltaTime;
+                return;
+            }
 
             if (session.State != SkillcheckSessionState.EnCurso)
             {
@@ -185,12 +225,57 @@ namespace BuenosDias.Gameplay
             SkillcheckSessionTick tick = session.Advance(deltaTime, pressed);
 
             if (tick.LinkResolved) AttemptResolved?.Invoke(tick.LinkOutcome);
+            if (tick.LinkResolved) CountStreak(tick.LinkOutcome);
             if (tick.Finished) { Close(); return; }
 
             // La réplica presenta la objeción que VIENE, no la que se acaba de
             // ganar: para cuando suena, el eslabón siguiente ya está contado.
             if (tick.LinkResolved) Objected?.Invoke(neighbor?.ObjectionFor(session.LinkIndex));
             if (tick.LinkStarted) AttemptStarted?.Invoke(session.Current);
+        }
+
+        /// <summary>
+        /// Lleva la racha de perfects. Un bueno o un fallo la cortan: el power up
+        /// premia la puntería sostenida, no el volumen. Al llegar al número se arma
+        /// y la racha arranca de cero, así el siguiente power up cuesta lo mismo.
+        /// </summary>
+        private void CountStreak(SkillcheckOutcome outcome)
+        {
+            int needed = PerfectsNeeded;
+            if (needed <= 0 || PowerUpArmed) return;
+
+            PerfectStreak = outcome == SkillcheckOutcome.Perfecto ? PerfectStreak + 1 : 0;
+
+            if (PerfectStreak >= needed)
+            {
+                PerfectStreak = 0;
+                PowerUpArmed = true;
+            }
+
+            PowerUpChanged?.Invoke(PerfectStreak, PowerUpArmed);
+        }
+
+        /// <summary>
+        /// Gasta el power up: la puerta se resuelve como una conversión PERFECTA sin
+        /// skillcheck. Paga el bono de un perfecto, suma el seguidor y mantiene el
+        /// cierre de siempre para que el sí se lea antes de volver a caminar.
+        /// No cuenta para la racha: se ganó el power up, no se juntó otro.
+        /// </summary>
+        private void ConvertInstantly()
+        {
+            PowerUpArmed = false;
+            PerfectStreak = 0;
+            PowerUpChanged?.Invoke(PerfectStreak, PowerUpArmed);
+            PowerUpConsumed?.Invoke();
+
+            float timeDelta = gameConfig.TimeBonusFor(1, 0, religion);
+
+            Converts++;
+            SetFollowers(Followers + 1);
+
+            instantHoldLeft = resolutionHoldSeconds;
+            Finished?.Invoke(new SkillcheckResult(
+                SkillcheckSessionState.Convertido, 1, 0, timeDelta));
         }
 
         private void Close()

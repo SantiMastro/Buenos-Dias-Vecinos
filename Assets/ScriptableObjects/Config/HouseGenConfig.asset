@@ -14,14 +14,53 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::BuenosDias.Config.HouseGenConfig
   lotWidthMinPixels: 190
   lotWidthMaxPixels: 270
-  gapMinPixels: 85
-  gapMaxPixels: 175
+  gapMinPixels: 170
+  gapMaxPixels: 300
   wallSprites:
-  - {fileID: 21300000, guid: 7d5f4fda3192d06418c8a595003126d3, type: 3}
-  - {fileID: 21300000, guid: 80c2008343379a54da6ebe09e04cc3a3, type: 3}
-  - {fileID: 21300000, guid: 1b84667ddd24efd42bca0a5ae036d8ad, type: 3}
-  - {fileID: 21300000, guid: 20b21ec9bbbde594aab77e595996dd02, type: 3}
-  - {fileID: 21300000, guid: c628690d43c474149b086f65a2a85a5f, type: 3}
+  - {fileID: 21300000, guid: 7a81a64cbce64f9d0560ed3d4c5fe7c0, type: 3}
+  - {fileID: 21300000, guid: 40b0c86302a559b5e40733a91fb0f8bb, type: 3}
+  - {fileID: 21300000, guid: 12ad441f050a128fb0f149a17edfcaab, type: 3}
+  - {fileID: 21300000, guid: 8edbba16e8be76893fb18c8f98628c8f, type: 3}
+  - {fileID: 21300000, guid: c2cb7faef3e2d79da6e3870f3da2c245, type: 3}
+  - {fileID: 21300000, guid: 440ae7e392ce37577e72ff3fe8cf3709, type: 3}
+  - {fileID: 21300000, guid: 9554cadd4ac97ba4f79e5acf677f65e1, type: 3}
+  - {fileID: 21300000, guid: bafeefe148acb00080fa2be63206c547, type: 3}
+  gableSprites:
+  - {fileID: 21300000, guid: ea3d6cdf9263ee7f625cc2f6bf3f48d0, type: 3}
+  - {fileID: 21300000, guid: e57b1837f344c6cf688a92fe5e11a07d, type: 3}
+  - {fileID: 21300000, guid: b7949a09f0823bbdb522ba1a12e8f1e9, type: 3}
+  slabSprites:
+  - {fileID: 21300000, guid: 446249e22b29b0fe34f6b18db45d4d78, type: 3}
+  - {fileID: 21300000, guid: 3a63340fc1f519a9040ef5fd3e581906, type: 3}
+  - {fileID: 21300000, guid: 03bf12ad31051a50ecfabf39515d54f3, type: 3}
+  fenceStyles:
+  - segment: {fileID: 21300000, guid: 33055b85c5b77675ad95d8e7f469308a, type: 3}
+    gate: {fileID: 21300000, guid: 376490bbb8c2b5ae059efbb160ae3ef1, type: 3}
+  - segment: {fileID: 21300000, guid: ed391cd998170f74a935438db0f60f22, type: 3}
+    gate: {fileID: 21300000, guid: f52c01d4b1b82d128d0bdb10cb37f379, type: 3}
+  - segment: {fileID: 21300000, guid: 567abc5471f8a88803edb8ca81edb95a, type: 3}
+    gate: {fileID: 21300000, guid: a563abcad6e9a23aabf0a0958ec12154, type: 3}
+  - segment: {fileID: 21300000, guid: c64c716fb0d9be9bedcb7c68ffaf9eb0, type: 3}
+    gate: {fileID: 21300000, guid: 9a3acf9ef38ef219a5cf6739e5889d09, type: 3}
+  doorStyles:
+  - closed: {fileID: 21300000, guid: 99d77b8858d36f1c247ee190c1b45715, type: 3}
+    open: {fileID: 21300000, guid: 3a30504b1d9681dbe563f452d9378431, type: 3}
+  - closed: {fileID: 21300000, guid: c37f4361f5adb4e1ab0b5b8bedfe52bb, type: 3}
+    open: {fileID: 21300000, guid: 4ccc62bbc832394c2c3e35b7438cd655, type: 3}
+  - closed: {fileID: 21300000, guid: ec05bcf214c99be30fceaeafeba25c71, type: 3}
+    open: {fileID: 21300000, guid: 7e7049de798fa13cf9288935c11d1661, type: 3}
+  windowStyles:
+  - tell: {fileID: 21300000, guid: d678a285b6e74912b84649af71b4b034, type: 3}
+    plain: {fileID: 21300000, guid: 8013bd5684fa3dd39ed5b5e2c9771704, type: 3}
+  - tell: {fileID: 21300000, guid: 9bf24ac7c3ea0cde468166428d732ad3, type: 3}
+    plain: {fileID: 21300000, guid: 5da307a3aa32110df1476501e48ce9b4, type: 3}
+  roofAddOns:
+  - {fileID: 21300000, guid: 1a085c6f5ddc3e168e5ee1e6d0ded871, type: 3}
+  - {fileID: 21300000, guid: f69ed4ad891b2be729ae609e4f1328b3, type: 3}
+  - {fileID: 21300000, guid: 1724ce9738a0a0a5cb12786103d2495c, type: 3}
+  - {fileID: 21300000, guid: 3a309f6e085aaf389fb2a52404bc0bd0, type: 3}
+  roofAddOnChance: 0.4
+  chimneySprite: {fileID: 21300000, guid: 96b584b30b4ce1794d964263d70fcd62, type: 3}
   fullGableMaxWidthPixels: 128
   windowTopMarginPixels: 4
   windowSeparationPixels: 60
@@ -32,7 +71,7 @@ MonoBehaviour:
   maximumSignals: 2
   maximumWindowVariants: 1
   wallAnchorCount: 2
-  groundAnchorCount: 1
+  groundAnchorCount: 2
   maximumTiledStrips: 1
   silhouetteCapacity: 1
   chimneyCapacity: 1

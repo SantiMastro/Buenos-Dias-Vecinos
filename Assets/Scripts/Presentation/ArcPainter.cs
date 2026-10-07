@@ -1,3 +1,5 @@
+using BuenosDias.Config;
+using BuenosDias.Simulation;
 using UnityEngine;
 
 namespace BuenosDias.Presentation
@@ -145,6 +147,54 @@ namespace BuenosDias.Presentation
                     pixels[y * size + x] = color;
                 }
             }
+        }
+
+        /// <summary>
+        /// Pinta una banda a lo largo del borde de una forma (cuadrado, triángulo,
+        /// polígonos, estrella), entre dos distancias hacia ADENTRO del borde, y solo dentro
+        /// del sector de ángulos pedido. Es el equivalente de <see cref="Paint"/>
+        /// para las pistas que no son un aro.
+        ///
+        /// Distancias negativas son hacia afuera del borde: sirven para trazos y
+        /// contornos que van por fuera de la pista.
+        /// </summary>
+        public void PaintShapeBand(
+            SkillcheckShape shape, float fromInward, float toInward,
+            float startAngle, float sweep, Color32 color)
+        {
+            if (sweep <= 0f || toInward <= fromInward) return;
+
+            for (int y = 0; y < size; y++)
+            {
+                float dy = y + 0.5f - center;
+
+                for (int x = 0; x < size; x++)
+                {
+                    float dx = x + 0.5f - center;
+
+                    float inward = SkillcheckShapeGeometry.InwardDistance(shape, dx, dy);
+                    if (inward < fromInward || inward >= toInward) continue;
+
+                    // El ángulo sale de la dirección desde el centro, igual que en el aro.
+                    float angle = Mathf.Atan2(dx, dy);
+
+                    if (Mathf.Repeat(angle - startAngle, TwoPi) >= sweep) continue;
+
+                    pixels[y * size + x] = color;
+                }
+            }
+        }
+
+        /// <summary>
+        /// Pinta la aguja de una forma que no es un aro: un rayo del centro al
+        /// borde (con un poco de sobra).
+        /// Se repinta en cada cuadro porque el largo cambia con el ángulo.
+        /// </summary>
+        public void PaintShapeNeedle(
+            SkillcheckShape shape, float angle, float thickness, Color32 color)
+        {
+            float reach = SkillcheckShapeGeometry.BoundaryRadius(shape, angle) + 4f;
+            PaintRay(angle, 0f, reach, thickness, color);
         }
 
         /// <summary>

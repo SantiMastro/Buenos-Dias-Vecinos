@@ -22,6 +22,8 @@ MonoBehaviour:
   openingMinimumRadians: 2.0944
   minimumWidthRadians: 0.785
   randomDirection: 1
+  instantConvertPowerUp: 1
+  perfectsForPowerUp: 3
   speedGainPerLink: 0.15
   pressSweepMaxSeconds: 0.05
   widthByProgress:

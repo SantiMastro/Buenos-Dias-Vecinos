@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace BuenosDias.Config
@@ -13,6 +14,14 @@ namespace BuenosDias.Config
         fileName = "Religion", menuName = "Buenos Días/Religión", order = 10)]
     public sealed class ReligionDefinition : ScriptableObject
     {
+        /// <summary>Un color del sprite base y por cuál se lo reemplaza.</summary>
+        [System.Serializable]
+        public struct ColorPair
+        {
+            public Color from;
+            public Color to;
+        }
+
         [Header("Identidad")]
         [Tooltip("Nombre en pantalla, en mayúsculas. Ej: TESTIGOS.")]
         [SerializeField] private string displayName = "TESTIGOS";
@@ -62,6 +71,33 @@ namespace BuenosDias.Config
         [Tooltip("Color de la corbata. Reemplaza al #7A2F3D del sprite base.")]
         [SerializeField] private Color tieColor = new Color32(0x7A, 0x2F, 0x3D, 0xFF);
 
+        [Header("Sombrero y rasgo")]
+        [Tooltip("Sombrero que se le pone al predicador (opcional). Se pega solo sobre " +
+                 "la cabeza de CADA cuadro de animación, así acompaña el balanceo. " +
+                 "El PNG tiene que tener Read/Write activado.")]
+        [SerializeField] private Sprite hatSprite;
+
+        [Tooltip("Cuántos píxeles del sombrero se hunden sobre la cabeza (el ala tapa " +
+                 "la frente). 2 queda bien.")]
+        [SerializeField, Range(0, 6)] private int hatSinkPixels = 2;
+
+        [Tooltip("Patillas / rulos que cuelgan junto a la cara (opcional). Se pegan " +
+                 "respecto de la coronilla de cada cuadro. Read/Write activado.")]
+        [SerializeField] private Sprite sidelockSprite;
+
+        [Tooltip("Dónde va la patilla: X respecto del centro de la cabeza (negativo = " +
+                 "hacia la nuca) e Y = filas por debajo de la coronilla hasta el borde " +
+                 "de arriba de la patilla.")]
+        [SerializeField] private Vector2Int sidelockOffset = new Vector2Int(-1, 6);
+
+        [Tooltip("Cambios de color EXTRA sobre el sprite base, para vestir distinto " +
+                 "(ej: el saco negro). Se suman a camisa y corbata.")]
+        [SerializeField] private List<ColorPair> extraSwaps = new List<ColorPair>();
+
+        [Tooltip("Fallos de skillcheck que se perdonan por puerta: el eslabón se repite " +
+                 "en vez de cerrar la puerta. 0 = ninguno.")]
+        [SerializeField, Range(0, 2)] private int secondChances;
+
         /// <summary>Nombre en pantalla.</summary>
         public string DisplayName => displayName;
 
@@ -91,6 +127,24 @@ namespace BuenosDias.Config
 
         /// <summary>Si puede alcanzar el final de ascensión.</summary>
         public bool CanAscend => canAscend;
+
+        /// <summary>Sombrero de esta religión, o <c>null</c> si no usa.</summary>
+        public Sprite HatSprite => hatSprite;
+
+        /// <summary>Píxeles que el sombrero se hunde sobre la cabeza.</summary>
+        public int HatSinkPixels => hatSinkPixels;
+
+        /// <summary>Patillas que cuelgan, o <c>null</c>.</summary>
+        public Sprite SidelockSprite => sidelockSprite;
+
+        /// <summary>Corrimiento de la patilla respecto de la coronilla.</summary>
+        public Vector2Int SidelockOffset => sidelockOffset;
+
+        /// <summary>Cambios de color extra de la vestimenta.</summary>
+        public IReadOnlyList<ColorPair> ExtraSwaps => extraSwaps;
+
+        /// <summary>Fallos que se perdonan por puerta.</summary>
+        public int SecondChances => secondChances;
 
         /// <summary>Color de camisa de esta religión.</summary>
         public Color ShirtColor => shirtColor;

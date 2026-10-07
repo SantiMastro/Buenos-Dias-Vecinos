@@ -23,10 +23,10 @@ namespace BuenosDias.Config
         [Tooltip("Puntaje mínimo para entrar. Con 1, terminar sin nadie atrás no deja récord.")]
         [SerializeField, Min(0)] private int minimumScore = 1;
 
-        [Tooltip("PRENDIDO (el default): la tabla aparece solo con las religiones que " +
+        [Tooltip("PRENDIDO: la tabla aparece solo con las religiones que " +
                  "no pueden ascender —las aspiradoras—, que no tienen otro final que " +
-                 "perseguir.\nAPAGADO: cada religión tiene su propia tabla.")]
-        [SerializeField] private bool onlyWithoutAscension = true;
+                 "perseguir.\nAPAGADO (el default): cada religión tiene su propia tabla.")]
+        [SerializeField] private bool onlyWithoutAscension = false;
 
         [Header("Iniciales")]
         [Tooltip("Cuántas letras. 3, como en los fichines.")]

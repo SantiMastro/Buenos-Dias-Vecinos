@@ -74,6 +74,23 @@ namespace BuenosDias.Config
                  "0.30, el 35% de los huecos queda pelado.")]
         [SerializeField, Range(0f, 1f)] private float chancePerGap = 0.35f;
 
+        [Header("Luz")]
+        [Tooltip("Si el decorado es una fuente de luz (la farola). De noche se le " +
+                 "prende un halo, un cono y un charco de luz, al ritmo del ciclo de día.")]
+        [SerializeField] private bool emitsLight;
+
+        [Tooltip("De dónde sale la luz, en píxeles desde la esquina inferior izquierda " +
+                 "del sprite: debajo de la lámpara.")]
+        [SerializeField] private Vector2 lightOffsetPixels = new Vector2(32f, 122f);
+
+        /// <summary>Si es una fuente de luz.</summary>
+        public bool EmitsLight => emitsLight;
+
+        /// <summary>Origen de la luz respecto del sprite, en unidades.</summary>
+        public Vector2 LightOffset => new Vector2(
+            ProjectConstants.ToUnits(lightOffsetPixels.x),
+            ProjectConstants.ToUnits(lightOffsetPixels.y));
+
         /// <summary>Sorting layer donde se dibuja.</summary>
         public string SortingLayer => sortingLayer;
 

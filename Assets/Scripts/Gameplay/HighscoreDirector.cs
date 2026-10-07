@@ -62,6 +62,9 @@ namespace BuenosDias.Gameplay
         public InitialsEntry Entry { get; private set; }
 
         /// <summary>Comitiva al caer la noche.</summary>
+        /// <summary>Religión con la que se jugó la partida que se está mostrando. Para el DNI.</summary>
+        public ReligionDefinition Religion { get; private set; }
+
         public int Score { get; private set; }
 
         /// <summary>Puesto, desde 0, que se ganó esta partida. −1 hasta guardar, o si no entró.</summary>
@@ -118,6 +121,8 @@ namespace BuenosDias.Gameplay
             if (!config.AppliesTo(runDirector.Religion)) return;
 
             Score = followers;
+            Religion = runDirector.Religion;
+            Entry = null; // las iniciales de la partida anterior no son de esta
             key = HighscoreConfig.KeyFor(runDirector.Religion);
             save = store.Load();
             Table = new HighscoreTable(config.Capacity, save.EntriesFor(key), config.MinimumScore);

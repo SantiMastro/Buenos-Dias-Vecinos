@@ -16,6 +16,9 @@ MonoBehaviour:
   weight: -0.35
   mountMode: 3
   sprite: {fileID: 21300000, guid: 1ec7c3da3477c8340834a00dc87b714e, type: 3}
+  spriteVariants:
+  - {fileID: 21300000, guid: ba09f3b090091b84421a16349b570e6e, type: 3}
+  - {fileID: 21300000, guid: b4fa40b187452a40497e77f027c0716e, type: 3}
   additiveLayer: {fileID: 0}
   additiveLayerAnimation: {fileID: 0}
   claimsDoorSideAnchor: 0

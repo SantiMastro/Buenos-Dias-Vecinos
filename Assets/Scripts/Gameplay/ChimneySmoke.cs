@@ -99,14 +99,16 @@ namespace BuenosDias.Gameplay
         /// Arma la chimenea y su pool de humo colgados de la casa. La llama la
         /// casa UNA vez, al entrar al pool: después solo se prende y se apaga.
         /// </summary>
-        public static ChimneySmoke Create(Transform house, SpriteRenderer roof, SignalVisualsConfig visuals)
+        public static ChimneySmoke Create(
+            Transform house, SpriteRenderer roof, SignalVisualsConfig visuals, Sprite bodySprite = null)
         {
             var root = new GameObject("Chimney");
             root.transform.SetParent(house, false);
 
             var smoke = root.AddComponent<ChimneySmoke>();
             smoke.visuals = SignalVisualsConfig.OrDefault(visuals);
-            smoke.chimney = NewRenderer(root.transform, "Body", ChimneySprite(), roof, roof.sortingOrder - 1);
+            smoke.chimney = NewRenderer(
+                root.transform, "Body", bodySprite != null ? bodySprite : ChimneySprite(), roof, roof.sortingOrder - 1);
             smoke.topY = smoke.chimney.sprite.rect.height / smoke.chimney.sprite.pixelsPerUnit;
 
             for (int i = 0; i < MaxPuffs; i++)

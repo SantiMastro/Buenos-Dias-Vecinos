@@ -71,7 +71,12 @@ namespace BuenosDias.Presentation
                 from = baseTie, to = religion.TieColor
             });
 
-            swapper.ApplyPalette(swaps);
+            foreach (ReligionDefinition.ColorPair extra in religion.ExtraSwaps)
+                swaps.Add(new PaletteSwapper.ColorSwap { from = extra.from, to = extra.to });
+
+            swapper.ApplyPalette(
+                swaps, religion.HatSprite, religion.HatSinkPixels,
+                religion.SidelockSprite, religion.SidelockOffset);
         }
 
         private bool ValidateSetup()

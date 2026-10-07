@@ -16,6 +16,14 @@ MonoBehaviour:
   weight: 0.25
   mountMode: 1
   sprite: {fileID: 21300000, guid: 9d1a6a5ef6e639b4ab84e68d2a144577, type: 3}
+  spriteVariants:
+  - {fileID: 21300000, guid: 8d25afeeaa72f3fbf072db321d3085a2, type: 3}
+  - {fileID: 21300000, guid: 8b5dc0a18c0cd1fe89bd9d9461e3b2ee, type: 3}
+  - {fileID: 21300000, guid: a3e71da2ee1e5afd1c3c3c39cec44709, type: 3}
+  - {fileID: 21300000, guid: abb0cf84d76636edfcaea0805fedf8ee, type: 3}
+  - {fileID: 21300000, guid: dda72c148d2504bb43ecb7c9cff4d839, type: 3}
+  - {fileID: 21300000, guid: eb04a2348186cc714ee183a90bd25847, type: 3}
+  - {fileID: 21300000, guid: b7f45f111b837c30d92ae5f6365d5ef6, type: 3}
   additiveLayer: {fileID: 0}
   additiveLayerAnimation: {fileID: 0}
   claimsDoorSideAnchor: 0

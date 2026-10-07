@@ -178,6 +178,7 @@ namespace BuenosDias.Presentation
         {
             if (director != null) director.RemainingChanged += OnRemainingChanged;
             if (skillcheck != null) skillcheck.FollowersChanged += OnFollowersChanged;
+            if (skillcheck != null) skillcheck.PowerUpChanged += OnPowerUpChanged;
 
             // Los carteles arrancan con el estado de AHORA y no vacíos: los dos
             // eventos avisan de cambios, así que sin esto el HUD quedaría en blanco
@@ -190,6 +191,7 @@ namespace BuenosDias.Presentation
         {
             if (director != null) director.RemainingChanged -= OnRemainingChanged;
             if (skillcheck != null) skillcheck.FollowersChanged -= OnFollowersChanged;
+            if (skillcheck != null) skillcheck.PowerUpChanged -= OnPowerUpChanged;
         }
 
         /// <summary>
@@ -214,7 +216,24 @@ namespace BuenosDias.Presentation
             int links = skillcheck != null ? skillcheck.ChainLinksWith(religion) : 1;
 
             // El × es el signo de multiplicación de la fuente, no una equis.
-            linksLabel.SetText("×" + links);
+            linksLabel.SetText("×" + links + PowerUpSuffix());
+        }
+
+        private void OnPowerUpChanged(int streak, bool armed) =>
+            OnFollowersChanged(skillcheck != null ? skillcheck.Followers : 0);
+
+        /// <summary>
+        /// Lo que se agrega al multiplicador: la racha hacia el power up ("1/3") o,
+        /// con el power up armado, el aviso de que la próxima puerta es gratis.
+        /// Vive en el mismo cartel para no depender de un objeto nuevo en la escena.
+        /// </summary>
+        private string PowerUpSuffix()
+        {
+            if (skillcheck == null || skillcheck.PerfectsNeeded <= 0) return string.Empty;
+            if (skillcheck.PowerUpArmed) return " +1 YA!";
+            if (skillcheck.PerfectStreak <= 0) return string.Empty;
+
+            return " " + skillcheck.PerfectStreak + "/" + skillcheck.PerfectsNeeded;
         }
 
         /// <summary>

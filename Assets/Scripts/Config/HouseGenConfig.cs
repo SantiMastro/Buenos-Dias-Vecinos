@@ -20,6 +20,41 @@ namespace BuenosDias.Config
         DosAguasCompleto
     }
 
+    /// <summary>Una puerta cerrada y su versión abierta, del mismo color.</summary>
+    [System.Serializable]
+    public sealed class DoorStyle
+    {
+        public Sprite closed;
+        public Sprite open;
+    }
+
+    /// <summary>
+    /// Un color de marco de ventana. <c>tell</c> es el marco vacío de la ventana
+    /// donde se asoma el vecino (la cortina va aparte, animada); <c>plain</c> es la
+    /// ventana común de señal. Las variantes de persiana y TV salen de las
+    /// señales, en el MISMO orden que esta lista.
+    /// </summary>
+    [System.Serializable]
+    public sealed class WindowStyle
+    {
+        public Sprite tell;
+        public Sprite plain;
+    }
+
+    /// <summary>
+    /// Una reja completa: el tramo que se repite a lo ancho y el portón de la
+    /// entrada. Van juntos para que el portón siempre combine con su reja.
+    /// </summary>
+    [System.Serializable]
+    public sealed class FenceStyle
+    {
+        [Tooltip("Tramo tileado a lo ancho del terreno.")]
+        public Sprite segment;
+
+        [Tooltip("Portón del camino de entrada, 40 px de ancho.")]
+        public Sprite gate;
+    }
+
     /// <summary>
     /// Generación procedural de la cuadra: medidas del terreno, módulos
     /// disponibles y dónde se monta cada cosa.
@@ -36,14 +71,42 @@ namespace BuenosDias.Config
         [SerializeField, Min(32f)] private float lotWidthMaxPixels = 270f;
 
         [Tooltip("Separación mínima entre casas, en píxeles.")]
-        [SerializeField, Min(0f)] private float gapMinPixels = 85f;
+        [SerializeField, Min(0f)] private float gapMinPixels = 170f;
 
         [Tooltip("Separación máxima entre casas, en píxeles.")]
-        [SerializeField, Min(0f)] private float gapMaxPixels = 175f;
+        [SerializeField, Min(0f)] private float gapMaxPixels = 300f;
 
         [Header("Módulos")]
         [Tooltip("Paredes posibles. Se sortea una por casa.")]
         [SerializeField] private List<Sprite> wallSprites = new List<Sprite>();
+
+        [Tooltip("Techos a dos aguas posibles (todos de 128×48). Se sortea uno por casa.")]
+        [SerializeField] private List<Sprite> gableSprites = new List<Sprite>();
+
+        [Tooltip("Losas posibles (todas de la misma altura, tileables). Se sortea una por casa.")]
+        [SerializeField] private List<Sprite> slabSprites = new List<Sprite>();
+
+        [Tooltip("Rejas posibles: segmento tileado y portón que van juntos. Se sortea " +
+                 "un estilo por casa.")]
+        [SerializeField] private List<FenceStyle> fenceStyles = new List<FenceStyle>();
+
+        [Tooltip("Puertas posibles (cerrada + abierta del mismo color). Se sortea una por casa.")]
+        [SerializeField] private List<DoorStyle> doorStyles = new List<DoorStyle>();
+
+        [Tooltip("Colores de marco de ventana. El orden debe coincidir con las variantes " +
+                 "de las señales de persiana y TV.")]
+        [SerializeField] private List<WindowStyle> windowStyles = new List<WindowStyle>();
+
+        [Tooltip("Adornos de techo (antena, parabólica, ventilación, claraboya). Son " +
+                 "SOLO decoración y van del lado contrario a la chimenea. ⚠ Nunca " +
+                 "pongas acá una chimenea: la chimenea es una señal.")]
+        [SerializeField] private List<Sprite> roofAddOns = new List<Sprite>();
+
+        [Tooltip("Probabilidad de que una casa con losa lleve un adorno de techo.")]
+        [SerializeField, Range(0f, 1f)] private float roofAddOnChance = 0.4f;
+
+        [Tooltip("Dibujo de la chimenea de la señal. Vacío = la chimenea chiquita por código.")]
+        [SerializeField] private Sprite chimneySprite;
 
         [Tooltip("Ancho, en píxeles, por debajo del cual una casa puede llevar el " +
                  "techo a dos aguas completo. Es el ancho nativo del sprite: por " +
@@ -133,6 +196,30 @@ namespace BuenosDias.Config
 
         /// <summary>Ancho máximo del terreno, en píxeles.</summary>
         public float LotWidthMaxPixels => lotWidthMaxPixels;
+
+        /// <summary>Techos a dos aguas disponibles.</summary>
+        public IReadOnlyList<Sprite> GableSprites => gableSprites;
+
+        /// <summary>Losas disponibles.</summary>
+        public IReadOnlyList<Sprite> SlabSprites => slabSprites;
+
+        /// <summary>Estilos de reja disponibles.</summary>
+        public IReadOnlyList<FenceStyle> FenceStyles => fenceStyles;
+
+        /// <summary>Puertas disponibles.</summary>
+        public IReadOnlyList<DoorStyle> DoorStyles => doorStyles;
+
+        /// <summary>Colores de ventana disponibles.</summary>
+        public IReadOnlyList<WindowStyle> WindowStyles => windowStyles;
+
+        /// <summary>Adornos de techo disponibles.</summary>
+        public IReadOnlyList<Sprite> RoofAddOns => roofAddOns;
+
+        /// <summary>Probabilidad de adorno de techo.</summary>
+        public float RoofAddOnChance => roofAddOnChance;
+
+        /// <summary>Chimenea de la señal, o null para la de código.</summary>
+        public Sprite ChimneySprite => chimneySprite;
 
         /// <summary>Paredes disponibles.</summary>
         public IReadOnlyList<Sprite> WallSprites => wallSprites;

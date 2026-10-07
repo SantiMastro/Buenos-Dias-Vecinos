@@ -30,7 +30,7 @@ namespace BuenosDias.Config
         [Tooltip("Opacidad de la sombra en el medio del cruce. Más alta se lee " +
                  "mejor de lejos, pero pasada 0.7 deja de parecer una sombra detrás " +
                  "de la cortina y parece un muñeco pegado al vidrio.")]
-        [SerializeField, Range(0f, 1f)] private float silhouetteMaxAlpha = 0.55f;
+        [SerializeField, Range(0f, 1f)] private float silhouetteMaxAlpha = 0.85f;
 
         [Tooltip("Altura de los pies de la sombra sobre el borde de abajo de la " +
                  "ventana, en píxeles.")]

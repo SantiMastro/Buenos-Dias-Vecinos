@@ -25,7 +25,7 @@ namespace BuenosDias.Gameplay
         /// </summary>
         public static void Apply(
             HouseGenConfig config, Transform tellWindow, Transform signalWindow,
-            float lotWidth, float doorX)
+            float lotWidth, float doorX, bool tellOnLeft = true)
         {
             if (config == null) return;
 
@@ -41,7 +41,9 @@ namespace BuenosDias.Gameplay
 
             // La de TELL va del lado por el que llega el jugador, para que el asomo
             // de la cortina entre en el mismo golpe de vista que la puerta.
-            float tellSide = config.TellWindowNearApproach ? -1f : 1f;
+            // Cada casa sortea de qué lado va: si fuera siempre la izquierda, el
+            // jugador aprendería a mirar solo ese lado.
+            float tellSide = tellOnLeft ? -1f : 1f;
             Place(tellWindow, doorX, pathHalf + gap, tellSide, windowWidth);
             Place(signalWindow, doorX, pathHalf + gap, -tellSide, windowWidth);
         }

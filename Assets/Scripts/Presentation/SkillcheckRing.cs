@@ -1,5 +1,6 @@
 using BuenosDias.Config;
 using BuenosDias.Gameplay;
+using System.Collections.Generic;
 using BuenosDias.Simulation;
 using UnityEngine;
 
@@ -86,6 +87,40 @@ namespace BuenosDias.Presentation
         [Tooltip("Tinte al errar. Rojo #A8455A de la paleta.")]
         [SerializeField] private Color missTint = new Color32(0xA8, 0x45, 0x5A, 0xFF);
 
+        [Header("Timbre de fondo")]
+        [Tooltip("Sprite del timbre que aparece DETRÁS del skillcheck (prop_timbre). \n" +
+                 "Vacío = no se dibuja timbre.")]
+        [SerializeField] private Sprite doorbellSprite;
+
+        [Tooltip("Sprite del timbre apretado (prop_timbre_activo). Se muestra al \n" +
+                 "acertar. Vacío = se usa el normal.")]
+        [SerializeField] private Sprite doorbellPressedSprite;
+
+        [Tooltip("Segundos que tarda el timbre en 'aparecer' creciendo de a escalas \n" +
+                 "enteras (×1, ×2, ×3), para no romper la grilla de píxeles.")]
+        [SerializeField, Min(0f)] private float doorbellPopSeconds = 0.12f;
+
+        [Tooltip("Cuántos píxeles baja el timbre al apretarlo.")]
+        [SerializeField, Range(0, 6)] private int doorbellPressDepthPixels = 2;
+
+        [Tooltip("Segundos que dura el hundido del timbre antes de volver.")]
+        [SerializeField, Min(0f)] private float doorbellPressSeconds = 0.09f;
+
+        private SpriteRenderer bellRenderer;
+        private float bellAge;
+        private float bellPressAge = -1f;
+        private bool bellMissed;
+
+        private Vector3 homePosition;
+        private SkillcheckShape shape = SkillcheckShape.Circulo;
+        private Sprite circleRingSprite;
+        private Sprite circleOutlineSprite;
+        private ArcPainter shapeNeedlePainter;
+        private readonly Dictionary<SkillcheckShape, ArcPainter> shapeRings =
+            new Dictionary<SkillcheckShape, ArcPainter>();
+        private readonly Dictionary<SkillcheckShape, ArcPainter> shapeOutlines =
+            new Dictionary<SkillcheckShape, ArcPainter>();
+
         private ArcPainter painter;
         private ArcPainter needlePainter;
         private SkillcheckAttempt attempt;
@@ -99,6 +134,9 @@ namespace BuenosDias.Presentation
             zoneRenderer.sprite = painter.Painted;
 
             PaintNeedle();
+            shapeNeedlePainter = new ArcPainter(textureSize, ProjectConstants.PixelsPerUnit);
+            homePosition = transform.localPosition;
+            BuildBell();
             Show(false);
         }
 
@@ -124,6 +162,9 @@ namespace BuenosDias.Presentation
         {
             painter?.Dispose();
             needlePainter?.Dispose();
+            shapeNeedlePainter?.Dispose();
+            foreach (ArcPainter p in shapeRings.Values) p.Dispose();
+            foreach (ArcPainter p in shapeOutlines.Values) p.Dispose();
         }
 
         /// <summary>
@@ -136,6 +177,7 @@ namespace BuenosDias.Presentation
             if (attempt == null) return;
 
             PointNeedle();
+            AnimateBell();
             if (attempt.Outcome == SkillcheckOutcome.EnCurso) return;
 
             flashLeft -= Time.deltaTime;
@@ -151,8 +193,11 @@ namespace BuenosDias.Presentation
             flashLeft = 0f;
             zoneRenderer.color = Color.white;
 
+            PlaceAtRandom(started);
+            ApplyShape(started.Shape);
             Repaint(started);
             PointNeedle();
+            StartBell();
             Show(true);
         }
 
@@ -173,6 +218,8 @@ namespace BuenosDias.Presentation
             flashLeft = flashSeconds;
             zoneRenderer.color =
                 outcome == SkillcheckOutcome.Fallado ? missTint : hitTint;
+
+            PressBell(outcome != SkillcheckOutcome.Fallado);
         }
 
         /// <summary>
@@ -186,13 +233,31 @@ namespace BuenosDias.Presentation
             // Inspector, pero el buffer es Color32: el casteo va explícito para que
             // no dependa de una conversión implícita que se lee como un descuido.
             painter.Clear();
-            painter.Paint(
-                ArcStart(target.ZoneStart, target.ZoneEnd, target.Direction), target.ZoneWidth,
-                trackInnerRadius, trackOuterRadius, (Color32)goodColor);
-            painter.Paint(
-                ArcStart(target.PerfectStart, target.PerfectEnd, target.Direction),
-                target.PerfectEnd - target.PerfectStart,
-                trackInnerRadius, trackOuterRadius, (Color32)perfectColor);
+
+            if (target.Shape == SkillcheckShape.Circulo)
+            {
+                painter.Paint(
+                    ArcStart(target.ZoneStart, target.ZoneEnd, target.Direction), target.ZoneWidth,
+                    trackInnerRadius, trackOuterRadius, (Color32)goodColor);
+                painter.Paint(
+                    ArcStart(target.PerfectStart, target.PerfectEnd, target.Direction),
+                    target.PerfectEnd - target.PerfectStart,
+                    trackInnerRadius, trackOuterRadius, (Color32)perfectColor);
+            }
+            else
+            {
+                // Mismo canal que el aro: de −0.5 a (ancho − 0.5) hacia adentro del borde.
+                float channel = SkillcheckShapeGeometry.ChannelWidth(target.Shape);
+                painter.PaintShapeBand(
+                    target.Shape, -0.5f, channel - 0.5f,
+                    ArcStart(target.ZoneStart, target.ZoneEnd, target.Direction), target.ZoneWidth,
+                    (Color32)goodColor);
+                painter.PaintShapeBand(
+                    target.Shape, -0.5f, channel - 0.5f,
+                    ArcStart(target.PerfectStart, target.PerfectEnd, target.Direction),
+                    target.PerfectEnd - target.PerfectStart, (Color32)perfectColor);
+            }
+
             painter.Apply();
         }
 
@@ -237,8 +302,219 @@ namespace BuenosDias.Presentation
         /// </summary>
         private void PointNeedle()
         {
-            float degrees = Mathf.Repeat(attempt.Direction * attempt.NeedleAngle, TwoPi) * Mathf.Rad2Deg;
-            needleRenderer.transform.localRotation = Quaternion.Euler(0f, 0f, -degrees);
+            float turn = Mathf.Repeat(attempt.Direction * attempt.NeedleAngle, TwoPi);
+
+            if (shape == SkillcheckShape.Circulo)
+            {
+                needleRenderer.transform.localRotation =
+                    Quaternion.Euler(0f, 0f, -turn * Mathf.Rad2Deg);
+                return;
+            }
+
+            // Fuera del círculo la aguja cambia de largo con el ángulo, así que no
+            // alcanza con rotar un sprite: se repinta apuntando al ángulo.
+            needleRenderer.transform.localRotation = Quaternion.identity;
+            shapeNeedlePainter.Clear();
+            shapeNeedlePainter.PaintShapeNeedle(shape, turn, needleThickness, (Color32)needleColor);
+            shapeNeedlePainter.Apply();
+        }
+
+        /// <summary>
+        /// Cambia los sprites de pista, contorno y aguja según la forma del eslabón.
+        /// El círculo usa los sprites originales de la escena; las otras formas se
+        /// pintan por código la primera vez que salen y quedan en caché.
+        /// </summary>
+        private void ApplyShape(SkillcheckShape newShape)
+        {
+            // Los sprites originales se guardan recién acá: el contorno se pinta en
+            // el Awake de otro componente, y recién en juego ya está listo.
+            if (circleRingSprite == null) circleRingSprite = ringRenderer.sprite;
+            if (circleOutlineSprite == null) circleOutlineSprite = outlineRenderer.sprite;
+
+            shape = newShape;
+
+            if (shape == SkillcheckShape.Circulo)
+            {
+                ringRenderer.sprite = circleRingSprite;
+                outlineRenderer.sprite = circleOutlineSprite;
+                needleRenderer.sprite = needlePainter.Painted;
+                return;
+            }
+
+            ringRenderer.sprite = ShapeRing(shape).Painted;
+            outlineRenderer.sprite = ShapeOutline(shape).Painted;
+            needleRenderer.sprite = shapeNeedlePainter.Painted;
+        }
+
+        /// <summary>Los dos trazos oscuros que encierran el canal, como los del aro.</summary>
+        private ArcPainter ShapeRing(SkillcheckShape target)
+        {
+            if (shapeRings.TryGetValue(target, out ArcPainter cached)) return cached;
+
+            var built = new ArcPainter(textureSize, ProjectConstants.PixelsPerUnit);
+            built.Clear();
+
+            float channel = SkillcheckShapeGeometry.ChannelWidth(target);
+            Color32 stroke = new Color32(0x1D, 0x16, 0x38, 0xFF);
+
+            built.PaintShapeBand(
+                target, -2f, -0.5f, 0f, Mathf.PI * 2f, stroke);
+
+            built.PaintShapeBand(
+                target, channel - 0.5f, channel + 1f, 0f, Mathf.PI * 2f, stroke);
+
+            built.Apply();
+            shapeRings[target] = built;
+            return built;
+        }
+
+        /// <summary>El contorno claro que despega la pista de cualquier fondo.</summary>
+        private ArcPainter ShapeOutline(SkillcheckShape target)
+        {
+            if (shapeOutlines.TryGetValue(target, out ArcPainter cached)) return cached;
+
+            var built = new ArcPainter(textureSize, ProjectConstants.PixelsPerUnit);
+            built.Clear();
+
+            float channel = SkillcheckShapeGeometry.ChannelWidth(target);
+            Color32 light = new Color32(0xF3, 0xEC, 0xE0, 0xFF);
+
+            built.PaintShapeBand(target, -4f, -2f, 0f, Mathf.PI * 2f, light);
+
+            built.PaintShapeBand(
+                target, channel + 1f, channel + 3f, 0f, Mathf.PI * 2f, light);
+
+            built.Apply();
+            shapeOutlines[target] = built;
+            return built;
+        }
+
+        /// <summary>
+        /// Corre el skillcheck a un lugar sorteado de la pantalla. Se redondea a
+        /// píxel entero: la cámara es pixel-perfect y una posición a medio píxel
+        /// haría temblar los bordes de la pista.
+        /// </summary>
+        private void PlaceAtRandom(SkillcheckAttempt target)
+        {
+            SkillcheckConfig config = runner != null ? runner.Config : null;
+            if (config == null || !config.RandomPosition)
+            {
+                transform.localPosition = homePosition;
+                return;
+            }
+
+            float xPixels = Mathf.Round(target.OffsetX * config.PositionRangeXPixels);
+            float yPixels = Mathf.Round(target.OffsetY * config.PositionRangeYPixels);
+
+            transform.localPosition = homePosition + new Vector3(
+                ProjectConstants.ToUnits(xPixels), ProjectConstants.ToUnits(yPixels), 0f);
+        }
+
+        // ── Timbre de fondo ────────────────────────────────────────────────────
+
+        /// <summary>
+        /// Crea el timbre por código, como hijo del skillcheck, detrás del aro.
+        /// Va al mismo orden que el contorno (que no se superpone con él: el timbre
+        /// vive en el centro) y por delante del velo.
+        /// </summary>
+        private void BuildBell()
+        {
+            if (doorbellSprite == null) return;
+
+            var go = new GameObject("Timbre");
+            go.transform.SetParent(transform, false);
+
+            bellRenderer = go.AddComponent<SpriteRenderer>();
+            bellRenderer.sprite = doorbellSprite;
+            bellRenderer.sortingLayerID = ringRenderer.sortingLayerID;
+            bellRenderer.sortingOrder = outlineRenderer.sortingOrder;
+            bellRenderer.sharedMaterial = ringRenderer.sharedMaterial;
+            bellRenderer.enabled = false;
+        }
+
+        /// <summary>Qué tan grande se dibuja el timbre, en escala ENTERA.</summary>
+        private int BellScale()
+        {
+            // En las formas angostas por dentro el timbre grande no entra.
+            switch (shape)
+            {
+                case SkillcheckShape.Triangulo:
+                case SkillcheckShape.Rombo:
+                case SkillcheckShape.Estrella:
+                    return 2;
+                default:
+                    return 3;
+            }
+        }
+
+        private void StartBell()
+        {
+            bellAge = 0f;
+            bellPressAge = -1f;
+            bellMissed = false;
+            if (bellRenderer == null) return;
+
+            bellRenderer.sprite = doorbellSprite;
+            AnimateBell();
+        }
+
+        private void PressBell(bool hit)
+        {
+            if (bellRenderer == null) return;
+
+            bellPressAge = 0f;
+            bellMissed = !hit;
+            if (hit && doorbellPressedSprite != null) bellRenderer.sprite = doorbellPressedSprite;
+        }
+
+        /// <summary>
+        /// Aparece creciendo ×1 → ×2 → ×3 (solo escalas enteras), se hunde unos
+        /// píxeles al apretarlo y, si se erró, tiembla de costado.
+        /// </summary>
+        private void AnimateBell()
+        {
+            if (bellRenderer == null) return;
+
+            bellAge += Time.deltaTime;
+
+            int target = BellScale();
+            float step = target > 1 ? doorbellPopSeconds / (target - 1) : 0f;
+            int scale = step <= 0f
+                ? target
+                : Mathf.Clamp(1 + Mathf.FloorToInt(bellAge / step), 1, target);
+            bellRenderer.transform.localScale = new Vector3(scale, scale, 1f);
+
+            float offsetX = 0f;
+            float offsetY = 0f;
+
+            if (bellPressAge >= 0f)
+            {
+                bellPressAge += Time.deltaTime;
+
+                if (bellMissed)
+                {
+                    // Temblor de un píxel, alternando cada ~0.04 s, durante el destello.
+                    if (bellPressAge < flashSeconds)
+                        offsetX = (Mathf.FloorToInt(bellPressAge / 0.04f) % 2 == 0 ? 1f : -1f);
+                }
+                else if (bellPressAge < doorbellPressSeconds)
+                {
+                    offsetY = -doorbellPressDepthPixels;
+                }
+            }
+
+            // El sprite del timbre importa con pivot abajo (prop_), así que sin esto
+            // queda parado SOBRE el centro del aro. Se corre para que su CENTRO
+            // caiga en el centro, en píxeles enteros para no romper la grilla.
+            Sprite bell = bellRenderer.sprite;
+            if (bell != null)
+            {
+                offsetX -= Mathf.Round((bell.rect.width * 0.5f - bell.pivot.x) * scale);
+                offsetY -= Mathf.Round((bell.rect.height * 0.5f - bell.pivot.y) * scale);
+            }
+
+            bellRenderer.transform.localPosition = new Vector3(
+                ProjectConstants.ToUnits(offsetX), ProjectConstants.ToUnits(offsetY), 0f);
         }
 
         private void Show(bool visible)
@@ -248,6 +524,7 @@ namespace BuenosDias.Presentation
             ringRenderer.enabled = visible;
             zoneRenderer.enabled = visible;
             needleRenderer.enabled = visible;
+            if (bellRenderer != null) bellRenderer.enabled = visible;
         }
 
         private bool ValidateSetup()

@@ -74,9 +74,10 @@ namespace BuenosDias.Presentation
         [SerializeField] private Color warningColor = new Color32(0xA8, 0x45, 0x5A, 0xFF);
 
         [Tooltip("Parpadeos por segundo cuando queda poco tiempo.")]
-        [SerializeField, Range(0.5f, 12f)] private float blinkHertz = 4f;
+        [SerializeField, Range(0.5f, 12f)] private float blinkHertz = 2.5f;
 
         private Sprite pixel;
+        private Sprite pixelFromLeft;
 
         private void Awake()
         {
@@ -85,18 +86,27 @@ namespace BuenosDias.Presentation
             // Un solo sprite blanco para las dos piezas: el color lo pone cada
             // renderer, así no hacen falta dos texturas idénticas.
             pixel = SolidSprite.Create(Color.white, ProjectConstants.PixelsPerUnit);
-            Dress(track);
-            Dress(fill);
+
+            // El relleno lleva el pivot en el borde IZQUIERDO: así su transform
+            // queda siempre en un píxel entero y lo único que cambia es el ancho.
+            // Con el pivot al centro, un ancho impar dejaba el centro en medio
+            // píxel, la Pixel Perfect Camera lo redondeaba para un lado o el otro
+            // según el cuadro y el borde de la barra parpadeaba de ida y vuelta.
+            pixelFromLeft = SolidSprite.Create(
+                Color.white, ProjectConstants.PixelsPerUnit, 4, new Vector2(0f, 0.5f));
+            Dress(track, pixel);
+            Dress(fill, pixelFromLeft);
         }
 
         private void OnDestroy()
         {
             SolidSprite.Dispose(pixel);
+            SolidSprite.Dispose(pixelFromLeft);
         }
 
-        private void Dress(SpriteRenderer renderer)
+        private void Dress(SpriteRenderer renderer, Sprite sprite)
         {
-            renderer.sprite = pixel;
+            renderer.sprite = sprite;
             renderer.drawMode = SpriteDrawMode.Tiled;
         }
 
@@ -125,11 +135,11 @@ namespace BuenosDias.Presentation
             track.size = Units(widthPixels, heightPixels);
             fill.size = Units(filled, heightPixels);
 
-            // El relleno se vacía desde la derecha, así que su centro se corre a
-            // medida que se achica: con el centro fijo se vaciaría por los dos
-            // lados a la vez y no se leería como un reloj.
+            // El relleno nace en el borde izquierdo del riel y se vacía desde la
+            // derecha: como el pivot está a la izquierda, alcanza con dejarlo
+            // fijo en ese borde y cambiarle el ancho.
             fill.transform.localPosition = new Vector3(
-                Units(filled - widthPixels, 0f).x * 0.5f, 0f, 0f);
+                Units(-widthPixels * 0.5f, 0f).x, 0f, 0f);
 
             fill.color = ColorNow();
         }

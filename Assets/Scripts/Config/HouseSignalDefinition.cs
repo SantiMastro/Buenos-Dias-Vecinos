@@ -79,6 +79,11 @@ namespace BuenosDias.Config
                  "y ChimeneaEnTecho, que se dibujan por código.")]
         [SerializeField] private Sprite sprite;
 
+        [Tooltip("Variantes del arte (opcional). Si hay, cada vez que se monta la señal " +
+                 "se sortea una; sirve para que el auto estacionado no sea siempre el " +
+                 "mismo. Es solo estético: todas las variantes pesan lo mismo.")]
+        [SerializeField] private Sprite[] spriteVariants;
+
         [Header("Capa de luz (opcional)")]
         [Tooltip("Sprite que se dibuja ENCIMA con blending aditivo: fx_farol_luz " +
                  "para la luz de entrada, fx_ventana_luz para el TV. Vacío en el resto.")]
@@ -127,6 +132,28 @@ namespace BuenosDias.Config
 
         /// <summary>Arte principal.</summary>
         public Sprite Sprite => sprite;
+
+        /// <summary>
+        /// Sprite a mostrar esta vez: una variante al azar si las hay, y si no el
+        /// principal. El azar es solo visual y no toca el balance.
+        /// </summary>
+        public Sprite PickSprite()
+        {
+            if (spriteVariants == null || spriteVariants.Length == 0) return sprite;
+            Sprite pick = spriteVariants[Random.Range(0, spriteVariants.Length)];
+            return pick != null ? pick : sprite;
+        }
+
+        /// <summary>
+        /// Variante que combina con el color de marco elegido para la casa. Si no
+        /// hay variantes, el sprite principal.
+        /// </summary>
+        public Sprite SpriteForStyle(int style)
+        {
+            if (spriteVariants == null || spriteVariants.Length == 0) return sprite;
+            Sprite pick = spriteVariants[Mathf.Clamp(style, 0, spriteVariants.Length - 1)];
+            return pick != null ? pick : sprite;
+        }
 
         /// <summary>Capa aditiva, o <c>null</c> si esta señal no tiene luz.</summary>
         public Sprite AdditiveLayer => additiveLayer;

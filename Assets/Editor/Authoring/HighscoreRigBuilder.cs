@@ -107,6 +107,12 @@ namespace BuenosDias.EditorTools.Authoring
             SerializedFieldUtility.SetReference(view, "gaugeFill", fill);
             SerializedFieldUtility.SetReference(view, "entryHintLabel", entryHint);
             SerializedFieldUtility.SetReference(view, "restartHintLabel", restartHint);
+
+            var dni = root.gameObject.AddComponent<HighscoreDniView>();
+            SerializedFieldUtility.SetReference(dni, "director", director);
+            SerializedFieldUtility.SetReference(dni, "panel", panel);
+            SerializedFieldUtility.SetReference(dni, "labelTemplate", header);
+            SerializedFieldUtility.SetReference(dni, "portraitSprite", SpriteLibrary.Load("chr_predicador_idle"));
             SerializedFieldUtility.SetReferenceList(view, "rowLabels", rows);
         }
 

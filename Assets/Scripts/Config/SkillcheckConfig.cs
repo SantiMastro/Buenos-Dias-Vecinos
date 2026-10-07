@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace BuenosDias.Config
@@ -89,6 +90,40 @@ namespace BuenosDias.Config
                  "antihorario. Apagado, gira siempre en horario.")]
         [SerializeField] private bool randomDirection = true;
 
+        [Header("Power up: conversión inmediata")]
+        [Tooltip("Si juntar perfects seguidos arma un power up: la PRÓXIMA puerta que \n" +
+                 "abra un vecino convierte al instante, sin skillcheck.")]
+        [SerializeField] private bool instantConvertPowerUp = true;
+
+        [Tooltip("Cuántos aciertos PERFECTOS seguidos (eslabones, de corrido entre \n" +
+                 "puertas) arman el power up. Un bueno o un fallo corta la racha.")]
+        [SerializeField, Range(2, 10)] private int perfectsForPowerUp = 3;
+
+        [Header("Forma y posición")]
+        [Tooltip("Si cada eslabón sortea la FORMA de la pista (círculo, cuadrado, \n" +
+                 "triángulo, rombo, pentágono, hexágono, octógono o estrella). Apagado, siempre es el círculo de siempre.")]
+        [SerializeField] private bool randomShape = true;
+
+        [Tooltip("Formas que se pueden sortear. Sacá una de la lista para que no salga.")]
+        [SerializeField]
+        private List<SkillcheckShape> shapes = new List<SkillcheckShape>
+        {
+            SkillcheckShape.Circulo, SkillcheckShape.Cuadrado, SkillcheckShape.Triangulo,
+            SkillcheckShape.Rombo, SkillcheckShape.Pentagono, SkillcheckShape.Hexagono,
+            SkillcheckShape.Octagono, SkillcheckShape.Estrella
+        };
+
+        [Tooltip("Si el skillcheck aparece en un lugar distinto cada vez, en vez de \n" +
+                 "siempre en el medio de la pantalla.")]
+        [SerializeField] private bool randomPosition = true;
+
+        [Tooltip("Cuánto se puede correr hacia los costados, en píxeles, desde el centro. \n" +
+                 "El aro mide unos 120 px: con la pantalla de 384, hasta ~120 entra entero.")]
+        [SerializeField, Range(0f, 130f)] private float positionRangeXPixels = 110f;
+
+        [Tooltip("Cuánto se puede correr hacia arriba y abajo, en píxeles.")]
+        [SerializeField, Range(0f, 40f)] private float positionRangeYPixels = 14f;
+
         [Tooltip("Cuánto más rápido va cada eslabón CONSECUTIVO de una misma " +
                  "puerta. Con 0.15: el segundo va a ×1.15, el tercero a ×1.30.")]
         [SerializeField, Range(0f, 1f)] private float speedGainPerLink = 0.15f;
@@ -141,6 +176,34 @@ namespace BuenosDias.Config
 
         /// <summary>Si cada eslabón sortea el sentido de la aguja.</summary>
         public bool RandomDirection => randomDirection;
+
+        /// <summary>Si los perfects seguidos arman el power up de conversión inmediata.</summary>
+        public bool InstantConvertPowerUp => instantConvertPowerUp;
+
+        /// <summary>Perfects seguidos que arman el power up.</summary>
+        public int PerfectsForPowerUp => perfectsForPowerUp;
+
+        /// <summary>Si cada eslabón sortea la forma de la pista.</summary>
+        public bool RandomShape => randomShape;
+
+        /// <summary>Si el skillcheck aparece en lugares distintos.</summary>
+        public bool RandomPosition => randomPosition;
+
+        /// <summary>Corrimiento horizontal máximo, en píxeles.</summary>
+        public float PositionRangeXPixels => positionRangeXPixels;
+
+        /// <summary>Corrimiento vertical máximo, en píxeles.</summary>
+        public float PositionRangeYPixels => positionRangeYPixels;
+
+        /// <summary>Sortea la forma de un eslabón. Sin sorteo o sin lista, círculo.</summary>
+        public SkillcheckShape RollShape(System.Random random)
+        {
+            if (!randomShape || shapes == null || shapes.Count == 0)
+                return SkillcheckShape.Circulo;
+
+            int index = Mathf.Min(shapes.Count - 1, (int)(random.NextDouble() * shapes.Count));
+            return shapes[index];
+        }
 
         /// <summary>Tope del tramo de aguja contra el que se juzga un apretón.</summary>
         public float PressSweepMaxSeconds => pressSweepMaxSeconds;

@@ -13,16 +13,33 @@ namespace BuenosDias.Config
         [SerializeField, Min(1f)] private float pixelsPerSecond = 152f;
 
         [Header("Aceleración del día")]
-        [Tooltip("Multiplicador de velocidad según cuánto AVANZÓ el día, de 0 a 1. " +
-                 "⚠ Tiene que empezar en 1: el día arranca a la velocidad de " +
-                 "siempre y se acelera desde ahí. Una curva que empiece en otra " +
-                 "cosa no cambia el final del día, cambia el juego entero.\n\n" +
+        [Tooltip("Multiplicador de velocidad según cuánto AVANZÓ el día, de 0 a 1.\n\n" +
+                 "Por defecto ARRANCA LENTO (0.5) y sube de a poco hasta 1.4: el " +
+                 "jugador tiene tiempo de leer las primeras casas y el ritmo se " +
+                 "va apretando de forma progresiva. Para volver al ritmo viejo " +
+                 "(1 → 1.35) poné la curva en esos valores.\n\n" +
                  "Lo que entra acá es el progreso MONÓTONO del atardecer y no el " +
                  "tiempo que queda: ganar segundos en una puerta no tiene que " +
                  "hacer caminar más lento, porque entonces convertir aflojaría la " +
                  "dificultad por una segunda vía que nadie decidió.")]
         [SerializeField]
-        private AnimationCurve speedByDayProgress = AnimationCurve.EaseInOut(0f, 1f, 1f, 1.35f);
+        private AnimationCurve speedByDayProgress = DefaultPaceCurve();
+
+        /// <summary>
+        /// Curva de ritmo por defecto: arranque lento y subida suave (tangentes
+        /// suavizadas, sin escalones).
+        /// </summary>
+        private static AnimationCurve DefaultPaceCurve()
+        {
+            var curve = new AnimationCurve(
+                new Keyframe(0f, 0.5f),
+                new Keyframe(0.35f, 0.75f),
+                new Keyframe(0.7f, 1.1f),
+                new Keyframe(1f, 1.4f));
+
+            for (int i = 0; i < curve.length; i++) curve.SmoothTangents(i, 0f);
+            return curve;
+        }
 
         [Header("Frenado")]
         [Tooltip("Segundos que tarda en frenar al tocar el timbre. La spec pide " +

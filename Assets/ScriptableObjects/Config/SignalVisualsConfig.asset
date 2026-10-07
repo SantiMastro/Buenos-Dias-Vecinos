@@ -15,9 +15,9 @@ MonoBehaviour:
   crossSeconds: 1.8
   minPauseSeconds: 1.2
   maxPauseSeconds: 3.5
-  silhouetteMaxAlpha: 0.55
-  sillPixels: 6
-  frameMarginPixels: 4
+  silhouetteMaxAlpha: 0.85
+  sillPixels: 10
+  frameMarginPixels: 8
   puffEverySeconds: 0.75
   puffLifeSeconds: 2.6
   puffRisePixels: 24

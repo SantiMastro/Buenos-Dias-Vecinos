@@ -55,6 +55,15 @@ namespace BuenosDias.Simulation
         /// </summary>
         public int Direction { get; }
 
+        /// <summary>Forma de la pista de este eslabón.</summary>
+        public SkillcheckShape Shape { get; }
+
+        /// <summary>Corrimiento horizontal sorteado, de −1 a 1. Lo escala la vista.</summary>
+        public float OffsetX { get; }
+
+        /// <summary>Corrimiento vertical sorteado, de −1 a 1. Lo escala la vista.</summary>
+        public float OffsetY { get; }
+
         /// <summary>Dónde empieza la zona buena.</summary>
         public float ZoneStart { get; }
 
@@ -94,6 +103,17 @@ namespace BuenosDias.Simulation
             // El sentido se sortea DESPUÉS de la zona y del mismo random: así una
             // semilla dada sigue poniendo la zona donde la ponía antes.
             Direction = config.RandomDirection && random.NextDouble() < 0.5 ? -1 : 1;
+
+            // Forma y posición se sortean DESPUÉS del sentido y del mismo random,
+            // por la misma razón: una semilla dada sigue poniendo la zona y el
+            // sentido donde los ponía antes de que existieran.
+            Shape = config.RollShape(random);
+
+            if (config.RandomPosition)
+            {
+                OffsetX = (float)random.NextDouble() * 2f - 1f;
+                OffsetY = (float)random.NextDouble() * 2f - 1f;
+            }
         }
 
         /// <summary>

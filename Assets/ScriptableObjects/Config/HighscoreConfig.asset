@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: BuenosDias.Runtime::BuenosDias.Config.HighscoreConfig
   capacity: 10
   minimumScore: 1
-  onlyWithoutAscension: 1
+  onlyWithoutAscension: 0
   initialsLength: 3
   alphabet: ABCDEFGHIJKLMNOPQRSTUVWXYZ
   holdSeconds: 0.6

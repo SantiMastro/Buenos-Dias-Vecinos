@@ -24,3 +24,5 @@ MonoBehaviour:
   spacingMaxPixels: 240
   minimumGapPixels: 0
   chancePerGap: 0.35
+  emitsLight: 1
+  lightOffsetPixels: {x: 32, y: 122}

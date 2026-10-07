@@ -99,11 +99,11 @@ namespace BuenosDias.Config
         [SerializeField] private List<NeighborDefinition> neighbors = new List<NeighborDefinition>();
 
         [Header("Religión por defecto")]
-        [Tooltip("PRENDIDO (el default): se juega SOLO con la religión por defecto " +
+        [Tooltip("PRENDIDO: se juega SOLO con la religión por defecto " +
                  "—el vendedor de aspiradoras— y la pantalla de selección se saltea.\n" +
-                 "APAGADO: vuelve la selección y se puede elegir cualquiera del " +
+                 "APAGADO (el default): vuelve la selección y se puede elegir cualquiera del " +
                  "catálogo, arrancando por la religión por defecto.")]
-        [SerializeField] private bool lockToDefaultReligion = true;
+        [SerializeField] private bool lockToDefaultReligion = false;
 
         [Tooltip("Con la que se juega si está bloqueado, y la que aparece primero en " +
                  "la selección si no. Para bloquear no hace falta que esté en el " +

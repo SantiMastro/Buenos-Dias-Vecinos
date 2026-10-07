@@ -13,7 +13,12 @@ MonoBehaviour:
   m_Name: ArbolDeVereda
   m_EditorClassIdentifier: Assembly-CSharp::BuenosDias.Config.SceneryPropSet
   sprites:
-  - {fileID: 21300000, guid: 0683f429668d19149bf8a591bc75144a, type: 3}
+  - {fileID: 21300000, guid: 52d2cb401ccdb7b04ad6d91820a37bb7, type: 3}
+  - {fileID: 21300000, guid: 255412b28076e30054105570bf5e3e82, type: 3}
+  - {fileID: 21300000, guid: b8999a99f104d0e05d97a7a61b4b91f7, type: 3}
+  - {fileID: 21300000, guid: d7022b38af8ececfdf44b37ca3e3bdef, type: 3}
+  - {fileID: 21300000, guid: 16d7ca8e5e388d1c01940a7a11c31ffd, type: 3}
+  - {fileID: 21300000, guid: 748d1f5581d5a999a0bab544d186602d, type: 3}
   bottomCropPixels: 0
   groundOffsetPixels: 0
   sortingLayer: HouseDetails

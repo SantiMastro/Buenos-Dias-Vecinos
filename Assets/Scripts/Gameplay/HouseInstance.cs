@@ -1,4 +1,6 @@
+using System.Collections.Generic;
 using BuenosDias.Config;
+using BuenosDias.Presentation;
 using BuenosDias.Simulation;
 using UnityEngine;
 
@@ -64,9 +66,15 @@ namespace BuenosDias.Gameplay
         private HouseGenConfig config;
         private int tellTriggerHash;
         private Sprite closedDoorSprite;
+        private Sprite openDoorCurrent;
+
+        private SpriteRenderer gate;
+        private SpriteRenderer roofAddOn;
+        private float slabTopY;
 
         private bool generatedBuilt;
         private SpriteRenderer signalGlow;
+        private WindowSilhouette windowSilhouette;
         private bool signalWindowFree = true;
 
         /// <summary>
@@ -86,6 +94,8 @@ namespace BuenosDias.Gameplay
         public Vector3 DoorPosition => door != null ? door.position : transform.position;
 
         /// <summary>Inyecta la config. La llama el spawner al crear el pool.</summary>
+        private SpriteRenderer tellWindowRenderer;
+
         public void Initialize(HouseGenConfig houseGenConfig)
         {
             config = houseGenConfig;
@@ -94,11 +104,18 @@ namespace BuenosDias.Gameplay
             // La hoja cerrada se guarda de lo que traiga el prefab en vez de pedir
             // un segundo campo: son el mismo dibujo, y dos campos para eso invitan
             // a que un día no coincidan.
+            // El spawner llama a esto cada vez que saca la casa del pool, pero lo
+            // que se busca por nombre y las piezas dibujadas por código se arman
+            // una sola vez por casa.
+            if (generatedBuilt) return;
+
             if (doorLeaf != null) closedDoorSprite = doorLeaf.sprite;
 
-            // El spawner llama a esto cada vez que saca la casa del pool, pero las
-            // piezas dibujadas por código se arman una sola vez por casa.
-            if (generatedBuilt) return;
+            // El portón cuelga de la puerta y no tiene campo propio: se busca por
+            // nombre una vez, así el prefab no cambia.
+            Transform gateTransform = door != null ? door.Find("Gate") : null;
+            gate = gateTransform != null ? gateTransform.GetComponent<SpriteRenderer>() : null;
+            tellWindowRenderer = tellWindow != null ? tellWindow.GetComponent<SpriteRenderer>() : null;
 
             BuildGeneratedPieces();
             generatedBuilt = true;
@@ -122,6 +139,7 @@ namespace BuenosDias.Gameplay
                 : SignalVisualsConfig.OrDefault(null);
 
             WindowSilhouette silhouette = BuildSilhouette(visuals);
+            windowSilhouette = silhouette;
 
             ChimneySmoke chimney = null;
             float roofTop = 0f;
@@ -129,7 +147,9 @@ namespace BuenosDias.Gameplay
             {
                 roofTop = roofSlab.transform.localPosition.y
                           + roofSlab.sprite.rect.height / roofSlab.sprite.pixelsPerUnit;
-                chimney = ChimneySmoke.Create(transform, roofSlab, visuals);
+                chimney = ChimneySmoke.Create(transform, roofSlab, visuals, config?.ChimneySprite);
+                slabTopY = roofTop;
+                BuildRoofAddOn();
             }
 
             float gableHalf = roofGable != null && roofGable.sprite != null
@@ -150,6 +170,23 @@ namespace BuenosDias.Gameplay
         }
 
         /// <summary>
+        /// Un solo renderer para el adorno de techo, con la capa, el material y el
+        /// orden de la losa. Va un paso DETRÁS de ella: así la base queda tapada y
+        /// parece plantado en el techo.
+        /// </summary>
+        private void BuildRoofAddOn()
+        {
+            var go = new GameObject("RoofAddOn");
+            go.transform.SetParent(transform, false);
+
+            roofAddOn = go.AddComponent<SpriteRenderer>();
+            roofAddOn.sortingLayerID = roofSlab.sortingLayerID;
+            roofAddOn.sortingOrder = roofSlab.sortingOrder - 1;
+            roofAddOn.sharedMaterial = roofSlab.sharedMaterial;
+            roofAddOn.enabled = false;
+        }
+
+        /// <summary>
         /// La silueta va ENCIMA de la cortina y translúcida: así se lee como una
         /// sombra del otro lado. Si el halo quedaba en el mismo orden, se lo sube
         /// uno para que la luz siga por encima de todo.
@@ -158,7 +195,7 @@ namespace BuenosDias.Gameplay
         {
             if (tellWindow == null) return null;
 
-            var windowRenderer = tellWindow.GetComponent<SpriteRenderer>();
+            SpriteRenderer windowRenderer = tellWindowRenderer;
             SpriteRenderer curtain = curtainAnimator != null
                 ? curtainAnimator.GetComponent<SpriteRenderer>()
                 : null;
@@ -186,12 +223,15 @@ namespace BuenosDias.Gameplay
             ApplyWall(layout, width);
             ApplyRoof(layout, width, doorX);
             ApplyFence(width);
+            ApplyRoofAddOn(layout, doorX);
 
             if (door != null) door.localPosition = WithX(door.localPosition, doorX);
             HouseWindowLayout.Apply(
-                config, tellWindow, signals.SignalWindowTransform, width, doorX);
+                config, tellWindow, signals.SignalWindowTransform, width, doorX,
+                Random.value < 0.5f);
 
-            signals.Mount(layout, anchors, config);
+            ApplyDoorAndWindowStyle(out int windowStyle);
+            signals.Mount(layout, anchors, config, windowStyle);
             signalWindowFree = !HasWindowVariant(layout);
 
             // ⚠️ La casa vive en un pool. Sin este cierre, una puerta que quedó
@@ -207,9 +247,9 @@ namespace BuenosDias.Gameplay
         /// </summary>
         public void SetDoorOpen(bool open)
         {
-            if (doorLeaf == null || openDoorSprite == null || closedDoorSprite == null) return;
+            if (doorLeaf == null || openDoorCurrent == null || closedDoorSprite == null) return;
 
-            doorLeaf.sprite = open ? openDoorSprite : closedDoorSprite;
+            doorLeaf.sprite = open ? openDoorCurrent : closedDoorSprite;
         }
 
         private void ApplyWall(HouseLayout layout, float width)
@@ -226,6 +266,11 @@ namespace BuenosDias.Gameplay
         {
             bool hasGable = layout.Roof != RoofStyle.LosaCompleta;
             bool gableOnly = layout.Roof == RoofStyle.DosAguasCompleto;
+
+            // Todas las variantes miden lo mismo, así que cambiar el sprite no
+            // mueve nada de lo demás. El azar es solo visual.
+            if (roofGable != null) roofGable.sprite = PickVariant(config?.GableSprites, roofGable.sprite);
+            if (roofSlab != null) roofSlab.sprite = PickVariant(config?.SlabSprites, roofSlab.sprite);
 
             if (roofGable != null)
             {
@@ -268,8 +313,86 @@ namespace BuenosDias.Gameplay
                    + roofSlab.sprite.rect.height / roofSlab.sprite.pixelsPerUnit;
         }
 
+        /// <summary>
+        /// Sortea el color de puerta y el de marco de ventana de la casa. Son solo
+        /// estéticos; la puerta guarda su par abierta para que al atender se abra
+        /// la del MISMO color.
+        /// </summary>
+        private void ApplyDoorAndWindowStyle(out int windowStyle)
+        {
+            windowStyle = 0;
+            openDoorCurrent = openDoorSprite;
+            if (config == null) return;
+
+            if (config.DoorStyles.Count > 0 && doorLeaf != null)
+            {
+                DoorStyle door = config.DoorStyles[Random.Range(0, config.DoorStyles.Count)];
+                if (door != null && door.closed != null && door.open != null)
+                {
+                    closedDoorSprite = door.closed;
+                    openDoorCurrent = door.open;
+                    doorLeaf.sprite = door.closed;
+                }
+            }
+
+            if (config.WindowStyles.Count > 0)
+            {
+                windowStyle = Random.Range(0, config.WindowStyles.Count);
+                Sprite tell = config.WindowStyles[windowStyle].tell;
+                if (tell != null && tellWindowRenderer != null) tellWindowRenderer.sprite = tell;
+            }
+        }
+
+        private static Sprite PickVariant(IReadOnlyList<Sprite> options, Sprite fallback)
+        {
+            if (options == null || options.Count == 0) return fallback;
+            Sprite pick = options[Random.Range(0, options.Count)];
+            return pick != null ? pick : fallback;
+        }
+
+        /// <summary>
+        /// Antena, parabólica, ventilación o claraboya sobre la losa, del lado
+        /// CONTRARIO a la chimenea. Es decoración pura: ninguna dice nada de si hay
+        /// alguien, y la chimenea —que sí es señal— nunca sale de esta lista.
+        /// </summary>
+        private void ApplyRoofAddOn(HouseLayout layout, float doorX)
+        {
+            if (roofAddOn == null) return;
+            roofAddOn.enabled = false;
+
+            IReadOnlyList<Sprite> options = config?.RoofAddOns;
+            if (options == null || options.Count == 0) return;
+            if (layout.Roof == RoofStyle.DosAguasCompleto) return;
+            if (Random.value >= config.RoofAddOnChance) return;
+
+            float halfLot = layout.LotWidthUnits * 0.5f;
+            float side = layout.WiderSideIsRight ? -1f : 1f;
+
+            float gableHalf = roofGable != null && roofGable.sprite != null
+                ? roofGable.sprite.rect.width * 0.5f / roofGable.sprite.pixelsPerUnit
+                : 0f;
+            float clearance = layout.Roof == RoofStyle.FrenteDosAguas ? gableHalf : config.DoorPathWidth;
+
+            float inner = doorX + side * clearance;
+            float edge = side * halfLot;
+            if (Mathf.Abs(edge - inner) < 1.2f) return;
+
+            roofAddOn.sprite = options[Random.Range(0, options.Count)];
+            float x = ParallaxLayer.Snap((inner + edge) * 0.5f, ProjectConstants.PixelsPerUnit);
+            float y = slabTopY - ProjectConstants.ToUnits(2f);
+            roofAddOn.transform.localPosition = new Vector3(x, y, 0f);
+            roofAddOn.enabled = true;
+        }
+
         private void ApplyFence(float width)
         {
+            if (config != null && config.FenceStyles.Count > 0)
+            {
+                FenceStyle style = config.FenceStyles[Random.Range(0, config.FenceStyles.Count)];
+                if (style != null && style.segment != null && fence != null) fence.sprite = style.segment;
+                if (style != null && style.gate != null && gate != null) gate.sprite = style.gate;
+            }
+
             if (fence == null || fence.sprite == null) return;
             float height = fence.sprite.rect.height / fence.sprite.pixelsPerUnit;
             fence.size = new Vector2(width, height);
@@ -298,6 +421,7 @@ namespace BuenosDias.Gameplay
         public void SetWindowLight(float amount)
         {
             SetGlow(windowGlow, amount);
+            if (windowSilhouette != null) windowSilhouette.SetNight(amount);
         }
 
         /// <summary>

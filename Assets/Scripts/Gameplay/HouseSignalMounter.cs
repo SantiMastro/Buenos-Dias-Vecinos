@@ -72,10 +72,20 @@ namespace BuenosDias.Gameplay
         }
 
         /// <summary>Coloca las señales de una receta ya resuelta.</summary>
-        public void Mount(HouseLayout layout, HouseAnchors anchors, HouseGenConfig config)
+        public void Mount(
+            HouseLayout layout, HouseAnchors anchors, HouseGenConfig config, int windowStyle = 0)
         {
             Clear();
+
+            // la ventana común también cambia de color con el estilo de la casa
+            if (signalWindow != null && config.WindowStyles.Count > 0)
+            {
+                int s = Mathf.Clamp(windowStyle, 0, config.WindowStyles.Count - 1);
+                if (config.WindowStyles[s].plain != null) signalWindow.sprite = config.WindowStyles[s].plain;
+            }
             int propIndex = 0;
+            float occupiedFrom = 0f, occupiedTo = 0f;
+            bool groundTaken = false;
 
             foreach (PlacedSignal placed in layout.Signals)
             {
@@ -84,7 +94,7 @@ namespace BuenosDias.Gameplay
                 switch (signal.MountMode)
                 {
                     case SignalMountMode.VarianteDeVentana:
-                        if (signalWindow != null) signalWindow.sprite = signal.Sprite;
+                        if (signalWindow != null) signalWindow.sprite = signal.SpriteForStyle(windowStyle);
                         break;
 
                     case SignalMountMode.FranjaTileada:
@@ -103,6 +113,22 @@ namespace BuenosDias.Gameplay
                         if (propIndex < propSlots.Length)
                         {
                             Vector3 position = anchors.PositionFor(placed, layout, config);
+
+                            // Dos props de suelo (auto + buzón) en un terreno angosto
+                            // pueden caer en el mismo lado y pisarse: el segundo se
+                            // descarta en vez de dibujarse encima del primero.
+                            if (signal.MountMode == SignalMountMode.PropEnAnclaDeSuelo
+                                && signal.Sprite != null)
+                            {
+                                float half = signal.Sprite.rect.width * 0.5f / signal.Sprite.pixelsPerUnit;
+                                float from = position.x - half, to = position.x + half;
+                                if (groundTaken && from < occupiedTo && to > occupiedFrom) break;
+
+                                occupiedFrom = groundTaken ? Mathf.Min(occupiedFrom, from) : from;
+                                occupiedTo = groundTaken ? Mathf.Max(occupiedTo, to) : to;
+                                groundTaken = true;
+                            }
+
                             propSlots[propIndex++].Show(signal, position);
                         }
                         break;

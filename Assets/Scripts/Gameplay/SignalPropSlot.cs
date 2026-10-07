@@ -45,7 +45,7 @@ namespace BuenosDias.Gameplay
             if (root != null) root.localPosition = localPosition;
 
             prop.enabled = true;
-            prop.sprite = signal.Sprite;
+            prop.sprite = signal.PickSprite();
 
             if (glow == null) return;
 

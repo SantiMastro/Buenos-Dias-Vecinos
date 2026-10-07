@@ -21,27 +21,41 @@ namespace BuenosDias.Gameplay
     [DisallowMultipleComponent]
     public sealed class WindowSilhouette : MonoBehaviour
     {
-        /// <summary>Cabeza, cuello y hombros. 11 × 14 px.</summary>
+        /// <summary>
+        /// Busto de una persona, 16 × 14 px: cabeza redonda, cuello y hombros. De un
+        /// solo tono, SIN borde, pero más CLARO que el vidrio: una sombra oscura
+        /// sobre un vidrio oscuro no se ve, y con eso nadie la leía como persona.
+        /// </summary>
         private static readonly string[] Rows =
         {
-            "....###....",
-            "...#####...",
-            "...#####...",
-            "...#####...",
-            "....###....",
-            ".....#.....",
-            "..#######..",
-            ".#########.",
-            "###########",
-            "###########",
-            "###########",
-            "###########",
-            "###########",
-            "###########"
+            "....########....",
+            "...##########...",
+            "...##########...",
+            "...##########...",
+            "...##########...",
+            "...##########...",
+            "....########....",
+            ".....######.....",
+            "......####......",
+            "...##########...",
+            ".##############.",
+            ".##############.",
+            ".##############.",
+            "################"
         };
 
-        /// <summary>Violeta oscuro #1D1638 de la paleta.</summary>
-        private static readonly Color32 Ink = new Color32(0x1D, 0x16, 0x38, 0xFF);
+        /// <summary>Sprite blanco: el color sale del tinte, que cambia con la hora.</summary>
+        private static readonly Color32 Ink = new Color32(0xFF, 0xFF, 0xFF, 0xFF);
+
+        /// <summary>
+        /// De día, violeta apagado: se lee contra el vidrio oscuro y la cortina.
+        /// De noche la ventana prendida es una mancha cálida y brillante, y la
+        /// persona se ve mejor como sombra OSCURA contra esa luz.
+        /// </summary>
+        private static readonly Color DayTint = new Color32(0x8A, 0x84, 0xB8, 0xFF);
+        private static readonly Color NightTint = new Color32(0x1D, 0x16, 0x38, 0xFF);
+
+        private float nightAmount;
 
         private static Sprite shared;
 
@@ -91,6 +105,16 @@ namespace BuenosDias.Gameplay
             waitLeft = Random.Range(0.2f, Mathf.Max(0.2f, visuals.MaxPauseSeconds));
         }
 
+        /// <summary>
+        /// Cuánto de noche está la ventana, de 0 a 1 (es lo prendida que está su
+        /// luz). De noche la sombra es oscura, más opaca y cruza más seguido: es la
+        /// pista que más tiene que verse cuando la calle está a media luz.
+        /// </summary>
+        public void SetNight(float amount)
+        {
+            nightAmount = Mathf.Clamp01(amount);
+        }
+
         /// <summary>Apaga la señal.</summary>
         public void Hide()
         {
@@ -117,7 +141,8 @@ namespace BuenosDias.Gameplay
             {
                 body.enabled = false;
                 crossElapsed = -1f;
-                waitLeft = Random.Range(visuals.MinPauseSeconds, visuals.MaxPauseSeconds);
+                waitLeft = Random.Range(visuals.MinPauseSeconds, visuals.MaxPauseSeconds)
+                           * Mathf.Lerp(1f, 0.55f, nightAmount);
                 return;
             }
 
@@ -135,14 +160,18 @@ namespace BuenosDias.Gameplay
             float far = Mathf.Max(margin, windowWidth - margin - spriteWidth);
             float x = leftToRight ? Mathf.Lerp(near, far, t) : Mathf.Lerp(far, near, t);
 
+            float bob = 0f;
+
             transform.localPosition = new Vector3(
                 ParallaxLayer.Snap(x, ProjectConstants.PixelsPerUnit),
-                ProjectConstants.ToUnits(visuals.SillPixels), 0f);
+                ProjectConstants.ToUnits(visuals.SillPixels + bob), 0f);
 
             // Aparece y se va en las puntas del cruce, de a escalones: un fundido
             // continuo inventa tonos que no están en la paleta.
             float fade = Mathf.Min(t, 1f - t) / visuals.FadeFraction;
-            body.color = new Color(1f, 1f, 1f, visuals.SilhouetteMaxAlpha * visuals.Step(fade));
+            Color tint = Color.Lerp(DayTint, NightTint, nightAmount);
+            float maxAlpha = Mathf.Lerp(visuals.SilhouetteMaxAlpha, 1f, nightAmount);
+            body.color = new Color(tint.r, tint.g, tint.b, maxAlpha * visuals.Step(fade));
         }
 
         private static Sprite SharedSprite()

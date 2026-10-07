@@ -10,7 +10,10 @@ namespace BuenosDias.Simulation
         Jugando,
 
         /// <summary>Se hizo de noche y se muestra el final.</summary>
-        Final
+        Final,
+
+        /// <summary>Pantalla de título. Antes de elegir religión; solo la primera vez.</summary>
+        Menu
     }
 
     /// <summary>
@@ -28,7 +31,22 @@ namespace BuenosDias.Simulation
     public sealed class RunStateMachine
     {
         /// <summary>Etapa actual. Arranca eligiendo religión.</summary>
-        public RunPhase Phase { get; private set; } = RunPhase.Seleccion;
+        public RunPhase Phase { get; private set; }
+
+        /// <summary>Arranca en la etapa pedida (por defecto, la selección).</summary>
+        public RunStateMachine(RunPhase initial = RunPhase.Seleccion)
+        {
+            Phase = initial;
+        }
+
+        /// <summary>Sale del menú a la selección de religión.</summary>
+        public bool StartSelection() => MoveTo(RunPhase.Menu, RunPhase.Seleccion);
+
+        /// <summary>Se saltea el menú sin avisar a nadie. Solo antes de suscribirse.</summary>
+        public void SkipMenu()
+        {
+            if (Phase == RunPhase.Menu) Phase = RunPhase.Seleccion;
+        }
 
         /// <summary>Avisa el cambio, ya con la etapa nueva puesta.</summary>
         public event System.Action<RunPhase> Changed;
