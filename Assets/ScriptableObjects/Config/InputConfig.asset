@@ -19,5 +19,6 @@ MonoBehaviour:
     device: 0
     key: 1
   felpudoSostenido: 0
+  teclasFelpudo: 1
   coincidenceSeconds: 0.05
   ringBufferSeconds: 0.25

@@ -9,7 +9,8 @@ namespace BuenosDias.Config
     /// deciden si un apretón cuenta.
     ///
     /// Se juega con UN solo esquema, el del control alternativo: el timbre (click
-    /// izquierdo) y el felpudo (Espacio, que manda la Raspberry Pi). Hubo otros
+    /// izquierdo) y el felpudo (Espacio, o S y B, según lo que tenga cargado la
+    /// Raspberry Pi: ver <see cref="TeclasFelpudo"/>). Hubo otros
     /// —un botón único, el control por objeto— y se sacaron: nunca iban a
     /// usarse, y cada uno era una bandera más para acordarse de poner bien.
     ///
@@ -32,7 +33,7 @@ namespace BuenosDias.Config
         [SerializeField]
         private PhysicalBinding botonB = new PhysicalBinding(BindingDevice.Teclado, Key.Space);
 
-        [Tooltip("Cómo se lee el felpudo.\n\n" +
+        [Tooltip("Cómo se lee el felpudo con 'Espacio' (con 'S y B' no se usa).\n\n" +
                  "APAGADO (toggle, el que va): cada toque sube o baja del felpudo. Es " +
                  "lo que corresponde a la plancha de la Raspberry Pi, que manda un " +
                  "toque de ~50 ms al pisar y otro al bajarse, y nunca sostiene la " +
@@ -41,6 +42,29 @@ namespace BuenosDias.Config
                  "Solo sirve si la Pi pasa a mandar la tecla MIENTRAS está pisada; " +
                  "con la Pi de hoy dejaría al predicador caminando siempre.")]
         [SerializeField] private bool felpudoSostenido;
+
+        [Header("Felpudo")]
+        [Tooltip("Qué teclas manda la placa del felpudo. TIENE QUE COINCIDIR con el " +
+                 "firmware cargado en la Raspberry Pi: si no, el felpudo no hace nada.\n\n" +
+                 "ESPACIO (firmware v16): un toque de Espacio al subirse y otro al " +
+                 "bajarse, y cada toque alterna. Usa el Botón B y el sostenido. Si se " +
+                 "pierde o sobra un toque, el felpudo queda invertido hasta corregirlo " +
+                 "a mano.\n\n" +
+                 "S Y B (firmware v17): una tecla al subirse y otra al bajarse. Cada " +
+                 "tecla dice el estado, así que una perdida o repetida se corrige sola " +
+                 "con la siguiente. Usa las dos teclas de abajo; el Botón B y el " +
+                 "sostenido no se usan.")]
+        [SerializeField] private TeclasFelpudo teclasFelpudo = TeclasFelpudo.Espacio;
+
+        [Tooltip("Con 'S y B': la tecla que manda la placa cuando alguien SE SUBE " +
+                 "(TECLA_SUBIO en el code.py de la placa).")]
+        [SerializeField]
+        private PhysicalBinding felpudoSube = new PhysicalBinding(BindingDevice.Teclado, Key.S);
+
+        [Tooltip("Con 'S y B': la tecla que manda la placa cuando alguien SE BAJA " +
+                 "(TECLA_BAJO en el code.py de la placa).")]
+        [SerializeField]
+        private PhysicalBinding felpudoBaja = new PhysicalBinding(BindingDevice.Teclado, Key.B);
 
         [Header("Tiempos")]
         [Tooltip("Segundos después del felpudo durante los que el timbre NO dispara.\n\n" +
@@ -69,8 +93,17 @@ namespace BuenosDias.Config
         /// <summary>El felpudo.</summary>
         public PhysicalBinding BotonB => botonB;
 
-        /// <summary>Si el felpudo se sostiene en vez de alternar.</summary>
+        /// <summary>Si el felpudo se sostiene en vez de alternar. Solo con <see cref="TeclasFelpudo.Espacio"/>.</summary>
         public bool FelpudoSostenido => felpudoSostenido;
+
+        /// <summary>Qué teclas manda la placa del felpudo.</summary>
+        public TeclasFelpudo TeclasFelpudo => teclasFelpudo;
+
+        /// <summary>Con <see cref="TeclasFelpudo.SyB"/>: la tecla de subirse.</summary>
+        public PhysicalBinding FelpudoSube => felpudoSube;
+
+        /// <summary>Con <see cref="TeclasFelpudo.SyB"/>: la tecla de bajarse.</summary>
+        public PhysicalBinding FelpudoBaja => felpudoBaja;
 
         /// <summary>Segundos después del felpudo durante los que el timbre no dispara.</summary>
         public float CoincidenceSeconds => coincidenceSeconds;

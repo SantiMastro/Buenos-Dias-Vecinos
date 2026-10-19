@@ -9,8 +9,8 @@ namespace BuenosDias.Gameplay
     ///
     /// Se juega con un solo esquema, el del control alternativo: el timbre (botón
     /// A, click izquierdo) toca, insiste y le pega al QTE, y el felpudo (botón B,
-    /// Espacio desde la Raspberry Pi) frena y vuelve a caminar. Las teclas y los
-    /// tiempos viven en un <see cref="InputConfig"/>.
+    /// Espacio o S y B desde la Raspberry Pi) frena y vuelve a caminar. Las teclas
+    /// y los tiempos viven en un <see cref="InputConfig"/>.
     /// </summary>
     /// <remarks>
     /// El orden de ejecución va adelantado porque todos los que preguntan lo hacen
@@ -79,9 +79,11 @@ namespace BuenosDias.Gameplay
             InputConfig settings = Config;
             WarnIfShared(settings);
 
+            bool dosTeclas = settings.TeclasFelpudo == TeclasFelpudo.SyB;
             source = new TwoButtonInputSource(
-                settings.BotonA, settings.BotonB,
-                settings.CoincidenceSeconds, settings.FelpudoSostenido);
+                settings.BotonA, dosTeclas ? settings.FelpudoSube : settings.BotonB,
+                settings.CoincidenceSeconds, settings.FelpudoSostenido,
+                dosTeclas ? settings.FelpudoBaja : null);
         }
 
         private void OnDestroy()
@@ -107,7 +109,20 @@ namespace BuenosDias.Gameplay
         /// </summary>
         private void WarnIfShared(InputConfig settings)
         {
-            if (settings.BotonA == null || !settings.BotonA.SameInputAs(settings.BotonB)) return;
+            bool dosTeclas = settings.TeclasFelpudo == TeclasFelpudo.SyB;
+            PhysicalBinding subirse = dosTeclas ? settings.FelpudoSube : settings.BotonB;
+
+            if (dosTeclas && subirse != null && subirse.SameInputAs(settings.FelpudoBaja))
+            {
+                Debug.LogError(
+                    $"[GameInput] '{name}': subirse y bajarse del felpudo están atados a " +
+                    $"la MISMA tecla ({subirse.Describe()}). Con 'S y B' el felpudo no se " +
+                    "puede leer así. Asigná teclas distintas en el InputConfig.", this);
+            }
+
+            if (settings.BotonA == null) return;
+            if (!settings.BotonA.SameInputAs(subirse) &&
+                !(dosTeclas && settings.BotonA.SameInputAs(settings.FelpudoBaja))) return;
 
             Debug.LogError(
                 $"[GameInput] '{name}': el timbre y el felpudo están atados a la MISMA " +

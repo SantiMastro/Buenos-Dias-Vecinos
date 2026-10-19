@@ -2,6 +2,22 @@ using UnityEngine;
 
 namespace BuenosDias.Gameplay
 {
+    /// <summary>Qué teclas manda la placa del felpudo, y por lo tanto cómo se lee.</summary>
+    public enum TeclasFelpudo
+    {
+        /// <summary>
+        /// Un toque de Espacio al subirse y otro al bajarse (firmware v16). Cada
+        /// toque alterna: si se pierde o sobra uno, el felpudo queda invertido.
+        /// </summary>
+        Espacio,
+
+        /// <summary>
+        /// S al subirse y B al bajarse (firmware v17). Cada tecla dice el estado,
+        /// así que una perdida o repetida se corrige sola con la siguiente.
+        /// </summary>
+        SyB
+    }
+
     /// <summary>
     /// Modalidad de TECLADO DOS BOTONES: el intermedio entre un botón y el objeto.
     ///
@@ -30,11 +46,17 @@ namespace BuenosDias.Gameplay
     ///
     /// Cuando A y B llegan juntos decide <see cref="TwoButtonArbiter"/>: sin él, un
     /// solo apretón podía frenar y tocar el timbre a la vez.
+    ///
+    /// Con <see cref="TeclasFelpudo.SyB"/> el felpudo deja de ser un toggle: la
+    /// placa manda una tecla al subirse y OTRA al bajarse, y cada una dice el
+    /// estado. Para el resto del juego B "se apretó" solo cuando el felpudo
+    /// cambia (ver <see cref="CuentaComoB"/>).
     /// </summary>
     public sealed class TwoButtonInputSource : IInputSource
     {
         private readonly PhysicalBinding a;
         private readonly PhysicalBinding b;
+        private readonly PhysicalBinding bajarse;
         private readonly TwoButtonArbiter arbiter;
         private readonly bool matIsHeld;
 
@@ -54,14 +76,49 @@ namespace BuenosDias.Gameplay
         /// <paramref name="matIsHeld"/> cambia cómo se lee B jugando: sostenido en
         /// vez de toggle. Es para la plancha física, que manda la tecla MIENTRAS
         /// está pisada; con toggle, bajarse de la plancha no haría nada.
+        ///
+        /// Con <paramref name="bajarse"/> el felpudo se lee con DOS teclas
+        /// (<see cref="TeclasFelpudo.SyB"/>): <paramref name="b"/> es subirse y
+        /// <paramref name="bajarse"/> es bajarse. Ahí no hay toggle ni sostenido, y
+        /// <paramref name="matIsHeld"/> no se usa.
         /// </summary>
         public TwoButtonInputSource(
-            PhysicalBinding a, PhysicalBinding b, float coincidenceSeconds = 0.1f, bool matIsHeld = false)
+            PhysicalBinding a, PhysicalBinding b, float coincidenceSeconds = 0.1f, bool matIsHeld = false,
+            PhysicalBinding bajarse = null)
         {
             this.a = a;
             this.b = b;
+            this.bajarse = bajarse;
             this.matIsHeld = matIsHeld;
             arbiter = new TwoButtonArbiter(coincidenceSeconds);
+        }
+
+        /// <summary>
+        /// Cómo queda el felpudo con dos teclas. <paramref name="sube"/> y
+        /// <paramref name="baja"/> son las teclas que llegaron en este cuadro. Si
+        /// llegaron las dos —dos toques de la placa en un cuadro muy largo— manda la
+        /// que sigue apretada, que es la última; si ya se soltaron las dos, queda
+        /// abajo.
+        /// </summary>
+        public static bool SiguienteFelpudo(bool enFelpudo, bool sube, bool baja, bool subeSigueApretada)
+        {
+            if (sube && baja) return subeSigueApretada;
+            if (sube) return true;
+            if (baja) return false;
+            return enFelpudo;
+        }
+
+        /// <summary>
+        /// Si el cambio del felpudo cuenta como apretón de B para el árbitro (que
+        /// confirma la religión y traba el timbre). Una tecla repetida no cambia
+        /// nada y no cuenta: la placa reintenta y vuelve a mandar la tecla al salir
+        /// de la pausa. En la selección solo confirma SUBIRSE: bajarse de la plancha
+        /// después de confirmar no tiene que confirmar de nuevo.
+        /// </summary>
+        public static bool CuentaComoB(bool antes, bool despues, InputContext context)
+        {
+            if (antes == despues) return false;
+            return despues || context != InputContext.Seleccion;
         }
 
         /// <summary>
@@ -81,6 +138,18 @@ namespace BuenosDias.Gameplay
         {
             bool aPressed = a != null && a.WasPressedThisFrame();
             bool bPressed = b != null && b.WasPressedThisFrame();
+
+            if (bajarse != null)
+            {
+                // Dos teclas: el felpudo sigue a la placa en todos los contextos,
+                // también en la selección, así no queda invertido al empezar.
+                bool next = SiguienteFelpudo(
+                    onMat, bPressed, bajarse.WasPressedThisFrame(), b != null && b.IsPressed());
+                bPressed = CuentaComoB(onMat, next, Context);
+                onMat = next;
+                frame = arbiter.Resolve(aPressed, bPressed, Context, Time.unscaledTime);
+                return;
+            }
 
             frame = arbiter.Resolve(aPressed, bPressed, Context, Time.unscaledTime);
             if (frame.ToggleMat && !matIsHeld) onMat = !onMat;
@@ -110,7 +179,7 @@ namespace BuenosDias.Gameplay
         public bool Held(GameAction action)
         {
             if (action == GameAction.Felpudo)
-                return matIsHeld ? b != null && b.IsPressed() : onMat;
+                return matIsHeld && bajarse == null ? b != null && b.IsPressed() : onMat;
 
             return a != null && a.IsPressed() && Resolve() == action;
         }
