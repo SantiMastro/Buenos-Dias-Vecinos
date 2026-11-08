@@ -54,6 +54,20 @@ public class PaletteSwapper : MonoBehaviour
     private static readonly Dictionary<Sprite, Sprite> swappedToOriginal
         = new Dictionary<Sprite, Sprite>();
 
+    /// <summary>
+    /// Vacía los caches al entrar a Play. Con la recarga de dominio apagada
+    /// (Enter Play Mode Options) las estáticas sobreviven entre partidas, pero los
+    /// sprites pintados no: Unity los destruye al salir de Play. Sin esto, la
+    /// segunda partida encontraba sprites muertos en el cache y el predicador se
+    /// quedaba con los colores de origen, sin cambiar de religión.
+    /// </summary>
+    [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
+    private static void ResetStatics()
+    {
+        cache.Clear();
+        swappedToOriginal.Clear();
+    }
+
     void Awake()
     {
         sr = GetComponent<SpriteRenderer>();
@@ -126,7 +140,13 @@ public class PaletteSwapper : MonoBehaviour
         if ((swaps.Count == 0 && hat == null && sidelock == null) || string.IsNullOrEmpty(paletteKey)) return null;
 
         var key = (source, paletteKey);
-        if (cache.TryGetValue(key, out Sprite hit)) return hit;
+        if (cache.TryGetValue(key, out Sprite hit))
+        {
+            // Vivo: sirve. Null "de verdad": es una pintada que ya falló y no se
+            // reintenta cada cuadro. Destruido (== null pero no null): es un
+            // resto de una partida anterior y hay que volver a pintarlo.
+            if (hit != null || ReferenceEquals(hit, null)) return hit;
+        }
 
         Sprite built = BuildSwapped(source);
         cache[key] = built;
@@ -381,5 +401,6 @@ public class PaletteSwapper : MonoBehaviour
             else DestroyImmediate(tex);
         }
         cache.Clear();
+        swappedToOriginal.Clear();
     }
 }

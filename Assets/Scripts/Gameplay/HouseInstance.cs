@@ -93,6 +93,39 @@ namespace BuenosDias.Gameplay
         /// <summary>Posición mundial de la puerta. La usa el rango del timbre.</summary>
         public Vector3 DoorPosition => door != null ? door.position : transform.position;
 
+        /// <summary>
+        /// Lo que salió la primera vez que se tocó el timbre de ESTA casa, o
+        /// <c>null</c> si nadie tocó todavía.
+        ///
+        /// ⚠️ Es de la casa y no del timbrazo: si cada vez que el predicador se baja
+        /// y vuelve a subirse al felpudo se volviera a sortear quién hay, amagar a
+        /// seguir y volver sacaba gente nueva de la misma puerta una y otra vez.
+        /// Una casa vacía sigue vacía y una ocupada sigue teniendo al mismo vecino.
+        /// </summary>
+        public HouseOccupancy? KnownOccupancy { get; private set; }
+
+        /// <summary>
+        /// Si el vecino ya abrió la puerta alguna vez. Una casa atendida no vuelve a
+        /// abrir: el que estaba ya dijo lo que tenía para decir.
+        /// </summary>
+        public bool WasAttended { get; private set; }
+
+        /// <summary>
+        /// Número al azar que fija QUÉ timbre suena en esta casa. Se sortea al armarla
+        /// y no cambia mientras la casa esté en pantalla: da igual cuántas veces se
+        /// insista, se baje y se vuelva a subir, o cuántos eslabones pida el vecino,
+        /// el timbre de esta puerta es siempre el mismo. Cada casa nueva sortea el
+        /// suyo. Es un número y no un nombre de clip para que el audio lo reduzca a
+        /// cuantos timbres haya cargados.
+        /// </summary>
+        public int BellVariant { get; private set; }
+
+        /// <summary>Guarda lo que salió al primer timbrazo.</summary>
+        public void RememberOccupancy(HouseOccupancy occupancy) => KnownOccupancy = occupancy;
+
+        /// <summary>Anota que el vecino abrió la puerta.</summary>
+        public void MarkAttended() => WasAttended = true;
+
         /// <summary>Inyecta la config. La llama el spawner al crear el pool.</summary>
         private SpriteRenderer tellWindowRenderer;
 
@@ -216,6 +249,11 @@ namespace BuenosDias.Gameplay
         public void Apply(HouseLayout layout)
         {
             Layout = layout;
+
+            // La casa vive en un pool: lo que pasó en su vida anterior no se hereda.
+            KnownOccupancy = null;
+            WasAttended = false;
+            BellVariant = Random.Range(0, int.MaxValue);
 
             float width = layout.LotWidthUnits;
             float doorX = ProjectConstants.ToUnits(layout.DoorOffsetPixels);

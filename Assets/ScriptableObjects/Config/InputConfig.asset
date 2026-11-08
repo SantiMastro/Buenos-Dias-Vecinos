@@ -19,6 +19,14 @@ MonoBehaviour:
     device: 0
     key: 1
   felpudoSostenido: 0
-  teclasFelpudo: 1
+  teclasFelpudo: 2
+  felpudoSube:
+    device: 0
+    key: 33
+  felpudoBaja:
+    device: 0
+    key: 16
+  latidoCaducaSeconds: 0.4
+  felpudoOciosoSeconds: 0
   coincidenceSeconds: 0.05
   ringBufferSeconds: 0.25

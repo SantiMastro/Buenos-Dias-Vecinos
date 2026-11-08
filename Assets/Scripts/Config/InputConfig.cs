@@ -53,7 +53,11 @@ namespace BuenosDias.Config
                  "S Y B (firmware v17): una tecla al subirse y otra al bajarse. Cada " +
                  "tecla dice el estado, así que una perdida o repetida se corrige sola " +
                  "con la siguiente. Usa las dos teclas de abajo; el Botón B y el " +
-                 "sostenido no se usan.")]
+                 "sostenido no se usan.\n\n" +
+                 "S LATIDO (firmware v19): la placa REPITE S mientras hay alguien " +
+                 "arriba y manda una B al bajarse. El juego solo frena mientras " +
+                 "sigan llegando S y, sin teclas, camina: una tecla perdida o de más " +
+                 "se corrige sola en 'Latido caduca'. Usa las dos teclas de abajo.")]
         [SerializeField] private TeclasFelpudo teclasFelpudo = TeclasFelpudo.Espacio;
 
         [Tooltip("Con 'S y B': la tecla que manda la placa cuando alguien SE SUBE " +
@@ -65,6 +69,21 @@ namespace BuenosDias.Config
                  "(TECLA_BAJO en el code.py de la placa).")]
         [SerializeField]
         private PhysicalBinding felpudoBaja = new PhysicalBinding(BindingDevice.Teclado, Key.B);
+
+        [Tooltip("Con 'S Latido': segundos sin recibir una S para dar el felpudo por " +
+                 "bajado y volver a caminar. La placa manda una S cada ~150 ms, así que " +
+                 "0.4 aguanta dos latidos perdidos. Más largo = el predicador tarda más " +
+                 "en caminar si la placa se cuelga; más corto = un tropiezo del USB lo " +
+                 "suelta de la puerta.")]
+        [SerializeField, Range(0.15f, 1f)] private float latidoCaducaSeconds = 0.4f;
+
+        [Tooltip("Seguro contra el felpudo TRABADO (la placa cree que hay alguien y no lo " +
+                 "hay). Segundos que el predicador puede estar parado en el felpudo sin " +
+                 "hacer nada —sin tocar el timbre, o con la puerta ya resuelta y sin " +
+                 "bajarse— antes de darlo por trabado: camina, y el juego ignora la " +
+                 "plancha hasta que la placa diga 'abajo'. Solo con 'S y B' o 'S Latido'. " +
+                 "0 lo apaga.")]
+        [SerializeField, Range(0f, 30f)] private float felpudoOciosoSeconds = 8f;
 
         [Header("Tiempos")]
         [Tooltip("Segundos después del felpudo durante los que el timbre NO dispara.\n\n" +
@@ -104,6 +123,12 @@ namespace BuenosDias.Config
 
         /// <summary>Con <see cref="TeclasFelpudo.SyB"/>: la tecla de bajarse.</summary>
         public PhysicalBinding FelpudoBaja => felpudoBaja;
+
+        /// <summary>Con <see cref="TeclasFelpudo.SLatido"/>: segundos sin S para volver a caminar.</summary>
+        public float LatidoCaducaSeconds => latidoCaducaSeconds;
+
+        /// <summary>Segundos parado en el felpudo sin hacer nada para darlo por trabado. 0 = apagado.</summary>
+        public float FelpudoIdleSeconds => felpudoOciosoSeconds;
 
         /// <summary>Segundos después del felpudo durante los que el timbre no dispara.</summary>
         public float CoincidenceSeconds => coincidenceSeconds;

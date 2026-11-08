@@ -55,6 +55,13 @@ namespace BuenosDias.Presentation
                  "ganaste. Apagado, solo la ascensión suena como ganaste.")]
         [SerializeField] private bool middleEndingCountsAsWin = true;
 
+        [Header("Timbre")]
+        [Tooltip("APAGADO (el default): cada casa tiene SU timbre, sorteado entre " +
+                 "timbre, timbre_2, timbre_3... Una misma casa suena siempre igual, " +
+                 "aunque insistas o te pida varios eslabones; la siguiente sortea otro.\n" +
+                 "PRENDIDO: todas las casas suenan con el MISMO timbre ('timbre').")]
+        [SerializeField] private bool oneBellForAllHouses;
+
         [Header("Pasos")]
         [SerializeField] private bool footsteps = true;
 
@@ -84,7 +91,6 @@ namespace BuenosDias.Presentation
         private const string MusicLose = "musica_perdiste";
         private const int MaxBellVariants = 8;
         private readonly List<string> bellNames = new List<string>();
-        private string currentBell;
         private AudioSource music;
         private float musicFade;
         private string musicWanted;      // pista que corresponde a la pantalla de ahora
@@ -181,7 +187,7 @@ namespace BuenosDias.Presentation
             {
                 "timbre", "cortina", "paso", "puerta_abre", "sin_respuesta", "perfecto",
                 "bueno", "fallo", "convierte", "rechazo", "racha", "powerup_listo",
-                "powerup_usa", "tecla", "fijar", "tabla", "fin"
+                "powerup_usa", "tecla", "fijar", "tabla", "fin", "vacia", "fuente"
             };
 
             foreach (string clipName in names)
@@ -191,9 +197,11 @@ namespace BuenosDias.Presentation
             }
 
             // Timbres alternativos: timbre_2 ... timbre_8. Los que no existan se
-            // ignoran sin avisos; el 'timbre' base siempre cuenta.
+            // ignoran sin avisos; el 'timbre' base siempre cuenta. Solo se cargan si
+            // cada casa tiene el suyo: con un timbre único no hacen falta.
             bellNames.Clear();
             if (Clip("timbre") != null) bellNames.Add("timbre");
+            if (oneBellForAllHouses) return;
 
             for (int i = 2; i <= MaxBellVariants; i++)
             {
@@ -289,15 +297,22 @@ namespace BuenosDias.Presentation
         }
 
         /// <summary>
-        /// Cada casa tiene SU timbre: se sortea al llegar y se mantiene mientras
-        /// el predicador insiste en la misma puerta, así que el timbre de una casa
-        /// suena siempre igual y el de la siguiente es otro.
+        /// Cada casa tiene SU timbre, y es el de la CASA: lo fija la casa al armarse
+        /// (<see cref="HouseInstance.BellVariant"/>), no este componente. Así suena
+        /// igual al insistir, al bajarse del felpudo y volver, y en cada eslabón que
+        /// pida el vecino, sin importar por qué estados pase el predicador. La casa
+        /// siguiente tiene otro sorteo. Con <c>oneBellForAllHouses</c> suenan todas
+        /// con el mismo.
         /// </summary>
         private void OnDoorbellRung(float precision)
         {
             if (bellNames.Count == 0) return;
-            if (currentBell == null) currentBell = bellNames[Random.Range(0, bellNames.Count)];
-            Play(currentBell, Level);
+
+            if (oneBellForAllHouses) { Play(bellNames[0], Level); return; }
+
+            HouseInstance house = preacher != null ? preacher.Target : null;
+            int variant = house != null ? house.BellVariant : 0;
+            Play(bellNames[variant % bellNames.Count], Level);
         }
 
         private void OnTell() => Play("cortina", Level);
@@ -306,11 +321,19 @@ namespace BuenosDias.Presentation
 
         private void OnPreacherState(PreacherState state)
         {
-            // al volver a caminar se cambia de casa, y con ella el timbre
-            if (state == PreacherState.Caminando) currentBell = null;
-
             if (state == PreacherState.Atendido) Play("puerta_abre", Level);
-            else if (state == PreacherState.SinRespuesta) Play("sin_respuesta", Level);
+            else if (state == PreacherState.SinRespuesta) PlayNoAnswer();
+        }
+
+        /// <summary>
+        /// Nadie abrió, y no es lo mismo que no haya nadie a que alguien te ignore:
+        /// la casa vacía suena hueca ('vacia'), la ocupada que no abre suena como
+        /// siempre ('sin_respuesta'). Así el oído también distingue los dos casos.
+        /// </summary>
+        private void PlayNoAnswer()
+        {
+            bool empty = preacher != null && preacher.TargetIsEmpty;
+            Play(empty ? "vacia" : "sin_respuesta", Level);
         }
 
         private void OnAttemptResolved(SkillcheckOutcome outcome)
@@ -329,7 +352,11 @@ namespace BuenosDias.Presentation
         /// </summary>
         private void OnDoorFinished(SkillcheckResult result)
         {
-            if (result.State == SkillcheckSessionState.Convertido) Play("convierte", Level, 0f, 0.22f);
+            if (result.State == SkillcheckSessionState.Convertido)
+            {
+                Play("convierte", Level, 0f, 0.22f);
+                Play("fuente", Level * 0.8f, 0.03f, 0.22f);   // el chorro de la fuente
+            }
             else Play("rechazo", Level, 0f, 0.3f);
         }
 

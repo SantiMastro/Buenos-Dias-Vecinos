@@ -15,7 +15,16 @@ namespace BuenosDias.Gameplay
         /// S al subirse y B al bajarse (firmware v17). Cada tecla dice el estado,
         /// así que una perdida o repetida se corrige sola con la siguiente.
         /// </summary>
-        SyB
+        SyB,
+
+        /// <summary>
+        /// S REPETIDA mientras hay alguien arriba, y una B al bajarse (firmware
+        /// v19). El felpudo deja de ser un estado que se recuerda y pasa a ser un
+        /// alquiler: el juego solo está frenado mientras sigan llegando S, y sin
+        /// teclas camina. Una tecla perdida, una de más o una placa colgada se
+        /// corrigen solas en el "Latido caduca" del InputConfig.
+        /// </summary>
+        SLatido
     }
 
     /// <summary>
@@ -51,6 +60,11 @@ namespace BuenosDias.Gameplay
     /// placa manda una tecla al subirse y OTRA al bajarse, y cada una dice el
     /// estado. Para el resto del juego B "se apretó" solo cuando el felpudo
     /// cambia (ver <see cref="CuentaComoB"/>).
+    ///
+    /// Con <see cref="TeclasFelpudo.SLatido"/> deja de ser un estado que se
+    /// recuerda: la placa repite S mientras hay alguien arriba y el juego solo se
+    /// queda frenado mientras sigan llegando. El valor por defecto es ABAJO, o sea
+    /// caminando. B corta al instante; si no llega, caduca sola.
     /// </summary>
     public sealed class TwoButtonInputSource : IInputSource
     {
@@ -59,9 +73,12 @@ namespace BuenosDias.Gameplay
         private readonly PhysicalBinding bajarse;
         private readonly TwoButtonArbiter arbiter;
         private readonly bool matIsHeld;
+        private readonly float latidoSeconds;
 
         private TwoButtonFrame frame;
         private bool onMat;
+        private float sinLatido = float.PositiveInfinity;
+        private bool revoked;
 
         /// <summary>Qué espera el juego. Le da significado al botón A.</summary>
         public InputContext Context { get; set; } = InputContext.Seleccion;
@@ -81,15 +98,21 @@ namespace BuenosDias.Gameplay
         /// (<see cref="TeclasFelpudo.SyB"/>): <paramref name="b"/> es subirse y
         /// <paramref name="bajarse"/> es bajarse. Ahí no hay toggle ni sostenido, y
         /// <paramref name="matIsHeld"/> no se usa.
+        ///
+        /// Con <paramref name="latidoSeconds"/> mayor que 0 (<see cref="TeclasFelpudo.SLatido"/>)
+        /// el felpudo es un alquiler: <paramref name="b"/> se REPITE mientras hay
+        /// alguien arriba, y si pasan estos segundos sin recibirla el predicador
+        /// vuelve a caminar. <paramref name="bajarse"/> lo corta al instante.
         /// </summary>
         public TwoButtonInputSource(
             PhysicalBinding a, PhysicalBinding b, float coincidenceSeconds = 0.1f, bool matIsHeld = false,
-            PhysicalBinding bajarse = null)
+            PhysicalBinding bajarse = null, float latidoSeconds = 0f)
         {
             this.a = a;
             this.b = b;
             this.bajarse = bajarse;
             this.matIsHeld = matIsHeld;
+            this.latidoSeconds = latidoSeconds;
             arbiter = new TwoButtonArbiter(coincidenceSeconds);
         }
 
@@ -106,6 +129,63 @@ namespace BuenosDias.Gameplay
             if (sube) return true;
             if (baja) return false;
             return enFelpudo;
+        }
+
+        /// <summary>
+        /// Lo más que cuenta un cuadro largo para la caducidad del latido. Si el
+        /// juego se traba un segundo (carga, recolector de basura), los latidos que
+        /// la placa mandó en el medio no se ven y, sin este tope, el felpudo caducaba
+        /// de golpe y soltaba la puerta que se estaba atendiendo.
+        /// </summary>
+        public const float LatidoTopeCuadro = 0.05f;
+
+        /// <summary>
+        /// El felpudo con latido (<see cref="TeclasFelpudo.SLatido"/>). Devuelve si
+        /// está pisado. <paramref name="sinLatido"/> son los segundos desde la
+        /// última S y arranca en infinito: el valor por defecto es ABAJO.
+        ///
+        /// Una S (nueva o todavía apretada) renueva el alquiler; una B lo corta al
+        /// instante; y sin ninguna de las dos caduca a los
+        /// <paramref name="caducaSeconds"/>. Si llegan las dos en el mismo cuadro
+        /// manda la S que sigue apretada, que es la última.
+        /// </summary>
+        public static bool SiguienteFelpudoLatido(
+            bool sube, bool baja, bool subeSigueApretada, float deltaTime, float caducaSeconds,
+            ref float sinLatido)
+        {
+            float paso = deltaTime < 0f ? 0f : (deltaTime > LatidoTopeCuadro ? LatidoTopeCuadro : deltaTime);
+            sinLatido += paso;
+
+            if (sube && baja) sinLatido = subeSigueApretada ? 0f : float.PositiveInfinity;
+            else if (baja) sinLatido = float.PositiveInfinity;
+            else if (sube || subeSigueApretada) sinLatido = 0f;
+
+            return sinLatido <= caducaSeconds;
+        }
+
+        /// <summary>
+        /// El seguro contra el felpudo trabado. Mientras está REVOCADO el felpudo se
+        /// lee como bajado, diga lo que diga la placa; se levanta la primera vez
+        /// que la placa dice "abajo" (una B, o que las S dejen de llegar).
+        /// </summary>
+        public static bool ResolverRevocado(bool next, ref bool revocado)
+        {
+            if (!revocado) return next;
+            if (!next) revocado = false;
+            return false;
+        }
+
+        /// <summary>
+        /// Da el felpudo por trabado: lo suelta y lo ignora hasta que la placa diga
+        /// "abajo". Devuelve false si esta modalidad no puede (con el toggle de
+        /// Espacio no hay forma de saber qué dice la placa).
+        /// </summary>
+        public bool Revoke()
+        {
+            if (bajarse == null) return false;
+            revoked = true;
+            onMat = false;
+            return true;
         }
 
         /// <summary>
@@ -143,8 +223,13 @@ namespace BuenosDias.Gameplay
             {
                 // Dos teclas: el felpudo sigue a la placa en todos los contextos,
                 // también en la selección, así no queda invertido al empezar.
-                bool next = SiguienteFelpudo(
-                    onMat, bPressed, bajarse.WasPressedThisFrame(), b != null && b.IsPressed());
+                bool baja = bajarse.WasPressedThisFrame();
+                bool subeApretada = b != null && b.IsPressed();
+                bool next = latidoSeconds > 0f
+                    ? SiguienteFelpudoLatido(
+                        bPressed, baja, subeApretada, Time.unscaledDeltaTime, latidoSeconds, ref sinLatido)
+                    : SiguienteFelpudo(onMat, bPressed, baja, subeApretada);
+                next = ResolverRevocado(next, ref revoked);
                 bPressed = CuentaComoB(onMat, next, Context);
                 onMat = next;
                 frame = arbiter.Resolve(aPressed, bPressed, Context, Time.unscaledTime);

@@ -99,7 +99,12 @@ namespace BuenosDias.Gameplay
             System.Random random, WaitConfig waitConfig, DoorbellConfig doorbellConfig,
             ReligionDefinition religion)
         {
-            HouseOccupancy occupancy = resolver.Resolve(house.Layout, random);
+            // ⚠️ La ocupación es de la CASA: si ya salió una vez, se reutiliza. Sin
+            // esto, bajarse del felpudo y volver a subirse a la misma puerta volvía
+            // a sortear quién hay —y volvía a tocar el anti-racha— y se podía sacar
+            // gente nueva de una casa ya atendida.
+            HouseOccupancy occupancy = house.KnownOccupancy ?? resolver.Resolve(house.Layout, random);
+            house.RememberOccupancy(occupancy);
 
             var attempt = new DoorAttempt(
                 house, precision, occupancy, waitConfig, doorbellConfig, religion, random);
@@ -127,7 +132,10 @@ namespace BuenosDias.Gameplay
         /// </summary>
         private void StartWait()
         {
+            // Una casa que ya abrió no vuelve a abrir, aunque haya alguien: sigue
+            // asomando la cortina, pero no atiende de nuevo.
             WillOpen = SomeoneHome
+                       && !House.WasAttended
                        && random.NextDouble() < doorbellConfig.OpenChanceAt(Insists);
 
             float duration = waitConfig.RollDuration(random, religion)

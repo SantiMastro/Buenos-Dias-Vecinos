@@ -28,6 +28,7 @@ namespace BuenosDias.Gameplay
         [SerializeField] private InputConfig config;
 
         private IInputSource source;
+        private TwoButtonInputSource twoButton;
         private InputConfig fallback;
 
         /// <summary>
@@ -67,6 +68,18 @@ namespace BuenosDias.Gameplay
         /// <summary>Si esa acción está sostenida ahora mismo.</summary>
         public bool Held(GameAction action) => source != null && source.Held(action);
 
+        /// <summary>
+        /// Segundos que el predicador puede estar parado en el felpudo sin hacer
+        /// nada antes de darlo por trabado. 0 = apagado.
+        /// </summary>
+        public float FelpudoIdleSeconds => Config.FelpudoIdleSeconds;
+
+        /// <summary>
+        /// Da el felpudo por trabado (la placa cree que hay alguien y no lo hay) y lo
+        /// ignora hasta que diga "abajo". Devuelve false si la modalidad no puede.
+        /// </summary>
+        public bool RevokeFelpudo() => twoButton != null && twoButton.Revoke();
+
         private void Awake()
         {
             if (config == null)
@@ -79,11 +92,13 @@ namespace BuenosDias.Gameplay
             InputConfig settings = Config;
             WarnIfShared(settings);
 
-            bool dosTeclas = settings.TeclasFelpudo == TeclasFelpudo.SyB;
-            source = new TwoButtonInputSource(
+            bool dosTeclas = settings.TeclasFelpudo != TeclasFelpudo.Espacio;
+            twoButton = new TwoButtonInputSource(
                 settings.BotonA, dosTeclas ? settings.FelpudoSube : settings.BotonB,
                 settings.CoincidenceSeconds, settings.FelpudoSostenido,
-                dosTeclas ? settings.FelpudoBaja : null);
+                dosTeclas ? settings.FelpudoBaja : null,
+                settings.TeclasFelpudo == TeclasFelpudo.SLatido ? settings.LatidoCaducaSeconds : 0f);
+            source = twoButton;
         }
 
         private void OnDestroy()
@@ -109,7 +124,7 @@ namespace BuenosDias.Gameplay
         /// </summary>
         private void WarnIfShared(InputConfig settings)
         {
-            bool dosTeclas = settings.TeclasFelpudo == TeclasFelpudo.SyB;
+            bool dosTeclas = settings.TeclasFelpudo != TeclasFelpudo.Espacio;
             PhysicalBinding subirse = dosTeclas ? settings.FelpudoSube : settings.BotonB;
 
             if (dosTeclas && subirse != null && subirse.SameInputAs(settings.FelpudoBaja))

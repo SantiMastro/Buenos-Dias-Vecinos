@@ -64,6 +64,13 @@ namespace BuenosDias.Gameplay
         public HouseInstance Target => attempt?.House;
 
         /// <summary>
+        /// Si la casa que se está tocando está vacía. Es falso mientras no hay
+        /// ninguna puerta en juego. Lo usan las vistas y el audio para distinguir
+        /// "no hay nadie" de "hay alguien y no abre", una vez que la espera terminó.
+        /// </summary>
+        public bool TargetIsEmpty => attempt != null && !attempt.SomeoneHome;
+
+        /// <summary>
         /// Cuánto más rápido se camina AHORA, por el avance del día.
         ///
         /// Es público porque el indicador de timbre tiene que medir el alcance con
@@ -227,6 +234,7 @@ namespace BuenosDias.Gameplay
         private void OnMat()
         {
             if (SteppedOff()) return;
+            if (StuckOnMat()) return;
             if (!approach.HasDoor || !ringBuffer.TryConsume(Time.time)) return;
 
             Ring();
@@ -256,11 +264,14 @@ namespace BuenosDias.Gameplay
 
         private void Ring()
         {
-            DoorbellRung?.Invoke(approach.Precision);
-
             attempt = DoorAttempt.Ring(
                 approach.House, approach.Precision, resolver, random,
                 gameConfig.Wait, gameConfig.Doorbell, religion);
+
+            // El aviso sale DESPUÉS de armar el intento: quien lo escucha pregunta por
+            // Target para saber a qué casa le tocaron el timbre (el audio elige el
+            // timbre de ESA casa), y antes de esta línea todavía era null.
+            DoorbellRung?.Invoke(approach.Precision);
 
             Enter(PreacherState.Esperando);
         }
@@ -284,6 +295,10 @@ namespace BuenosDias.Gameplay
             // vio moverse la cortina, hay alguien. La FSM no necesita saber cuál de
             // las dos es, solo que la puerta no se abrió.
             if (!attempt.WillOpen) { Enter(PreacherState.SinRespuesta); return; }
+
+            // Abrió: esta casa ya no vuelve a atender, ni aunque el jugador se baje
+            // del felpudo y vuelva a subirse.
+            attempt.House.MarkAttended();
 
             // La cadena arranca en el mismo cuadro en que se abre la puerta: si
             // esperara al Update siguiente, el aro aparecería un cuadro después
@@ -346,7 +361,29 @@ namespace BuenosDias.Gameplay
         /// </summary>
         private void Settled()
         {
-            SteppedOff();
+            if (SteppedOff()) return;
+            StuckOnMat();
+        }
+
+        /// <summary>
+        /// El seguro contra el felpudo trabado. Si el predicador lleva demasiado
+        /// parado en la plancha SIN hacer nada —en <c>EnElFelpudo</c> sin tocar el
+        /// timbre, o en <c>Resuelto</c> sin bajarse— lo más probable es que la placa
+        /// crea que hay alguien y no lo haya. Se lo revoca: el juego ignora la plancha
+        /// hasta que diga "abajo", y el predicador sigue caminando.
+        ///
+        /// Solo estos dos estados: ahí el jugador no tiene nada que hacer salvo
+        /// tocar el timbre o bajarse. Con la puerta en juego (esperando, abierta o sin
+        /// respuesta) no se toca nada.
+        /// </summary>
+        private bool StuckOnMat()
+        {
+            float limit = input.FelpudoIdleSeconds;
+            if (limit <= 0f || stateTime < limit) return false;
+            if (!input.RevokeFelpudo()) return false;
+
+            Abandon();
+            return true;
         }
 
         /// <summary>
