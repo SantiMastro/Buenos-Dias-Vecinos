@@ -42,7 +42,7 @@ MonoBehaviour:
   houseGeneration: {fileID: 11400000, guid: 1e13675d0a139014582568ac473920fd, type: 2}
   dayCycle: {fileID: 11400000, guid: 7192e1e78f94578439e3be7e375c401f, type: 2}
   followers: {fileID: 11400000, guid: 65adc5cc6d7d42d4ba0aef2fc474826e, type: 2}
-  bonusBaseSeconds: 3
-  bonusPerfectSeconds: 4
-  bonusGoodSeconds: 1.5
-  bonusCapPerLinkSeconds: 7
+  bonusBaseSeconds: 1.5
+  bonusPerfectSeconds: 2
+  bonusGoodSeconds: 0.75
+  bonusCapPerLinkSeconds: 3.5

@@ -40,6 +40,7 @@ namespace BuenosDias.Presentation
 
         private HouseInstance opened;
         private DoorBurst burst;
+        private FeedbackFx fx;
 
         private void Awake()
         {
@@ -57,17 +58,20 @@ namespace BuenosDias.Presentation
             // Sin renderer de referencia no hay capa ni material para dibujar los
             // chispazos: las puertas funcionan igual, solo sin ellos.
             burst = DoorBurst.Create(preacher.GetComponent<SpriteRenderer>());
+            fx = FeedbackFx.Create(preacher.GetComponent<SpriteRenderer>());
         }
 
         private void OnEnable()
         {
             preacher.StateChanged += OnStateChanged;
+            preacher.DoorbellRung += OnDoorbellRung;
             if (skillcheck != null) skillcheck.Finished += OnDoorFinished;
         }
 
         private void OnDisable()
         {
             preacher.StateChanged -= OnStateChanged;
+            preacher.DoorbellRung -= OnDoorbellRung;
             if (skillcheck != null) skillcheck.Finished -= OnDoorFinished;
 
             // Cerrar al apagarse no es una cortesía: la casa vive en un pool y se
@@ -75,15 +79,34 @@ namespace BuenosDias.Presentation
             // cuadra como una casa que abre sola.
             Close();
             burst?.Clear();
+            fx?.Clear();
         }
 
-        private void OnDestroy() => burst?.Destroy();
+        private void OnDestroy()
+        {
+            burst?.Destroy();
+            fx?.Destroy();
+        }
 
-        private void Update() => burst?.Tick(Time.deltaTime);
+        private void Update()
+        {
+            burst?.Tick(Time.deltaTime);
+            fx?.Tick(Time.deltaTime);
+        }
+
+        /// <summary>
+        /// Timbrazo (primero o insistencia): ondas desde el timbre de ESA casa. Sin
+        /// esto, tocar solo se notaba por el brazo y el sonido.
+        /// </summary>
+        private void OnDoorbellRung(float precision)
+        {
+            HouseInstance house = preacher.Target;
+            if (house != null) fx?.PlayRing(house.DoorPosition);
+        }
 
         private void OnStateChanged(PreacherState state)
         {
-            if (state == PreacherState.SinRespuesta) ShowEmptyHouse();
+            if (state == PreacherState.SinRespuesta) ShowNoAnswer();
 
             if (state != PreacherState.Atendido) { Close(); return; }
 
@@ -96,12 +119,16 @@ namespace BuenosDias.Presentation
         /// muestra: es lo que separa "no hay nadie" de "hay alguien y te ignora", que
         /// hasta ahora solo se leía por la ausencia de la cortina.
         /// </summary>
-        private void ShowEmptyHouse()
+        private void ShowNoAnswer()
         {
             HouseInstance house = preacher.Target;
-            if (house == null || !preacher.TargetIsEmpty) return;
+            if (house == null) return;
 
-            burst?.PlayEmpty(house.DoorPosition);
+            // Siempre: la reacción de animé del predicador ("no pasó nada"). Si
+            // había alguien, además la venita de enojo sobre la puerta.
+            fx?.PlayIgnored(preacher.transform.position, house.DoorPosition, preacher.TargetIsEmpty);
+
+            if (preacher.TargetIsEmpty) burst?.PlayEmpty(house.DoorPosition);
         }
 
         /// <summary>
@@ -111,6 +138,10 @@ namespace BuenosDias.Presentation
         /// </summary>
         private void OnDoorFinished(SkillcheckResult result)
         {
+            // El "+4s" / "-3s": que se vea qué le hizo la puerta al reloj.
+            if (Mathf.Abs(result.TimeDelta) > 0.01f)
+                fx?.PlayTime(preacher.transform.position, result.TimeDelta);
+
             if (result.State != SkillcheckSessionState.Convertido || opened == null) return;
 
             burst?.PlayFountain(opened.DoorPosition);

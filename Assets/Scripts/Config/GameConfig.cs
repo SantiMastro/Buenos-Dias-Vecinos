@@ -122,21 +122,23 @@ namespace BuenosDias.Config
 
         [Header("Bono de tiempo")]
         [Tooltip("Segundos base por conversión, por cada eslabón de la cadena.")]
-        [SerializeField, Min(0f)] private float bonusBaseSeconds = 3f;
+        [SerializeField, Min(0f)] private float bonusBaseSeconds = 1.5f;
 
         [Tooltip("Segundos extra por acierto PERFECTO, por eslabón.")]
-        [SerializeField, Min(0f)] private float bonusPerfectSeconds = 4f;
+        [SerializeField, Min(0f)] private float bonusPerfectSeconds = 2f;
 
         [Tooltip("Segundos extra por acierto BUENO, por eslabón.")]
-        [SerializeField, Min(0f)] private float bonusGoodSeconds = 1.5f;
+        [SerializeField, Min(0f)] private float bonusGoodSeconds = 0.75f;
 
         [Tooltip("Techo del bono POR ESLABÓN, antes del multiplicador de la religión. " +
-                 "Con 7 y una cadena de 3, el techo de esa puerta es 21. TIENE QUE QUEDAR EN base + perfecto (hoy 3+4=7) O POR ENCIMA: por debajo satura las dos calidades y vuelve el bug de abajo.\n\n" +
+                 "Con 3,5 y una cadena de 3, el techo de esa puerta es 10,5. TIENE QUE QUEDAR EN base + perfecto (hoy 1,5+2=3,5) O POR ENCIMA: por debajo satura las dos calidades y vuelve el bug de abajo.\n\n" +
+                 "Se bajó a la mitad (10/11) después del playtest: convertir devolvía demasiado " +
+                 "tiempo (hasta 28 s de un día de 72) y el reloj dejaba de apurar.\n\n" +
                  "Era un techo absoluto de 16 s y estaba mal: con 4 eslabones, pegarle " +
                  "todo al naranja y todo al verde pagaban EXACTAMENTE lo mismo, porque " +
                  "los dos saturaban. El premio a la precisión desaparecía justo donde la " +
                  "cadena es más larga y el check más difícil.")]
-        [SerializeField, Min(0f)] private float bonusCapPerLinkSeconds = 7f;
+        [SerializeField, Min(0f)] private float bonusCapPerLinkSeconds = 3.5f;
 
         /// <summary>Duración del día en segundos.</summary>
         public float DayDurationSeconds => dayDurationSeconds;
